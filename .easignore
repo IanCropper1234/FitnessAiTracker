@@ -1,0 +1,51 @@
+# Exclude cache and local directories (HUGE)
+.local
+.cache
+.config
+.pythonlibs
+
+# Exclude root-level node_modules and build artifacts
+node_modules
+dist
+.git
+
+# Exclude other project directories not needed for mobile
+client
+server
+shared
+attached_assets
+ios
+mobile_backup
+docs
+
+# Exclude root-level config files
+package.json
+package-lock.json
+tsconfig.json
+vite.config.ts
+tailwind.config.ts
+postcss.config.js
+drizzle.config.ts
+README.md
+replit.md
+.replit
+replit.nix
+.gitignore
+
+# Exclude build artifacts from mobile directory
+mobile/node_modules
+mobile/.expo
+mobile/dist
+mobile/*.log
+
+# Exclude OS files
+.DS_Store
+*.swp
+*.swo
+.Spotlight-V100
+.Trashes
+
+# Exclude IDE
+.vscode
+.idea
+*.sublime-*

@@ -92,6 +92,10 @@
       },
       "googleClientIdWeb": "497657957131-8gb7mmtgbknc78qdovbs8hff1b2263r9.apps.googleusercontent.com",
       "googleClientIdIos": "497657957131-l96b41913u5g99k0flv7usfdj410iu21.apps.googleusercontent.com"
-    }
+    },
+    "plugins": [
+      "expo-web-browser",
+      "expo-secure-store"
+    ]
   }
 }
