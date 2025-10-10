@@ -7,27 +7,17 @@
       "distribution": "internal",
       "env": {
         "EXPO_NO_CAPABILITY_SYNC": "1"
-      },
-      "node": "20.18.3",
-      "cache": {
-        "disabled": false
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
         "EXPO_NO_CAPABILITY_SYNC": "1"
-      },
-      "cache": {
-        "disabled": false
       }
     },
     "production": {
       "env": {
         "EXPO_NO_CAPABILITY_SYNC": "1"
-      },
-      "cache": {
-        "disabled": false
       }
     }
   },
