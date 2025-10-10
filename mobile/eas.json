@@ -5,17 +5,26 @@
   "build": {
     "development": {
       "distribution": "internal",
+      "ios": {
+        "image": "latest"
+      },
       "env": {
         "EXPO_NO_CAPABILITY_SYNC": "1"
       }
     },
     "preview": {
       "distribution": "internal",
+      "ios": {
+        "image": "latest"
+      },
       "env": {
         "EXPO_NO_CAPABILITY_SYNC": "1"
       }
     },
     "production": {
+      "ios": {
+        "image": "latest"
+      },
       "env": {
         "EXPO_NO_CAPABILITY_SYNC": "1"
       }

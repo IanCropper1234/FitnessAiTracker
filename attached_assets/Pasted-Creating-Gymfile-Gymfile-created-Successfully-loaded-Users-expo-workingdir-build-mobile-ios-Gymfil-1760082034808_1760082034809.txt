@@ -1,0 +1,905 @@
+Creating Gymfile
+Gymfile created
+Successfully loaded '/Users/expo/workingdir/build/mobile/ios/Gymfile' 📄
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                                                  Detected Values from './Gymfile'                                                                   |
++-----------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+| suppress_xcode_output | true                                                                                                                                        |
+| clean                 | false                                                                                                                                       |
+| scheme                | MyTrainPro                                                                                                                                  |
+| configuration         | Release                                                                                                                                     |
+| export_options        |                                                                                                                                             |
+| export_xcargs         | OTHER_CODE_SIGN_FLAGS="--keychain /var/folders/vn/nzbsghpn733f46w61_gbp33r0000gn/T/eas-build-13881f23-008e-448f-9615-cfc83c22fc48.keychain" |
+| disable_xcpretty      | true                                                                                                                                        |
+| buildlog_path         | /Users/expo/workingdir/logs                                                                                                                 |
+| output_directory      | ./build                                                                                                                                     |
++-----------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+Resolving Swift Package Manager dependencies...
+$ xcodebuild -resolvePackageDependencies -workspace ./MyTrainPro.xcworkspace -scheme MyTrainPro -configuration Release
+▸ Command line invocation:
+▸     /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -resolvePackageDependencies -workspace ./MyTrainPro.xcworkspace -scheme MyTrainPro -configuration Release
+▸ User defaults from command line:
+▸     IDEPackageSupportUseBuiltinSCM = YES
+▸ resolved source packages:
+$ xcodebuild -showBuildSettings -workspace ./MyTrainPro.xcworkspace -scheme MyTrainPro -configuration Release 2>&1
+Command timed out after 3 seconds on try 1 of 4, trying again with a 6 second timeout...
+Detected provisioning profile mapping: {:"com.trainpro.app"=>"b387b834-d28c-49ed-a10f-a137bfe7eef4"}
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                                                                      Summary for gym 2.220.0                                                                                       |
++------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+| workspace                                            | ./MyTrainPro.xcworkspace                                                                                                                    |
+| scheme                                               | MyTrainPro                                                                                                                                  |
+| clean                                                | false                                                                                                                                       |
+| output_directory                                     | ./build                                                                                                                                     |
+| output_name                                          | MyTrainPro                                                                                                                                  |
+| configuration                                        | Release                                                                                                                                     |
+| silent                                               | false                                                                                                                                       |
+| skip_package_ipa                                     | false                                                                                                                                       |
+| skip_package_pkg                                     | false                                                                                                                                       |
+| export_options.method                                | app-store                                                                                                                                   |
+| export_options.provisioningProfiles.com.trainpro.app | b387b834-d28c-49ed-a10f-a137bfe7eef4                                                                                                        |
+| export_xcargs                                        | OTHER_CODE_SIGN_FLAGS="--keychain /var/folders/vn/nzbsghpn733f46w61_gbp33r0000gn/T/eas-build-13881f23-008e-448f-9615-cfc83c22fc48.keychain" |
+| build_path                                           | /Users/expo/Library/Developer/Xcode/Archives/2025-10-10                                                                                     |
+| result_bundle                                        | false                                                                                                                                       |
+| buildlog_path                                        | /Users/expo/workingdir/logs                                                                                                                 |
+| destination                                          | generic/platform=iOS                                                                                                                        |
+| suppress_xcode_output                                | true                                                                                                                                        |
+| xcodebuild_formatter                                 | xcpretty                                                                                                                                    |
+| build_timing_summary                                 | false                                                                                                                                       |
+| disable_xcpretty                                     | true                                                                                                                                        |
+| skip_profile_detection                               | false                                                                                                                                       |
+| xcodebuild_command                                   | xcodebuild                                                                                                                                  |
+| skip_package_dependencies_resolution                 | false                                                                                                                                       |
+| disable_package_automatic_updates                    | false                                                                                                                                       |
+| use_system_scm                                       | false                                                                                                                                       |
+| xcode_path                                           | /Applications/Xcode.app                                                                                                                     |
++------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+$ set -o pipefail && xcodebuild -workspace ./MyTrainPro.xcworkspace -scheme MyTrainPro -configuration Release -destination 'generic/platform=iOS' -archivePath /Users/expo/Library/Developer/Xcode/Archives/2025-10-10/MyTrainPro\ 2025-10-10\ 00.31.10.xcarchive archive | tee /Users/expo/workingdir/logs/MyTrainPro-MyTrainPro.log > /dev/null
+› Executing react-native Pods/hermes-engine » [CP-User] [Hermes] Replace Hermes for the right configuration, if needed
+› Preparing Pods/glog-glog_privacy » ResourceBundle-glog_privacy-glog-Info.plist
+› Preparing Pods/boost-boost_privacy » ResourceBundle-boost_privacy-boost-Info.plist
+› Preparing Pods/React-cxxreact-React-cxxreact_privacy » ResourceBundle-React-cxxreact_privacy-React-cxxreact-Info.plist
+› Copying   ../../../Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/React-cxxreact_privacy.bundle/PrivacyInfo.xcprivacy ➜ ../../../Users/expo/workingdir/build/mobile/node_modules/react-native/ReactCommon/cxxreact/PrivacyInfo.xcprivacy
+› Preparing Pods/React-Core-React-Core_privacy » ResourceBundle-React-Core_privacy-React-Core-Info.plist
+› Preparing Pods/RCT-Folly-RCT-Folly_privacy » ResourceBundle-RCT-Folly_privacy-RCT-Folly-Info.plist
+› Copying   ../../../Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/React-Core_privacy.bundle/PrivacyInfo.xcprivacy ➜ ../../../Users/expo/workingdir/build/mobile/node_modules/react-native/React/Resources/PrivacyInfo.xcprivacy
+› Creating  Pods/glog-glog_privacy » glog_privacy.bundle
+› Creating  Pods/boost-boost_privacy » boost_privacy.bundle
+› Copying   ../../../Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/ExpoConstants_privacy.bundle/PrivacyInfo.xcprivacy ➜ ../../../Users/expo/workingdir/build/mobile/node_modules/expo-constants/ios/PrivacyInfo.xcprivacy
+› Preparing Pods/EXConstants-ExpoConstants_privacy » ResourceBundle-ExpoConstants_privacy-EXConstants-Info.plist
+› Preparing Pods/ExpoFileSystem-ExpoFileSystem_privacy » ResourceBundle-ExpoFileSystem_privacy-ExpoFileSystem-Info.plist
+› Copying   ../../../Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/ExpoFileSystem_privacy.bundle/PrivacyInfo.xcprivacy ➜ ../../../Users/expo/workingdir/build/mobile/node_modules/expo-file-system/ios/PrivacyInfo.xcprivacy
+› Preparing expo-constants Pods/EXConstants-EXConstants » ResourceBundle-EXConstants-EXConstants-Info.plist
+› Copying   ../../../Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/ExpoApplication_privacy.bundle/PrivacyInfo.xcprivacy ➜ ../../../Users/expo/workingdir/build/mobile/node_modules/expo-application/ios/PrivacyInfo.xcprivacy
+› Creating  Pods/React-cxxreact-React-cxxreact_privacy » React-cxxreact_privacy.bundle
+› Creating  Pods/React-Core-React-Core_privacy » React-Core_privacy.bundle
+› Creating  Pods/RCT-Folly-RCT-Folly_privacy » RCT-Folly_privacy.bundle
+› Creating  Pods/ExpoFileSystem-ExpoFileSystem_privacy » ExpoFileSystem_privacy.bundle
+› Creating  Pods/EXConstants-ExpoConstants_privacy » ExpoConstants_privacy.bundle
+› Creating  expo-constants Pods/EXConstants-EXConstants » EXConstants.bundle
+› Creating  Pods/EXApplication-ExpoApplication_privacy » ExpoApplication_privacy.bundle
+› Executing react-native Pods/hermes-engine » [CP] Copy XCFrameworks
+› Compiling react-native Pods/glog » vlog_is_on.cc
+› Compiling react-native Pods/glog » utilities.cc
+› Compiling react-native Pods/glog » symbolize.cc
+› Compiling react-native Pods/glog » signalhandler.cc
+› Compiling react-native Pods/glog » raw_logging.cc
+› Compiling react-native Pods/glog » logging.cc
+› Compiling react-native Pods/glog » glog-dummy.m
+› Compiling react-native Pods/glog » demangle.cc
+› Compiling react-native Pods/fmt » format.cc
+› Compiling react-native Pods/fmt » fmt-dummy.m
+› Compiling react-native Pods/Yoga » event.cpp
+› Compiling react-native Pods/Yoga » Yoga-dummy.m
+› Compiling react-native Pods/Yoga » YGValue.cpp
+› Compiling react-native Pods/Yoga » YGPixelGrid.cpp
+› Compiling react-native Pods/Yoga » YGNodeStyle.cpp
+› Compiling react-native Pods/Yoga » YGNodeLayout.cpp
+› Compiling react-native Pods/Yoga » YGNode.cpp
+› Packaging react-native Pods/glog » libglog.a
+› Packaging react-native Pods/fmt » libfmt.a
+› Compiling react-native Pods/Yoga » YGEnums.cpp
+› Compiling react-native Pods/Yoga » YGConfig.cpp
+› Compiling react-native Pods/Yoga » PixelGrid.cpp
+› Compiling react-native Pods/Yoga » Node.cpp
+› Compiling react-native Pods/Yoga » Log.cpp
+› Compiling react-native Pods/Yoga » LayoutResults.cpp
+› Compiling react-native Pods/Yoga » FlexLine.cpp
+› Compiling react-native Pods/Yoga » Config.cpp
+› Compiling react-native Pods/Yoga » CalculateLayout.cpp
+› Compiling react-native Pods/Yoga » Cache.cpp
+› Compiling react-native Pods/Yoga » Baseline.cpp
+› Compiling react-native Pods/Yoga » AssertFatal.cpp
+› Compiling react-native Pods/Yoga » AbsoluteLayout.cpp
+› Compiling react-native Pods/SocketRocket » SocketRocket-dummy.m
+› Compiling react-native Pods/SocketRocket » SRWebSocket.m
+› Compiling react-native Pods/SocketRocket » SRURLUtilities.m
+› Compiling react-native Pods/SocketRocket » SRSecurityPolicy.m
+› Compiling react-native Pods/SocketRocket » SRSIMDHelpers.m
+› Compiling react-native Pods/SocketRocket » SRRunLoopThread.m
+› Compiling react-native Pods/SocketRocket » SRRandom.m
+› Compiling react-native Pods/SocketRocket » SRProxyConnect.m
+› Compiling react-native Pods/SocketRocket » SRPinningSecurityPolicy.m
+› Compiling react-native Pods/SocketRocket » SRMutex.m
+› Compiling react-native Pods/SocketRocket » SRLog.m
+› Compiling react-native Pods/SocketRocket » SRIOConsumerPool.m
+› Compiling react-native Pods/SocketRocket » SRIOConsumer.m
+› Compiling react-native Pods/SocketRocket » SRHash.m
+› Compiling react-native Pods/SocketRocket » SRHTTPConnectMessage.m
+› Compiling react-native Pods/SocketRocket » SRDelegateController.m
+› Compiling react-native Pods/SocketRocket » SRConstants.m
+› Compiling react-native Pods/SocketRocket » NSURLRequest+SRWebSocket.m
+› Compiling react-native Pods/SocketRocket » NSRunLoop+SRWebSocket.m
+› Compiling react-native Pods/ReactCommon » TurboModuleUtils.cpp
+› Compiling react-native Pods/ReactCommon » TurboModulePerfLogger.cpp
+› Compiling react-native Pods/ReactCommon » TurboModuleBinding.cpp
+› Compiling react-native Pods/ReactCommon » TurboModule.cpp
+› Packaging react-native Pods/SocketRocket » libSocketRocket.a
+› Packaging react-native Pods/Yoga » libYoga.a
+› Compiling react-native Pods/ReactCommon » TurboCxxModule.cpp
+› Compiling react-native Pods/ReactCommon » ReactCommon-dummy.m
+› Compiling react-native Pods/ReactCommon » LongLivedObject.cpp
+› Compiling react-native Pods/ReactCommon » CxxTurboModuleUtils.cpp
+› Compiling react-native Pods/React-utils » jsi-utils.cpp
+› Compiling react-native Pods/React-utils » RunLoopObserver.cpp
+› Compiling react-native Pods/React-utils » React-utils-dummy.m
+› Compiling react-native Pods/React-utils » ManagedObjectWrapper.mm
+› Compiling react-native Pods/React-runtimescheduler » Task.cpp
+› Compiling react-native Pods/React-runtimescheduler » RuntimeScheduler_Modern.cpp
+› Compiling react-native Pods/React-runtimescheduler » RuntimeScheduler_Legacy.cpp
+› Compiling react-native Pods/React-runtimescheduler » RuntimeSchedulerCallInvoker.cpp
+› Compiling react-native Pods/React-runtimescheduler » RuntimeScheduler.cpp
+› Compiling react-native Pods/React-runtimescheduler » React-runtimescheduler-dummy.m
+› Compiling React-rendererdebug-dummy.m
+› Compiling react-native Pods/React-rendererdebug » DebugStringConvertibleItem.cpp
+› Compiling react-native Pods/React-rendererdebug » DebugStringConvertible.cpp
+› Compiling react-native Pods/React-renderercss » React-renderercss-dummy.m
+› Compiling react-native Pods/React-renderercss » CSSDummy.cpp
+› Compiling react-native Pods/React-rendererconsistency » ShadowTreeRevisionConsistencyManager.cpp
+› Compiling react-native Pods/React-rendererconsistency » React-rendererconsistency-dummy.m
+› Compiling react-native Pods/React-performancetimeline » React-performancetimeline-dummy.m
+› Packaging react-native Pods/React-rendererconsistency » libReact-rendererconsistency.a
+› Compiling react-native Pods/React-performancetimeline » PerformanceObserverRegistry.cpp
+› Compiling react-native Pods/React-performancetimeline » PerformanceObserver.cpp
+› Compiling react-native Pods/React-performancetimeline » PerformanceEntryReporter.cpp
+› Compiling react-native Pods/React-performancetimeline » PerformanceEntryKeyedBuffer.cpp
+› Compiling react-native Pods/React-performancetimeline » PerformanceEntryCircularBuffer.cpp
+› Compiling react-native Pods/React-perflogger » ReactPerfettoCategories.cpp
+› Compiling react-native Pods/React-perflogger » ReactPerfetto.cpp
+› Compiling react-native Pods/React-perflogger » React-perflogger-dummy.m
+› Compiling react-native Pods/React-perflogger » HermesPerfettoDataSource.cpp
+› Compiling react-native Pods/React-perflogger » FuseboxTracer.cpp
+› Compiling react-native Pods/React-perflogger » FuseboxPerfettoDataSource.cpp
+› Compiling react-native Pods/React-perflogger » BridgeNativeModulePerfLogger.cpp
+› Compiling React-oscompat-dummy.m
+› Compiling react-native Pods/React-oscompat » OSCompatWindows.cpp
+› Compiling react-native Pods/React-oscompat » OSCompatPosix.cpp
+› Compiling react-native Pods/React-logger » react_native_log.cpp
+› Compiling react-native Pods/React-logger » React-logger-dummy.m
+› Packaging react-native Pods/React-oscompat » libReact-oscompat.a
+› Compiling react-native Pods/React-jsitooling » React-jsitooling-dummy.m
+› Compiling react-native Pods/React-jsitooling » JSRuntimeFactoryCAPI.cpp
+› Compiling react-native Pods/React-jsitooling » JSRuntimeFactory.cpp
+› Compiling react-native Pods/React-jsinspectortracing » RuntimeSamplingProfileTraceEventSerializer.cpp
+› Compiling react-native Pods/React-jsinspectortracing » React-jsinspectortracing-dummy.m
+› Compiling react-native Pods/React-jsinspectortracing » PerformanceTracer.cpp
+› Compiling react-native Pods/React-jsinspectortracing » EventLoopTaskReporter.cpp
+› Compiling react-native Pods/React-jsinspector » TracingAgent.cpp
+› Compiling react-native Pods/React-jsinspector » RuntimeTargetDebuggerSessionObserver.cpp
+› Compiling react-native Pods/React-jsinspector » RuntimeTargetConsole.cpp
+› Compiling react-native Pods/React-jsinspector » RuntimeTarget.cpp
+› Compiling react-native Pods/React-jsinspector » RuntimeAgent.cpp
+› Compiling react-native Pods/React-jsinspector » React-jsinspector-dummy.m
+› Compiling react-native Pods/React-jsinspector » NetworkIOAgent.cpp
+› Compiling react-native Pods/React-jsinspector » InstanceTarget.cpp
+› Compiling react-native Pods/React-jsinspector » InstanceAgent.cpp
+› Compiling react-native Pods/React-jsinspector » InspectorUtilities.cpp
+› Compiling react-native Pods/React-jsinspector » InspectorPackagerConnection.cpp
+› Compiling react-native Pods/React-jsinspector » InspectorInterfaces.cpp
+› Compiling react-native Pods/React-jsinspector » InspectorFlags.cpp
+› Compiling react-native Pods/React-jsinspector » HostTarget.cpp
+› Compiling react-native Pods/React-jsinspector » HostAgent.cpp
+› Compiling react-native Pods/React-jsinspector » FallbackRuntimeTargetDelegate.cpp
+› Compiling react-native Pods/React-jsinspector » FallbackRuntimeAgentDelegate.cpp
+› Compiling react-native Pods/React-jsinspector » ExecutionContextManager.cpp
+› Compiling react-native Pods/React-jsinspector » ExecutionContext.cpp
+› Compiling react-native Pods/React-jsinspector » ConsoleMessage.cpp
+› Compiling react-native Pods/React-jsinspector » CdpJson.cpp
+› Compiling react-native Pods/React-jsiexecutor » React-jsiexecutor-dummy.m
+› Compiling react-native Pods/React-jsiexecutor » JSINativeModules.cpp
+› Compiling react-native Pods/React-jsiexecutor » JSIExecutor.cpp
+› Compiling react-native Pods/React-jsi » React-jsi-dummy.m
+› Compiling react-native Pods/React-jsi » JSIDynamic.cpp
+› Compiling react-native Pods/React-jserrorhandler » StackTraceParser.cpp
+› Compiling react-native Pods/React-jserrorhandler » React-jserrorhandler-dummy.m
+› Compiling react-native Pods/React-jserrorhandler » JsErrorHandler.cpp
+› Compiling react-native Pods/React-hermes » Registration.cpp
+› Compiling react-native Pods/React-hermes » React-hermes-dummy.m
+› Compiling react-native Pods/React-hermes » HermesRuntimeTargetDelegate.cpp
+› Compiling react-native Pods/React-hermes » HermesRuntimeSamplingProfileSerializer.cpp
+› Compiling react-native Pods/React-hermes » HermesRuntimeAgentDelegate.cpp
+› Compiling react-native HermesExecutorFactory.cpp
+› Compiling react-native Pods/React-hermes » ConnectionDemux.cpp
+› Compiling react-native Pods/React-graphics » Transform.cpp
+› Compiling react-native Pods/React-graphics » React-graphics-dummy.m
+› Compiling react-native Pods/React-graphics » RCTPlatformColorUtils.mm
+› Compiling react-native Pods/React-graphics » PlatformColorParser.mm
+› Compiling react-native Pods/React-graphics » HostPlatformColor.mm
+› Compiling react-native Pods/React-graphics » ColorComponents.cpp
+› Compiling react-native Pods/React-featureflags » ReactNativeFeatureFlagsAccessor.cpp
+› Compiling react-native Pods/React-featureflags » ReactNativeFeatureFlags.cpp
+› Compiling react-native Pods/React-featureflags » React-featureflags-dummy.m
+› Compiling react-native Pods/React-debug » react_native_assert.cpp
+› Compiling react-native Pods/React-debug » React-debug-dummy.m
+› Compiling react-native Pods/React-cxxreact » ReactMarker.cpp
+› Packaging react-native Pods/React-debug » libReact-debug.a
+› Compiling react-native Pods/React-cxxreact » React-cxxreact-dummy.m
+› Compiling react-native Pods/React-cxxreact » RAMBundleRegistry.cpp
+› Compiling react-native Pods/React-cxxreact » NativeToJsBridge.cpp
+› Compiling react-native Pods/React-cxxreact » ModuleRegistry.cpp
+› Compiling react-native Pods/React-cxxreact » MethodCall.cpp
+› Compiling react-native Pods/React-cxxreact » JSIndexedRAMBundle.cpp
+› Compiling react-native Pods/React-cxxreact » JSExecutor.cpp
+› Compiling react-native Pods/React-cxxreact » JSBundleType.cpp
+› Compiling react-native Pods/React-cxxreact » JSBigString.cpp
+› Compiling react-native Pods/React-cxxreact » Instance.cpp
+› Compiling react-native Pods/React-cxxreact » CxxNativeModule.cpp
+› Compiling react-native Pods/React-RCTText » React-RCTText-dummy.m
+› Compiling react-native Pods/React-RCTText » RCTVirtualTextViewManager.mm
+› Compiling react-native Pods/React-RCTText » RCTVirtualTextView.mm
+› Compiling react-native Pods/React-RCTText » RCTVirtualTextShadowView.mm
+› Compiling react-native Pods/React-RCTText » RCTUITextView.mm
+› Compiling react-native Pods/React-RCTText » RCTUITextField.mm
+› Compiling react-native Pods/React-RCTText » RCTTextViewManager.mm
+› Compiling react-native Pods/React-RCTText » RCTTextView.mm
+› Compiling react-native Pods/React-RCTText » RCTTextShadowView.mm
+› Compiling react-native Pods/React-RCTText » RCTTextSelection.mm
+› Compiling react-native Pods/React-RCTText » RCTTextAttributes.mm
+› Compiling react-native Pods/React-RCTText » RCTSinglelineTextInputViewManager.mm
+› Compiling react-native Pods/React-RCTText » RCTSinglelineTextInputView.mm
+› Compiling react-native Pods/React-RCTText » RCTRawTextViewManager.mm
+› Compiling react-native Pods/React-RCTText » RCTRawTextShadowView.mm
+› Compiling react-native Pods/React-RCTText » RCTMultilineTextInputViewManager.mm
+› Compiling react-native Pods/React-RCTText » RCTMultilineTextInputView.mm
+› Compiling react-native Pods/React-RCTText » RCTInputAccessoryViewManager.mm
+› Compiling react-native Pods/React-RCTText » RCTInputAccessoryViewContent.mm
+› Compiling react-native Pods/React-RCTText » RCTInputAccessoryView.mm
+› Compiling react-native Pods/React-RCTText » RCTInputAccessoryShadowView.mm
+› Compiling react-native Pods/React-RCTText » RCTDynamicTypeRamp.mm
+› Compiling react-native Pods/React-RCTText » RCTConvert+Text.mm
+› Compiling react-native Pods/React-RCTText » RCTBaseTextViewManager.mm
+› Compiling react-native Pods/React-RCTText » RCTBaseTextShadowView.mm
+› Compiling react-native Pods/React-RCTText » RCTBaseTextInputViewManager.mm
+› Compiling react-native Pods/React-RCTText » RCTBaseTextInputView.mm
+› Compiling react-native Pods/React-RCTText » RCTBaseTextInputShadowView.mm
+› Compiling react-native Pods/React-RCTText » RCTBackedTextInputDelegateAdapter.mm
+› Compiling react-native Pods/React-RCTText » NSTextStorage+FontScaling.m
+› Compiling React-NativeModulesApple-dummy.m
+› Compiling react-native Pods/React-NativeModulesApple » RCTTurboModuleManager.mm
+› Compiling react-native Pods/React-NativeModulesApple » RCTTurboModule.mm
+› Compiling react-native Pods/React-NativeModulesApple » RCTInteropTurboModule.mm
+› Compiling react-native Pods/React-Mapbuffer » React-Mapbuffer-dummy.m
+› Compiling react-native Pods/React-Mapbuffer » MapBuffer.cpp
+› Compiling react-native Pods/React-Core » UIView+React.m
+› Compiling react-native Pods/React-Core » React-Core-dummy.m
+› Compiling react-native Pods/React-Core » RCTWrapperViewController.m
+› Compiling react-native Pods/React-Core » RCTWindowSafeAreaProxy.mm
+› Compiling react-native Pods/React-Core » RCTViewUtils.m
+› Compiling react-native Pods/React-Core » RCTViewRegistry.m
+› Compiling react-native Pods/React-Core » RCTViewManager.m
+› Compiling react-native Pods/React-Core » RCTView.m
+› Compiling react-native Pods/React-Core » RCTVersion.m
+› Compiling react-native Pods/React-Core » RCTUtilsUIOverride.m
+› Compiling react-native Pods/React-Core » RCTUtils.m
+› Compiling react-native Pods/React-Core » RCTUIManagerUtils.m
+› Compiling react-native Pods/React-Core » RCTUIManagerObserverCoordinator.mm
+› Compiling react-native Pods/React-Core » RCTUIManager.mm
+› Compiling react-native Pods/React-Core » RCTTraitCollectionProxy.mm
+› Compiling react-native Pods/React-Core » RCTTouchHandler.m
+› Compiling react-native Pods/React-Core » RCTSwitchManager.m
+› Compiling react-native Pods/React-Core » RCTSwitch.m
+› Compiling react-native Pods/React-Core » RCTSurfaceView.mm
+› Compiling react-native Pods/React-Core » RCTSurfaceStage.m
+› Compiling react-native Pods/React-Core » RCTSurfaceSizeMeasureMode.mm
+› Compiling react-native Pods/React-Core » RCTSurfaceRootView.mm
+› Compiling react-native Pods/React-Core » RCTSurfaceRootShadowView.m
+› Compiling react-native Pods/React-Core » RCTSurfacePresenterStub.m
+› Compiling react-native Pods/React-Core » RCTSurfaceHostingView.mm
+› Compiling react-native Pods/React-Core » RCTSurfaceHostingProxyRootView.mm
+› Compiling react-native Pods/React-Core » RCTSurface.mm
+› Compiling react-native Pods/React-Core » RCTShadowView.m
+› Compiling react-native Pods/React-Core » RCTShadowView+Layout.m
+› Compiling react-native RCTShadowView+Internal.m
+› Compiling react-native Pods/React-Core » RCTScrollViewManager.m
+› Compiling react-native Pods/React-Core » RCTScrollView.m
+› Compiling react-native Pods/React-Core » RCTScrollEvent.m
+› Compiling react-native Pods/React-Core » RCTScrollContentViewManager.m
+› Compiling react-native Pods/React-Core » RCTScrollContentView.m
+› Compiling react-native Pods/React-Core » RCTScrollContentShadowView.m
+› Compiling react-native Pods/React-Core » RCTSafeAreaViewManager.m
+› Compiling react-native Pods/React-Core » RCTSafeAreaViewLocalData.m
+› Compiling react-native Pods/React-Core » RCTSafeAreaView.m
+› Compiling react-native Pods/React-Core » RCTSafeAreaShadowView.m
+› Compiling react-native Pods/React-Core » RCTRootView.m
+› Compiling react-native Pods/React-Core » RCTRootShadowView.m
+› Compiling react-native Pods/React-Core » RCTRootContentView.m
+› Compiling react-native RCTReloadCommand.m
+› Compiling react-native Pods/React-Core » RCTRefreshControlManager.m
+› Compiling react-native Pods/React-Core » RCTRefreshControl.m
+› Compiling react-native Pods/React-Core » RCTRedBoxSetEnabled.m
+› Compiling react-native Pods/React-Core » RCTRedBoxExtraDataViewController.m
+› Compiling react-native Pods/React-Core » RCTReconnectingWebSocket.m
+› Compiling react-native Pods/React-Core » RCTProfile.m
+› Compiling react-native Pods/React-Core » RCTPerformanceLoggerLabels.m
+› Compiling react-native Pods/React-Core » RCTPerformanceLogger.mm
+› Compiling react-native Pods/React-Core » RCTPausedInDebuggerOverlayController.mm
+› Compiling react-native Pods/React-Core » RCTParserUtils.m
+› Compiling react-native Pods/React-Core » RCTPackagerClient.m
+› Compiling react-native RCTObjcExecutor.mm
+› Compiling react-native Pods/React-Core » RCTNativeModule.mm
+› Compiling react-native Pods/React-Core » RCTMultipartStreamReader.m
+› Compiling react-native Pods/React-Core » RCTModuleRegistry.m
+› Compiling react-native Pods/React-Core » RCTModuleMethod.mm
+› Compiling react-native Pods/React-Core » RCTModuleData.mm
+› Compiling react-native Pods/React-Core » RCTModalManager.m
+› Compiling react-native Pods/React-Core » RCTModalHostViewManager.m
+› Compiling react-native Pods/React-Core » RCTModalHostViewController.m
+› Compiling react-native Pods/React-Core » RCTModalHostView.m
+› Compiling react-native Pods/React-Core » RCTMessageThread.mm
+› Compiling react-native Pods/React-Core » RCTManagedPointer.mm
+› Compiling react-native Pods/React-Core » RCTLog.mm
+› Compiling react-native Pods/React-Core » RCTLocalizedString.mm
+› Compiling react-native Pods/React-Core » RCTLayoutAnimationGroup.m
+› Compiling react-native Pods/React-Core » RCTLayout.m
+› Compiling react-native Pods/React-Core » RCTKeyWindowValuesProxy.mm
+› Compiling react-native Pods/React-Core » RCTKeyCommands.m
+› Compiling react-native Pods/React-Core » RCTJavaScriptLoader.mm
+› Compiling react-native Pods/React-Core » RCTJSThread.m
+› Compiling react-native Pods/React-Core » RCTJSStackFrame.m
+› Compiling react-native Pods/React-Core » RCTJSIExecutorRuntimeInstaller.mm
+› Compiling react-native Pods/React-Core » RCTInspectorUtils.mm
+› Compiling react-native Pods/React-Core » RCTInspectorNetworkHelper.mm
+› Compiling react-native Pods/React-Core » RCTInspectorDevServerHelper.mm
+› Compiling react-native Pods/React-Core » RCTInspector.mm
+› Compiling react-native Pods/React-Core » RCTInitialAccessibilityValuesProxy.mm
+› Compiling react-native Pods/React-Core » RCTI18nUtil.m
+› Compiling react-native Pods/React-Core » RCTFrameUpdate.m
+› Compiling react-native Pods/React-Core » RCTFont.mm
+› Compiling react-native Pods/React-Core » RCTFollyConvert.mm
+› Compiling react-native Pods/React-Core » RCTEventEmitter.m
+› Compiling react-native Pods/React-Core » RCTEventDispatcher.m
+› Compiling react-native Pods/React-Core » RCTErrorInfo.m
+› Compiling react-native Pods/React-Core » RCTDisplayLink.m
+› Compiling react-native Pods/React-Core » RCTDevLoadingViewSetEnabled.m
+› Compiling react-native Pods/React-Core » RCTDefaultCxxLogFunction.mm
+› Compiling react-native Pods/React-Core » RCTDebuggingOverlayManager.m
+› Compiling react-native Pods/React-Core » RCTDebuggingOverlay.m
+› Compiling react-native RCTCxxUtils.mm
+› Compiling react-native Pods/React-Core » RCTCxxModule.mm
+› Compiling react-native Pods/React-Core » RCTCxxMethod.mm
+› Compiling react-native Pods/React-Core » RCTCxxInspectorPackagerConnectionDelegate.mm
+› Compiling react-native Pods/React-Core » RCTCxxConvert.m
+› Compiling react-native Pods/React-Core » RCTConvert.mm
+› Compiling react-native Pods/React-Core » RCTConvert+Transform.m
+› Compiling react-native Pods/React-Core » RCTConstants.m
+› Compiling react-native Pods/React-Core » RCTComponentEvent.m
+› Compiling react-native Pods/React-Core » RCTComponentData.mm
+› Compiling react-native Pods/React-Core » RCTCallableJSModules.m
+› Compiling react-native Pods/React-Core » RCTCallInvoker.mm
+› Compiling react-native Pods/React-Core » RCTBundleURLProvider.mm
+› Compiling react-native Pods/React-Core » RCTBundleManager.m
+› Compiling react-native Pods/React-Core » RCTBridgeProxy.mm
+› Compiling react-native Pods/React-Core » RCTBridgeModuleDecorator.m
+› Compiling react-native Pods/React-Core » RCTBridgeConstants.m
+› Compiling react-native Pods/React-Core » RCTBridge.mm
+› Compiling react-native Pods/React-Core » RCTBorderDrawing.m
+› Compiling react-native Pods/React-Core » RCTAssert.m
+› Compiling react-native Pods/React-Core » RCTActivityIndicatorViewManager.m
+› Compiling react-native Pods/React-Core » RCTActivityIndicatorView.m
+› Compiling react-native Pods/React-Core » NSDataBigString.mm
+› Compiling react-native Pods/RCTTypeSafety » RCTTypedModuleConstants.mm
+› Compiling react-native Pods/RCTTypeSafety » RCTTypeSafety-dummy.m
+› Compiling react-native Pods/RCTTypeSafety » RCTConvertHelpers.mm
+› Compiling react-native Pods/RCTDeprecation » RCTDeprecation.m
+› Compiling react-native Pods/RCTDeprecation » RCTDeprecation-dummy.m
+› Compiling react-native Pods/RCT-Folly » json_pointer.cpp
+› Compiling react-native Pods/RCT-Folly » json.cpp
+› Compiling react-native Pods/RCT-Folly » dynamic.cpp
+› Compiling react-native Pods/RCT-Folly » UniqueInstance.cpp
+› Compiling react-native Pods/RCT-Folly » Unicode.cpp
+› Packaging react-native Pods/RCTDeprecation » libRCTDeprecation.a
+› Compiling react-native Pods/RCT-Folly » ToAscii.cpp
+› Compiling react-native Pods/RCT-Folly » SysUio.cpp
+› Compiling react-native Pods/RCT-Folly » String.cpp
+› Compiling react-native Pods/RCT-Folly » StaticSingletonManager.cpp
+› Compiling react-native Pods/RCT-Folly » SpookyHashV2.cpp
+› Compiling react-native Pods/RCT-Folly » SplitStringSimd.cpp
+› Compiling react-native Pods/RCT-Folly » SharedMutex.cpp
+› Compiling react-native Pods/RCT-Folly » ScopeGuard.cpp
+› Compiling react-native Pods/RCT-Folly » SanitizeThread.cpp
+› Compiling react-native Pods/RCT-Folly » SafeAssert.cpp
+› Compiling react-native Pods/RCT-Folly » ReentrantAllocator.cpp
+› Compiling react-native Pods/RCT-Folly » RCT-Folly-dummy.m
+› Compiling react-native Pods/RCT-Folly » ParkingLot.cpp
+› Compiling react-native Pods/RCT-Folly » NetOps.cpp
+› Compiling react-native Pods/RCT-Folly » MallocImpl.cpp
+› Compiling react-native Pods/RCT-Folly » Futex.cpp
+› Compiling react-native Pods/RCT-Folly » Format.cpp
+› Compiling react-native Pods/RCT-Folly » FileUtil.cpp
+› Compiling react-native Pods/RCT-Folly » F14Table.cpp
+› Compiling react-native Pods/RCT-Folly » Exception.cpp
+› Compiling react-native Pods/RCT-Folly » Demangle.cpp
+› Compiling react-native Pods/RCT-Folly » Conv.cpp
+› Compiling react-native Pods/RCT-Folly » CacheLocality.cpp
+› Compiling react-native Pods/RCT-Folly » CString.cpp
+› Compiling react-native Pods/RCT-Folly » AtFork.cpp
+› Compiling react-native Pods/DoubleConversion » strtod.cc
+› Compiling react-native Pods/DoubleConversion » fixed-dtoa.cc
+› Compiling react-native Pods/DoubleConversion » fast-dtoa.cc
+› Compiling react-native Pods/DoubleConversion » double-conversion.cc
+› Compiling react-native Pods/DoubleConversion » diy-fp.cc
+› Compiling react-native Pods/DoubleConversion » cached-powers.cc
+› Compiling react-native Pods/DoubleConversion » bignum.cc
+› Compiling react-native Pods/DoubleConversion » DoubleConversion-dummy.m
+› Packaging react-native Pods/React-logger » libReact-logger.a
+› Packaging react-native Pods/DoubleConversion » libDoubleConversion.a
+› Packaging react-native Pods/React-Mapbuffer » libReact-Mapbuffer.a
+› Packaging react-native Pods/RCT-Folly » libRCT-Folly.a
+› Packaging react-native Pods/React-rendererdebug » libReact-rendererdebug.a
+› Packaging react-native Pods/React-perflogger » libReact-perflogger.a
+› Packaging react-native Pods/React-jsinspectortracing » libReact-jsinspectortracing.a
+› Packaging react-native Pods/React-jsi » libReact-jsi.a
+› Packaging react-native Pods/React-featureflags » libReact-featureflags.a
+› Packaging react-native Pods/React-jsinspector » libReact-jsinspector.a
+› Packaging react-native Pods/React-cxxreact » libReact-cxxreact.a
+› Packaging react-native Pods/React-jsitooling » libReact-jsitooling.a
+› Packaging react-native Pods/React-performancetimeline » libReact-performancetimeline.a
+› Packaging react-native Pods/React-jsiexecutor » libReact-jsiexecutor.a
+› Packaging react-native Pods/React-hermes » libReact-hermes.a
+› Packaging react-native Pods/React-utils » libReact-utils.a
+› Packaging react-native Pods/React-runtimescheduler » libReact-runtimescheduler.a
+› Packaging react-native Pods/React-renderercss » libReact-renderercss.a
+› Packaging react-native Pods/ReactCommon » libReactCommon.a
+› Packaging react-native Pods/React-graphics » libReact-graphics.a
+› Packaging react-native Pods/React-Core » libReact-Core.a
+› Packaging react-native Pods/React-jserrorhandler » libReact-jserrorhandler.a
+› Packaging react-native Pods/React-NativeModulesApple » libReact-NativeModulesApple.a
+› Packaging react-native Pods/React-RCTText » libReact-RCTText.a
+› Packaging react-native Pods/RCTTypeSafety » libRCTTypeSafety.a
+› Executing react-native Pods/React-Fabric » [CP-User] [RN]Check rncore
+› Executing react-native Pods/React-RCTFBReactNativeSpec » [CP-User] [RN]Check FBReactNativeSpec
+› Compiling react-native Pods/React-Fabric » utils.cpp
+› Compiling react-native Pods/React-Fabric » updateMountedFlag.cpp
+› Compiling react-native Pods/React-Fabric » stubs.cpp
+› Compiling react-native Pods/React-Fabric » sliceChildShadowNodeViewPairs.cpp
+› Compiling react-native Pods/React-Fabric » componentNameByReactViewName.cpp
+› Compiling react-native YogaStylableProps.cpp
+› Compiling react-native Pods/React-Fabric » YogaLayoutableShadowNode.cpp
+› Compiling react-native Pods/React-Fabric » WeakFamilyRegistry.cpp
+› Compiling react-native Pods/React-Fabric » ViewShadowNode.cpp
+› Compiling react-native Pods/React-Fabric » ValueFactoryEventPayload.cpp
+› Compiling react-native Pods/React-Fabric » UnstableLegacyViewManagerAutomaticShadowNode.cpp
+› Compiling react-native Pods/React-Fabric » UnstableLegacyViewManagerAutomaticComponentDescriptor.cpp
+› Compiling react-native Pods/React-Fabric » UIManagerBinding.cpp
+› Compiling react-native Pods/React-Fabric » UIManager.cpp
+› Compiling react-native Pods/React-Fabric » TransactionTelemetry.cpp
+› Compiling react-native Pods/React-Fabric » TouchEventEmitter.cpp
+› Compiling react-native Pods/React-Fabric » TouchEvent.cpp
+› Compiling react-native Pods/React-Fabric » TextAttributes.cpp
+› Compiling react-native Pods/React-Fabric » TelemetryController.cpp
+› Compiling react-native Pods/React-Fabric » SurfaceTelemetry.cpp
+› Compiling react-native Pods/React-Fabric » SurfaceManager.cpp
+› Compiling react-native Pods/React-Fabric » SurfaceHandler.cpp
+› Compiling react-native Pods/React-Fabric » StubViewTree.cpp
+› Compiling react-native Pods/React-Fabric » StubView.cpp
+› Compiling react-native Pods/React-Fabric » State.cpp
+› Compiling react-native Pods/React-Fabric » ShadowViewMutation.cpp
+› Compiling react-native Pods/React-Fabric » ShadowView.cpp
+› Compiling react-native Pods/React-Fabric » ShadowTreeRevisionConsistencyManager.cpp
+› Compiling react-native Pods/React-Fabric » ShadowTreeRevision.cpp
+› Compiling react-native Pods/React-Fabric » ShadowTreeRegistry.cpp
+› Compiling react-native Pods/React-Fabric » ShadowTree.cpp
+› Compiling react-native Pods/React-Fabric » ShadowNodeTraits.cpp
+› Compiling react-native Pods/React-Fabric » ShadowNodeFragment.cpp
+› Compiling react-native Pods/React-Fabric » ShadowNodeFamily.cpp
+› Compiling react-native Pods/React-Fabric » ShadowNode.cpp
+› Compiling react-native Pods/React-Fabric » Sealable.cpp
+› Compiling react-native Pods/React-Fabric » ScrollViewState.cpp
+› Compiling react-native Pods/React-Fabric » ScrollViewShadowNode.cpp
+› Compiling react-native Pods/React-Fabric » ScrollViewProps.cpp
+› Compiling react-native Pods/React-Fabric » ScrollViewEventEmitter.cpp
+› Compiling react-native Pods/React-Fabric » ScrollEvent.cpp
+› Compiling react-native Pods/React-Fabric » Scheduler.cpp
+› Compiling react-native Pods/React-Fabric » RootShadowNode.cpp
+› Compiling react-native Pods/React-Fabric » RootProps.cpp
+› Compiling react-native Pods/React-Fabric » ReactRootViewTagGenerator.cpp
+› Compiling react-native Pods/React-Fabric » React-Fabric-dummy.m
+› Compiling react-native Pods/React-Fabric » RawValue.cpp
+› Compiling react-native Pods/React-Fabric » RawPropsParser.cpp
+› Compiling react-native Pods/React-Fabric » RawPropsKeyMap.cpp
+› Compiling react-native Pods/React-Fabric » RawPropsKey.cpp
+› Compiling react-native Pods/React-Fabric » RawProps.cpp
+› Compiling react-native Pods/React-Fabric » RawEvent.cpp
+› Compiling react-native Pods/React-Fabric » RCTLegacyViewManagerInteropCoordinator.mm
+› Compiling react-native Pods/React-Fabric » Props.cpp
+› Compiling react-native Pods/React-Fabric » PointerHoverTracker.cpp
+› Compiling react-native Pods/React-Fabric » PointerEventsProcessor.cpp
+› Compiling react-native Pods/React-Fabric » PointerEvent.cpp
+› Compiling react-native Pods/React-Fabric » ParagraphAttributes.cpp
+› Compiling react-native Pods/React-Fabric » NativeComponentRegistryBinding.cpp
+› Compiling react-native Pods/React-Fabric » MountingTransaction.cpp
+› Compiling react-native Pods/React-Fabric » MountingCoordinator.cpp
+› Compiling react-native Pods/React-Fabric » LegacyViewManagerInteropViewProps.cpp
+› Compiling react-native Pods/React-Fabric » LegacyViewManagerInteropViewEventEmitter.cpp
+› Compiling react-native Pods/React-Fabric » LegacyViewManagerInteropState.mm
+› Compiling react-native Pods/React-Fabric » LegacyViewManagerInteropComponentDescriptor.mm
+› Compiling react-native Pods/React-Fabric » LeakChecker.cpp
+› Compiling react-native Pods/React-Fabric » LazyShadowTreeRevisionConsistencyManager.cpp
+› Compiling react-native Pods/React-Fabric » LayoutableShadowNode.cpp
+› Compiling react-native Pods/React-Fabric » LayoutMetrics.cpp
+› Compiling react-native Pods/React-Fabric » LayoutConstraints.cpp
+› Compiling react-native Pods/React-Fabric » LayoutAnimationKeyFrameManager.cpp
+› Compiling react-native Pods/React-Fabric » LayoutAnimationDriver.cpp
+› Compiling react-native Pods/React-Fabric » LatestShadowTreeRevisionProvider.cpp
+› Compiling react-native Pods/React-Fabric » InstanceHandle.cpp
+› Compiling react-native Pods/React-Fabric » ImageTelemetry.cpp
+› Compiling react-native Pods/React-Fabric » ImageResponseObserverCoordinator.cpp
+› Compiling react-native Pods/React-Fabric » ImageResponse.cpp
+› Compiling react-native Pods/React-Fabric » ImageRequest.cpp
+› Compiling react-native Pods/React-Fabric » EventTarget.cpp
+› Compiling react-native Pods/React-Fabric » EventQueueProcessor.cpp
+› Compiling react-native Pods/React-Fabric » EventQueue.cpp
+› Compiling react-native Pods/React-Fabric » EventPerformanceLogger.cpp
+› Compiling react-native Pods/React-Fabric » EventListener.cpp
+› Compiling react-native Pods/React-Fabric » EventEmitter.cpp
+› Compiling react-native Pods/React-Fabric » EventDispatcher.cpp
+› Compiling react-native Pods/React-Fabric » EventBeat.cpp
+› Compiling react-native Pods/React-Fabric » DynamicPropsUtilities.cpp
+› Compiling react-native Pods/React-Fabric » Differentiator.cpp
+› Compiling react-native Pods/React-Fabric » DOM.cpp
+› Compiling react-native Pods/React-Fabric » CullingContext.cpp
+› Compiling react-native Pods/React-Fabric » ComponentDescriptorRegistry.cpp
+› Compiling react-native Pods/React-Fabric » ComponentDescriptorProviderRegistry.cpp
+› Compiling react-native Pods/React-Fabric » ComponentDescriptor.cpp
+› Compiling react-native Pods/React-Fabric » BaseViewProps.cpp
+› Compiling react-native Pods/React-Fabric » BaseViewEventEmitter.cpp
+› Compiling react-native Pods/React-Fabric » BaseTouch.cpp
+› Compiling react-native Pods/React-Fabric » AttributedStringBox.cpp
+› Compiling react-native Pods/React-Fabric » AttributedString.cpp
+› Compiling react-native Pods/React-Fabric » AppRegistryBinding.cpp
+› Compiling react-native Pods/React-Fabric » AccessibilityProps.cpp
+› Compiling react-native Pods/React-microtasksnativemodule » React-microtasksnativemodule-dummy.m
+› Compiling react-native Pods/React-microtasksnativemodule » NativeMicrotasks.cpp
+› Compiling react-native Pods/React-idlecallbacksnativemodule » React-idlecallbacksnativemodule-dummy.m
+› Compiling react-native Pods/React-idlecallbacksnativemodule » NativeIdleCallbacks.cpp
+› Compiling react-native Pods/React-featureflagsnativemodule » React-featureflagsnativemodule-dummy.m
+› Compiling react-native Pods/React-featureflagsnativemodule » NativeReactNativeFeatureFlags.cpp
+› Compiling react-native Pods/React-RuntimeHermes » React-RuntimeHermes-dummy.m
+› Compiling react-native Pods/React-RuntimeHermes » HermesInstance.cpp
+› Compiling react-native Pods/React-RuntimeCore » React-RuntimeCore-dummy.m
+› Compiling react-native Pods/React-RuntimeCore » TimerManager.cpp
+› Compiling react-native Pods/React-RuntimeCore » LegacyUIManagerConstantsProviderBinding.cpp
+› Compiling react-native Pods/React-RuntimeCore » BufferedRuntimeExecutor.cpp
+› Packaging react-native Pods/React-Fabric » libReact-Fabric.a
+› Compiling react-native Pods/React-RCTVibration » React-RCTVibration-dummy.m
+› Compiling react-native Pods/React-RCTVibration » RCTVibrationPlugins.mm
+› Compiling react-native Pods/React-RCTVibration » RCTVibration.mm
+› Compiling react-native Pods/React-RCTSettings » React-RCTSettings-dummy.m
+› Compiling react-native Pods/React-RCTSettings » RCTSettingsPlugins.mm
+› Compiling react-native Pods/React-RCTSettings » RCTSettingsManager.mm
+› Compiling react-native Pods/React-RCTNetwork » React-RCTNetwork-dummy.m
+› Compiling react-native Pods/React-RCTNetwork » RCTNetworking.mm
+› Compiling react-native Pods/React-RCTNetwork » RCTNetworkTask.mm
+› Compiling react-native Pods/React-RCTNetwork » RCTNetworkPlugins.mm
+› Compiling react-native Pods/React-RCTNetwork » RCTHTTPRequestHandler.mm
+› Compiling react-native Pods/React-RCTNetwork » RCTFileRequestHandler.mm
+› Compiling react-native Pods/React-RCTNetwork » RCTDataRequestHandler.mm
+› Compiling react-native Pods/React-RCTLinking » React-RCTLinking-dummy.m
+› Compiling react-native Pods/React-RCTLinking » RCTLinkingPlugins.mm
+› Compiling react-native Pods/React-RCTLinking » RCTLinkingManager.mm
+› Compiling react-native Pods/React-RCTFBReactNativeSpec » React-RCTFBReactNativeSpec-dummy.m
+› Compiling react-native Pods/React-RCTFBReactNativeSpec » FBReactNativeSpec-generated.mm
+› Compiling react-native Pods/React-RCTFBReactNativeSpec » FBReactNativeSpecJSI-generated.cpp
+› Compiling react-native Pods/React-RCTImage » React-RCTImage-dummy.m
+› Compiling react-native RCTUIImageViewAnimated.mm
+› Compiling react-native Pods/React-RCTImage » RCTResizeMode.mm
+› Compiling react-native Pods/React-RCTImage » RCTLocalAssetImageLoader.mm
+› Compiling react-native Pods/React-RCTImage » RCTImageViewManager.mm
+› Compiling react-native Pods/React-RCTImage » RCTImageView.mm
+› Compiling react-native Pods/React-RCTImage » RCTImageUtils.mm
+› Compiling react-native Pods/React-RCTImage » RCTImageURLLoaderWithAttribution.mm
+› Compiling react-native Pods/React-RCTImage » RCTImageStoreManager.mm
+› Compiling react-native Pods/React-RCTImage » RCTImageShadowView.mm
+› Compiling react-native Pods/React-RCTImage » RCTImagePlugins.mm
+› Packaging react-native Pods/React-RCTFBReactNativeSpec » libReact-RCTFBReactNativeSpec.a
+› Compiling react-native Pods/React-RCTImage » RCTImageEditingManager.mm
+› Compiling react-native Pods/React-RCTImage » RCTImageCache.mm
+› Compiling react-native Pods/React-RCTImage » RCTImageBlurUtils.mm
+› Compiling react-native Pods/React-RCTImage » RCTGIFImageDecoder.mm
+› Compiling react-native Pods/React-RCTImage » RCTDisplayWeakRefreshable.mm
+› Compiling react-native Pods/React-RCTImage » RCTBundleAssetImageLoader.mm
+› Compiling react-native Pods/React-RCTImage » RCTAnimatedImage.mm
+› Compiling react-native Pods/React-RCTBlob » React-RCTBlob-dummy.m
+› Compiling react-native Pods/React-RCTBlob » RCTFileReaderModule.mm
+› Compiling react-native Pods/React-RCTBlob » RCTBlobPlugins.mm
+› Compiling react-native Pods/React-RCTBlob » RCTBlobManager.mm
+› Compiling react-native Pods/React-RCTBlob » RCTBlobCollector.mm
+› Packaging react-native Pods/React-microtasksnativemodule » libReact-microtasksnativemodule.a
+› Packaging react-native Pods/React-idlecallbacksnativemodule » libReact-idlecallbacksnativemodule.a
+› Packaging react-native Pods/React-featureflagsnativemodule » libReact-featureflagsnativemodule.a
+› Packaging react-native Pods/React-RCTVibration » libReact-RCTVibration.a
+› Packaging react-native Pods/React-RCTSettings » libReact-RCTSettings.a
+› Packaging react-native Pods/React-RCTNetwork » libReact-RCTNetwork.a
+› Packaging react-native Pods/React-RCTLinking » libReact-RCTLinking.a
+› Packaging react-native Pods/React-RCTImage » libReact-RCTImage.a
+› Compiling react-native Pods/React-RCTAnimation » React-RCTAnimation-dummy.m
+› Compiling react-native Pods/React-RCTAnimation » RCTValueAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTTransformAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTTrackingAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTSubtractionAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTStyleAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTSpringAnimation.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTPropsAnimatedNode.mm
+› Packaging react-native Pods/React-RCTBlob » libReact-RCTBlob.a
+› Compiling react-native Pods/React-RCTAnimation » RCTObjectAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTNativeAnimatedTurboModule.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTNativeAnimatedNodesManager.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTNativeAnimatedModule.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTMultiplicationAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTModuloAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTInterpolationAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTFrameAnimation.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTEventAnimation.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTDivisionAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTDiffClampAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTDecayAnimation.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTColorAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTAnimationUtils.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTAnimationPlugins.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTAnimatedNode.mm
+› Compiling react-native Pods/React-RCTAnimation » RCTAdditionAnimatedNode.mm
+› Compiling react-native Pods/React-ImageManager » React-ImageManager-dummy.m
+› Compiling react-native Pods/React-ImageManager » RCTSyncImageManager.mm
+› Compiling react-native Pods/React-ImageManager » RCTImageManager.mm
+› Compiling react-native Pods/React-ImageManager » ImageManager.mm
+› Compiling react-native Pods/React-FabricImage » React-FabricImage-dummy.m
+› Compiling react-native Pods/React-FabricImage » ImageState.cpp
+› Compiling react-native Pods/React-FabricImage » ImageShadowNode.cpp
+› Packaging react-native Pods/React-RCTAnimation » libReact-RCTAnimation.a
+› Compiling react-native Pods/React-FabricImage » ImageProps.cpp
+› Compiling react-native Pods/React-FabricImage » ImageEventEmitter.cpp
+› Compiling react-native Pods/React-FabricImage » ImageComponentDescriptor.cpp
+› Compiling react-native Pods/React-CoreModules » React-CoreModules-dummy.m
+› Compiling react-native Pods/React-CoreModules » RCTWebSocketModule.mm
+› Compiling react-native Pods/React-CoreModules » RCTTiming.mm
+› Compiling react-native Pods/React-CoreModules » RCTStatusBarManager.mm
+› Compiling react-native Pods/React-CoreModules » RCTSourceCode.mm
+› Compiling react-native Pods/React-CoreModules » RCTRedBox.mm
+› Compiling react-native Pods/React-CoreModules » RCTPlatform.mm
+› Compiling react-native Pods/React-CoreModules » RCTPerfMonitor.mm
+› Compiling react-native Pods/React-CoreModules » RCTLogBoxView.mm
+› Compiling react-native Pods/React-CoreModules » RCTKeyboardObserver.mm
+› Compiling react-native Pods/React-CoreModules » RCTI18nManager.mm
+› Compiling react-native Pods/React-CoreModules » RCTFPSGraph.mm
+› Compiling react-native Pods/React-CoreModules » RCTExceptionsManager.mm
+› Compiling react-native Pods/React-CoreModules » RCTEventDispatcher.mm
+› Compiling react-native Pods/React-CoreModules » RCTDeviceInfo.mm
+› Compiling react-native Pods/React-CoreModules » RCTDevToolsRuntimeSettingsModule.mm
+› Compiling react-native Pods/React-CoreModules » RCTDevSettings.mm
+› Compiling react-native Pods/React-CoreModules » RCTDevMenu.mm
+› Compiling react-native Pods/React-CoreModules » RCTDevLoadingView.mm
+› Compiling react-native Pods/React-CoreModules » RCTAppearance.mm
+› Compiling react-native Pods/React-CoreModules » RCTAppState.mm
+› Compiling react-native Pods/React-CoreModules » RCTAlertManager.mm
+› Compiling react-native Pods/React-CoreModules » RCTAlertController.mm
+› Compiling react-native Pods/React-CoreModules » RCTActionSheetManager.mm
+› Compiling react-native Pods/React-CoreModules » RCTAccessibilityManager.mm
+› Compiling react-native Pods/React-CoreModules » CoreModulesPlugins.mm
+› Packaging react-native Pods/React-RuntimeCore » libReact-RuntimeCore.a
+› Packaging react-native Pods/React-ImageManager » libReact-ImageManager.a
+› Executing react-native Pods/React-FabricComponents » [CP-User] [RN]Check rncore
+› Compiling react-native Pods/React-domnativemodule » React-domnativemodule-dummy.m
+› Compiling react-native Pods/React-domnativemodule » NativeDOM.cpp
+› Compiling react-native Pods/React-defaultsnativemodule » React-defaultsnativemodule-dummy.m
+› Compiling react-native Pods/React-defaultsnativemodule » DefaultTurboModules.cpp
+› Compiling react-native Pods/React-RuntimeApple » React-RuntimeApple-dummy.m
+› Packaging react-native Pods/React-RuntimeHermes » libReact-RuntimeHermes.a
+› Compiling react-native Pods/React-RuntimeApple » RCTPerformanceLoggerUtils.mm
+› Compiling react-native Pods/React-RuntimeApple » RCTLegacyUIManagerConstantsProvider.mm
+› Compiling react-native Pods/React-RuntimeApple » RCTJSThreadManager.mm
+› Packaging react-native Pods/React-CoreModules » libReact-CoreModules.a
+› Compiling react-native Pods/React-RuntimeApple » RCTInstance.mm
+› Compiling react-native Pods/React-RuntimeApple » RCTHost.mm
+› Compiling react-native Pods/React-RuntimeApple » RCTHermesInstance.mm
+› Compiling react-native Pods/React-RuntimeApple » ObjCTimerRegistry.mm
+› Compiling react-native Pods/React-RCTRuntime » React-RCTRuntime-dummy.m
+› Compiling react-native Pods/React-RCTRuntime » RCTHermesInstanceFactory.mm
+› Compiling react-native Pods/React-RCTFabric » React-RCTFabric-dummy.m
+› Compiling react-native Pods/React-RCTFabric » UIView+ComponentViewProtocol.mm
+› Compiling react-native Pods/React-RCTFabric » RCTViewFinder.mm
+› Compiling react-native Pods/React-RCTFabric » RCTViewComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTUnimplementedViewComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTUnimplementedNativeComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTTextInputUtils.mm
+› Compiling react-native Pods/React-RCTFabric » RCTTextInputComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTSwitchComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTSurfaceTouchHandler.mm
+› Compiling react-native Pods/React-RCTFabric » RCTSurfaceRegistry.mm
+› Compiling react-native Pods/React-RCTFabric » RCTSurfacePresenterBridgeAdapter.mm
+› Compiling react-native Pods/React-RCTFabric » RCTSurfacePresenter.mm
+› Compiling react-native Pods/React-RCTFabric » RCTSurfacePointerHandler.mm
+› Compiling react-native Pods/React-RCTFabric » RCTScrollViewComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTScheduler.mm
+› Compiling react-native Pods/React-RCTFabric » RCTSafeAreaViewComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTRootComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTReactTaggedView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTPullToRefreshViewComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTParagraphComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTParagraphComponentAccessibilityProvider.mm
+› Compiling react-native Pods/React-RCTFabric » RCTMountingTransactionObserverCoordinator.mm
+› Compiling react-native Pods/React-RCTFabric » RCTMountingManager.mm
+› Compiling react-native Pods/React-RCTFabric » RCTModalHostViewComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTLocalizationProvider.mm
+› Compiling react-native Pods/React-RCTFabric » RCTLinearGradient.mm
+› Compiling react-native Pods/React-RCTFabric » RCTLegacyViewManagerInteropCoordinatorAdapter.mm
+› Compiling react-native Pods/React-RCTFabric » RCTLegacyViewManagerInteropComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTInputAccessoryContentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTInputAccessoryComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTImageResponseObserverProxy.mm
+› Compiling react-native Pods/React-RCTFabric » RCTImageComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTGenericDelegateSplitter.mm
+› Compiling react-native Pods/React-RCTFabric » RCTFabricSurface.mm
+› Compiling react-native Pods/React-RCTFabric » RCTFabricModalHostViewController.mm
+› Compiling react-native Pods/React-RCTFabric » RCTFabricComponentsPlugins.mm
+› Compiling react-native Pods/React-RCTFabric » RCTEnhancedScrollView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTDebuggingOverlayComponentView.mm
+› Compiling react-native Pods/React-RCTFabric » RCTComponentViewRegistry.mm
+› Compiling react-native Pods/React-RCTFabric » RCTComponentViewFactory.mm
+› Compiling react-native Pods/React-RCTFabric » RCTColorSpaceUtils.mm
+› Compiling react-native Pods/React-RCTFabric » RCTBoxShadow.mm
+› Compiling react-native Pods/React-RCTFabric » RCTAccessibilityElement.mm
+› Compiling react-native Pods/React-RCTFabric » PlatformRunLoopObserver.mm
+› Compiling react-native Pods/React-RCTFabric » AppleEventBeat.cpp
+› Compiling react-native Pods/React-RCTAppDelegate » React-RCTAppDelegate-dummy.m
+› Compiling react-native Pods/React-RCTAppDelegate » RCTRootViewFactory.mm
+› Compiling react-native Pods/React-RCTAppDelegate » RCTReactNativeFactory.mm
+› Compiling react-native Pods/React-RCTAppDelegate » RCTDefaultReactNativeFactoryDelegate.mm
+› Compiling react-native Pods/React-RCTAppDelegate » RCTAppSetupUtils.mm
+› Compiling react-native Pods/React-RCTAppDelegate » RCTAppDelegate.mm
+› Compiling react-native Pods/React-FabricComponents » React-FabricComponents-dummy.m
+› Compiling react-native Pods/React-FabricComponents » TextLayoutManager.mm
+› Compiling react-native Pods/React-FabricComponents » RCTTextLayoutManager.mm
+› Compiling react-native Pods/React-FabricComponents » RCTFontUtils.mm
+› Compiling react-native Pods/React-FabricComponents » RCTAttributedTextUtils.mm
+› Compiling react-native Pods/React-FabricComponents » ModalHostViewUtils.mm
+› Compiling react-native Pods/React-FabricComponents » UnimplementedViewShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » UnimplementedViewProps.cpp
+› Compiling react-native Pods/React-FabricComponents » UnimplementedViewComponentDescriptor.cpp
+› Compiling react-native Pods/React-FabricComponents » TextShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » TextProps.cpp
+› Compiling react-native Pods/React-FabricComponents » TextMeasureCache.cpp
+› Compiling react-native Pods/React-FabricComponents » TextLayoutManager.cpp
+› Compiling react-native Pods/React-FabricComponents » TextInputState.cpp
+› Compiling react-native Pods/React-FabricComponents » TextInputShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » TextInputProps.cpp
+› Compiling react-native Pods/React-FabricComponents » TextInputEventEmitter.cpp
+› Compiling react-native Pods/React-FabricComponents » States.cpp
+› Compiling react-native Pods/React-FabricComponents » ScrollViewState.cpp
+› Compiling react-native Pods/React-FabricComponents » ScrollViewShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » ScrollViewProps.cpp
+› Compiling react-native Pods/React-FabricComponents » ScrollViewEventEmitter.cpp
+› Compiling react-native Pods/React-FabricComponents » ScrollEvent.cpp
+› Compiling react-native SafeAreaViewState.cpp
+› Compiling react-native Pods/React-FabricComponents » SafeAreaViewShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » RawTextShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » RawTextProps.cpp
+› Compiling react-native Pods/React-FabricComponents » Props.cpp
+› Compiling react-native Pods/React-FabricComponents » ParagraphState.cpp
+› Compiling react-native Pods/React-FabricComponents » ParagraphShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » ParagraphProps.cpp
+› Compiling react-native Pods/React-FabricComponents » ParagraphEventEmitter.cpp
+› Compiling react-native ParagraphComponentDescriptor.cpp
+› Compiling react-native Pods/React-FabricComponents » ModalHostViewState.cpp
+› Compiling react-native Pods/React-FabricComponents » ModalHostViewShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » InputAccessoryShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » EventEmitters.cpp
+› Compiling react-native Pods/React-FabricComponents » ComponentDescriptors.cpp
+› Compiling react-native Pods/React-FabricComponents » BaseTextShadowNode.cpp
+› Compiling react-native Pods/React-FabricComponents » BaseTextProps.cpp
+› Compiling react-native Pods/React-FabricComponents » BaseTextInputProps.cpp
+› Packaging react-native Pods/React-FabricImage » libReact-FabricImage.a
+› Packaging react-native Pods/React-FabricComponents » libReact-FabricComponents.a
+› Packaging react-native Pods/React-domnativemodule » libReact-domnativemodule.a
+› Packaging react-native Pods/React-RCTFabric » libReact-RCTFabric.a
+› Packaging react-native Pods/React-defaultsnativemodule » libReact-defaultsnativemodule.a
+› Packaging react-native Pods/React-RuntimeApple » libReact-RuntimeApple.a
+› Packaging react-native Pods/React-RCTRuntime » libReact-RCTRuntime.a
+› Packaging react-native Pods/React-RCTAppDelegate » libReact-RCTAppDelegate.a
+› Executing mytrainpro Pods/ReactCodegen » [CP-User] Generate Specs
+› Compiling mytrainpro Pods/ReactCodegen » safeareacontextJSI-generated.cpp
+› Compiling mytrainpro Pods/ReactCodegen » safeareacontext-generated.mm
+› Compiling mytrainpro Pods/ReactCodegen » States.cpp
+› Compiling mytrainpro Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling mytrainpro Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling mytrainpro Pods/ReactCodegen » ReactCodegen-dummy.m
+› Compiling mytrainpro Pods/ReactCodegen » RNCWebViewSpecJSI-generated.cpp
+› Compiling mytrainpro Pods/ReactCodegen » RNCWebViewSpec-generated.mm
+› Compiling mytrainpro Pods/ReactCodegen » RCTThirdPartyComponentsProvider.mm
+› Compiling mytrainpro Pods/ReactCodegen » RCTModulesConformingToProtocolsProvider.mm
+› Compiling mytrainpro Pods/ReactCodegen » RCTModuleProviders.mm
+› Compiling mytrainpro Pods/ReactCodegen » Props.cpp
+› Compiling mytrainpro Pods/ReactCodegen » Props.cpp
+› Compiling mytrainpro Pods/ReactCodegen » EventEmitters.cpp
+› Compiling mytrainpro Pods/ReactCodegen » EventEmitters.cpp
+› Compiling mytrainpro Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling mytrainpro Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling react-native-webview Pods/react-native-webview » react-native-webview-dummy.m
+› Compiling react-native-webview Pods/react-native-webview » RNCWebViewModule.mm
+› Compiling react-native-webview Pods/react-native-webview » RNCWebViewManager.mm
+› Compiling react-native-webview Pods/react-native-webview » RNCWebViewImpl.m
+› Compiling react-native-webview Pods/react-native-webview » RNCWebViewDecisionManager.m
+› Compiling react-native-webview Pods/react-native-webview » RNCWebView.mm
+› Compiling react-native-webview Pods/react-native-webview » RNCWKProcessPoolManager.m
+› Packaging mytrainpro Pods/ReactCodegen » libReactCodegen.a
+› Compiling react-native-webview Pods/react-native-webview » RCTConvert+WKDataDetectorTypes.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » react-native-safe-area-context-dummy.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewMode.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewManager.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewEdges.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewComponentView.mm
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaView.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaUtils.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaProviderManager.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaProvider.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCOnInsetsChangeEvent.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewState.cpp
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewShadowNode.cpp
+› Compiling mytrainpro Pods/ReactAppDependencyProvider » ReactAppDependencyProvider-dummy.m
+› Compiling mytrainpro Pods/ReactAppDependencyProvider » RCTAppDependencyProvider.mm
+› Packaging react-native-webview Pods/react-native-webview » libreact-native-webview.a
+
+❌  (node_modules/expo-modules-core/ios/Core/Views/SwiftUI/AutoSizingStack.swift:35:16)
+
+  33 |             content.fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
+  34 |               .hidden()
+> 35 |               .onGeometryChange(for: CGSize.self, of: { proxy in proxy.size }, action: { size in
+     |                ^ value of type 'some View' has no member 'onGeometryChange'
+  36 |                 var size = size
+  37 |                 size.width = axis.contains(.horizontal) ? size.width : ShadowNodeProxy.UNDEFINED_SIZE
+  38 |                 size.height = axis.contains(.vertical) ? size.height : ShadowNodeProxy.UNDEFINED_SIZE
+› Packaging mytrainpro Pods/ReactAppDependencyProvider » libReactAppDependencyProvider.a
+› Packaging react-native-safe-area-context Pods/react-native-safe-area-context » libreact-native-safe-area-context.a
+▸ ** ARCHIVE FAILED **
+▸ The following build commands failed:
+▸ 	CompileSwift normal arm64 (in target 'ExpoModulesCore' from project 'Pods')
+▸ 	SwiftCompile normal arm64 Compiling\ AnyArgument.swift,\ AnyChild.swift,\ AnyClassDefinitionElement.swift,\ AnyDefinition.swift,\ AnyDynamicType.swift,\ AnyExpoView.swift,\ AnyField.swift,\ AnyFunctionDefinition.swift,\ AnyModule.swift,\ AnyTypedArray.swift,\ AnyViewDefinition.swift,\ AnyViewProp.swift,\ AppCodeSignEntitlements.swift,\ AppContext.swift,\ AppContextConfig.swift,\ AppleView.swift,\ AsyncFunctionDefinition.swift,\ AsyncFunctionFactories.swift,\ AutoSizingStack.swift,\ Callback.swift,\ CdpNetworkTypes.swift,\ ChainableException.swift,\ ClassComponentBuilder.swift,\ ClassDefinition.swift,\ ClassFactories.swift,\ ClassRegistry.swift,\ CodedError.swift,\ CommonExceptions.swift,\ ComponentData.swift,\ ConcreteTypedArrays.swift,\ ConcreteViewProp.swift,\ ConcurrentFunctionDefinition.swift,\ ConcurrentFunctionFactories.swift,\ ConstantDefinition.swift,\ ConstantFactories.swift,\ Conversions.swift,\ Convertible.swift,\ Convertibles.swift,\ Convertibles+CMTime.swift,\ Convertibles+Color.swift,\ Convertibles+SwiftUI.swift,\ CoreModule.swift,\ DynamicArrayType.swift,\ DynamicConvertibleType.swift,\ DynamicDataType.swift,\ DynamicDictionaryType.swift,\ DynamicEitherType.swift,\ DynamicEnumType.swift,\ DynamicJavaScriptType.swift,\ DynamicNumberType.swift,\ DynamicOptionalType.swift,\ DynamicRawType.swift,\ DynamicSharedObjectType.swift,\ DynamicStringType.swift,\ DynamicSwiftUIViewType.swift,\ DynamicType.swift,\ DynamicTypedArrayType.swift,\ DynamicViewType.swift,\ DynamicVoidType.swift,\ Either.swift,\ Enumerable.swift,\ EventDispatcher.swift,\ EventListener.swift,\ EventListenersFactories.swift,\ EventObservingDefinition.swift,\ Exception.swift,\ ExceptionOrigin.swift,\ Exceptions.swift,\ ExpoAppDelegateSubscriber.swift,\ ExpoAppDelegateSubscriberRepository.swift,\ ExpoFabricView.swift,\ ExpoReactDelegate.swift,\ ExpoReactDelegateHandler.swift,\ ExpoRequestCdpInterceptor.swift,\ ExpoRequestInterceptorProtocol.swift,\ ExpoRuntime.swift,\ ExpoSwiftUI.swift,\ ExpoView.swift,\ Field.swift,\ FieldExtensions.swift,\ FieldOption.swift,\ FileSystemLegacyUtilities.swift,\ FileSystemUtilities.swift,\ GenericException.swift,\ GenericTypedArray.swift,\ JavaScriptFunction.swift,\ JavaScriptObjectBuilder.swift,\ JavaScriptRuntime.swift,\ JavaScriptUtils.swift,\ JavaScriptValue.swift,\ LegacyEventEmitterCompat.swift,\ Logger.swift,\ LoggerTimer.swift,\ LogHandlers.swift,\ LogType.swift,\ MainValueConverter.swift,\ Module.swift,\ ModuleDefinition.swift,\ ModuleDefinitionBuilder.swift,\ ModuleDefinitionEncoder.swift,\ ModuleFactories.swift,\ ModuleHolder.swift,\ ModulePriorities.swift,\ ModuleRegistry.swift,\ ModulesProvider.swift,\ NativeModulesProxyModule.swift,\ NSLabel.swift,\ ObjectDefinition.swift,\ ObjectDefinitionBuilder.swift,\ ObjectFactories.swift,\ PersistentFileLog.swift,\ Platform.swift,\ Promise.swift,\ PropertyDefinition.swift,\ PropertyFactories.swift,\ ReactNativeFactoryProvider.swift,\ Record.swift,\ SharedObject.swift,\ SharedObjectRegistry.swift,\ SharedRef.swift,\ SwiftUIHostingView.swift,\ SwiftUILayoutMetrics.swift,\ SwiftUIShadowNodeProxy.swift,\ SwiftUIViewDefinition.swift,\ SwiftUIViewDefinitionBuilder.swift,\ SwiftUIViewDefinitionDefaultProps.swift,\ SwiftUIViewFrameObserver.swift,\ SwiftUIViewHost.swift,\ SwiftUIViewProps.swift,\ SwiftUIVirtualView.swift,\ SyncFunctionDefinition.swift,\ SyncFunctionFactories.swift,\ TypedArray.swift,\ UnexpectedException.swift,\ UnimplementedExpoView.swift,\ URLAuthenticationChallengeForwardSender.swift,\ URLRequest+httpBodyData.swift,\ URLSessionSessionDelegateProxy.swift,\ Utilities.swift,\ Uuidv5.swift,\ View+Modifiers.swift,\ ViewDefinition.swift,\ ViewDefinitionBuilder.swift,\ ViewFactories.swift,\ ViewLifecycleMethod.swift,\ ViewModuleWrapper.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/AnyArgument.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/AnyChild.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Classes/AnyClassDefinitionElement.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Protocols/AnyDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/AnyDynamicType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Protocols/AnyExpoView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/AnyField.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Functions/AnyFunctionDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Protocols/AnyModule.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/TypedArrays/AnyTypedArray.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Protocols/AnyViewDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/AnyViewProp.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/AppCodeSignEntitlements.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/AppContext.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/AppContextConfig.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/AppleView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Functions/AsyncFunctionDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/AsyncFunctionFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/AutoSizingStack.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Events/Callback.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/CdpNetworkTypes.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/ChainableException.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Builders/ClassComponentBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Classes/ClassDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ClassFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Classes/ClassRegistry.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/CodedError.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/CommonExceptions.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ComponentData.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/TypedArrays/ConcreteTypedArrays.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ConcreteViewProp.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Functions/ConcurrentFunctionDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ConcurrentFunctionFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Objects/ConstantDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ConstantFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Conversions.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/Convertible.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/Convertibles.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Convertibles/Convertibles+CMTime.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Convertibles/Convertibles+Color.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/Convertibles+SwiftUI.swift /Users/expo/wor
+kingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Modules/CoreModule.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicArrayType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicConvertibleType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicDataType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicDictionaryType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicEitherType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicEnumType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicJavaScriptType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicNumberType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicOptionalType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicRawType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicSharedObjectType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicStringType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicSwiftUIViewType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicTypedArrayType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicViewType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicVoidType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/Either.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/Enumerable.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Events/EventDispatcher.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/EventListener.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/EventListenersFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Events/EventObservingDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/Exception.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/ExceptionOrigin.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Uuidv5/Exceptions.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/AppDelegates/ExpoAppDelegateSubscriber.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/AppDelegates/ExpoAppDelegateSubscriberRepository.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Fabric/ExpoFabricView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/ReactDelegates/ExpoReactDelegate.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/ReactDelegates/ExpoReactDelegateHandler.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/ExpoRequestCdpInterceptor.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/ExpoRequestInterceptorProtocol.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/ExpoRuntime.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/ExpoSwiftUI.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ExpoView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/Field.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/FieldExtensions.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/FieldOption.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/FileSystemUtilities/FileSystemLegacyUtilities.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/FileSystemUtilities/FileSystemUtilities.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/GenericException.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/TypedArrays/GenericTypedArray.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/JavaScriptFunction.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Objects/JavaScriptObjectBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/JSI/JavaScriptRuntime.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/JavaScriptUtils.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/JSI/JavaScriptValue.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Events/LegacyEventEmitterCompat.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/Logger.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/LoggerTimer.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/LogHandlers.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/LogType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/MainValueConverter.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Modules/Module.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Modules/ModuleDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Modules/ModuleDefinitionBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/ModuleDefinitionEncoder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ModuleFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/ModuleHolder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/AppDelegates/ModulePriorities.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/ModuleRegistry.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/ModulesProvider.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Legacy/NativeModulesProxy/NativeModulesProxyModule.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Platform/NSLabel.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Objects/ObjectDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Builders/ObjectDefinitionBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ObjectFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/PersistentFileLog.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Platform/Platform.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Promise.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Objects/PropertyDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/PropertyFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/AppDelegates/ReactNativeFactoryProvider.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/Record.swift /Users/expo/workingdir/build/mobile/node_m
+odules/expo-modules-core/ios/Core/SharedObjects/SharedObject.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/SharedObjects/SharedObjectRegistry.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/SharedObjects/SharedRef.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUILayoutMetrics.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIShadowNodeProxy.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewDefinitionBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewDefinitionDefaultProps.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewFrameObserver.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewHost.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewProps.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Functions/SyncFunctionDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/SyncFunctionFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/TypedArrays/TypedArray.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/UnexpectedException.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/UnimplementedExpoView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/URLAuthenticationChallengeForwardSender.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/URLRequest+httpBodyData.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/URLSessionSessionDelegateProxy.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Utilities.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Uuidv5/Uuidv5.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/View+Modifiers.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ViewDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Builders/ViewDefinitionBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ViewFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ViewLifecycleMethod.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ViewModuleWrapper.swift (in target 'ExpoModulesCore' from project 'Pods')
+▸ (2 failures)
+** ARCHIVE FAILED **
+The following build commands failed:
+	CompileSwift normal arm64 (in target 'ExpoModulesCore' from project 'Pods')
+	SwiftCompile normal arm64 Compiling\ AnyArgument.swift,\ AnyChild.swift,\ AnyClassDefinitionElement.swift,\ AnyDefinition.swift,\ AnyDynamicType.swift,\ AnyExpoView.swift,\ AnyField.swift,\ AnyFunctionDefinition.swift,\ AnyModule.swift,\ AnyTypedArray.swift,\ AnyViewDefinition.swift,\ AnyViewProp.swift,\ AppCodeSignEntitlements.swift,\ AppContext.swift,\ AppContextConfig.swift,\ AppleView.swift,\ AsyncFunctionDefinition.swift,\ AsyncFunctionFactories.swift,\ AutoSizingStack.swift,\ Callback.swift,\ CdpNetworkTypes.swift,\ ChainableException.swift,\ ClassComponentBuilder.swift,\ ClassDefinition.swift,\ ClassFactories.swift,\ ClassRegistry.swift,\ CodedError.swift,\ CommonExceptions.swift,\ ComponentData.swift,\ ConcreteTypedArrays.swift,\ ConcreteViewProp.swift,\ ConcurrentFunctionDefinition.swift,\ ConcurrentFunctionFactories.swift,\ ConstantDefinition.swift,\ ConstantFactories.swift,\ Conversions.swift,\ Convertible.swift,\ Convertibles.swift,\ Convertibles+CMTime.swift,\ Convertibles+Color.swift,\ Convertibles+SwiftUI.swift,\ CoreModule.swift,\ DynamicArrayType.swift,\ DynamicConvertibleType.swift,\ DynamicDataType.swift,\ DynamicDictionaryType.swift,\ DynamicEitherType.swift,\ DynamicEnumType.swift,\ DynamicJavaScriptType.swift,\ DynamicNumberType.swift,\ DynamicOptionalType.swift,\ DynamicRawType.swift,\ DynamicSharedObjectType.swift,\ DynamicStringType.swift,\ DynamicSwiftUIViewType.swift,\ DynamicType.swift,\ DynamicTypedArrayType.swift,\ DynamicViewType.swift,\ DynamicVoidType.swift,\ Either.swift,\ Enumerable.swift,\ EventDispatcher.swift,\ EventListener.swift,\ EventListenersFactories.swift,\ EventObservingDefinition.swift,\ Exception.swift,\ ExceptionOrigin.swift,\ Exceptions.swift,\ ExpoAppDelegateSubscriber.swift,\ ExpoAppDelegateSubscriberRepository.swift,\ ExpoFabricView.swift,\ ExpoReactDelegate.swift,\ ExpoReactDelegateHandler.swift,\ ExpoRequestCdpInterceptor.swift,\ ExpoRequestInterceptorProtocol.swift,\ ExpoRuntime.swift,\ ExpoSwiftUI.swift,\ ExpoView.swift,\ Field.swift,\ FieldExtensions.swift,\ FieldOption.swift,\ FileSystemLegacyUtilities.swift,\ FileSystemUtilities.swift,\ GenericException.swift,\ GenericTypedArray.swift,\ JavaScriptFunction.swift,\ JavaScriptObjectBuilder.swift,\ JavaScriptRuntime.swift,\ JavaScriptUtils.swift,\ JavaScriptValue.swift,\ LegacyEventEmitterCompat.swift,\ Logger.swift,\ LoggerTimer.swift,\ LogHandlers.swift,\ LogType.swift,\ MainValueConverter.swift,\ Module.swift,\ ModuleDefinition.swift,\ ModuleDefinitionBuilder.swift,\ ModuleDefinitionEncoder.swift,\ ModuleFactories.swift,\ ModuleHolder.swift,\ ModulePriorities.swift,\ ModuleRegistry.swift,\ ModulesProvider.swift,\ NativeModulesProxyModule.swift,\ NSLabel.swift,\ ObjectDefinition.swift,\ ObjectDefinitionBuilder.swift,\ ObjectFactories.swift,\ PersistentFileLog.swift,\ Platform.swift,\ Promise.swift,\ PropertyDefinition.swift,\ PropertyFactories.swift,\ ReactNativeFactoryProvider.swift,\ Record.swift,\ SharedObject.swift,\ SharedObjectRegistry.swift,\ SharedRef.swift,\ SwiftUIHostingView.swift,\ SwiftUILayoutMetrics.swift,\ SwiftUIShadowNodeProxy.swift,\ SwiftUIViewDefinition.swift,\ SwiftUIViewDefinitionBuilder.swift,\ SwiftUIViewDefinitionDefaultProps.swift,\ SwiftUIViewFrameObserver.swift,\ SwiftUIViewHost.swift,\ SwiftUIViewProps.swift,\ SwiftUIVirtualView.swift,\ SyncFunctionDefinition.swift,\ SyncFunctionFactories.swift,\ TypedArray.swift,\ UnexpectedException.swift,\ UnimplementedExpoView.swift,\ URLAuthenticationChallengeForwardSender.swift,\ URLRequest+httpBodyData.swift,\ URLSessionSessionDelegateProxy.swift,\ Utilities.swift,\ Uuidv5.swift,\ View+Modifiers.swift,\ ViewDefinition.swift,\ ViewDefinitionBuilder.swift,\ ViewFactories.swift,\ ViewLifecycleMethod.swift,\ ViewModuleWrapper.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/AnyArgument.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/AnyChild.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Classes/AnyClassDefinitionElement.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Protocols/AnyDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/AnyDynamicType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Protocols/AnyExpoView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/AnyField.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Functions/AnyFunctionDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Protocols/AnyModule.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/TypedArrays/AnyTypedArray.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Protocols/AnyViewDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/AnyViewProp.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/AppCodeSignEntitlements.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/AppContext.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/AppContextConfig.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/AppleView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Functions/AsyncFunctionDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/AsyncFunctionFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/AutoSizingStack.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Events/Callback.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/CdpNetworkTypes.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/ChainableException.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Builders/ClassComponentBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Classes/ClassDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ClassFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Classes/ClassRegistry.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/CodedError.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/CommonExceptions.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ComponentData.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/TypedArrays/ConcreteTypedArrays.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ConcreteViewProp.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Functions/ConcurrentFunctionDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ConcurrentFunctionFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Objects/ConstantDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ConstantFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Conversions.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/Convertible.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/Convertibles.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Convertibles/Convertibles+CMTime.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Convertibles/Convertibles+Color.swift
+/Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/Convertibles+SwiftUI.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Modules/CoreModule.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicArrayType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicConvertibleType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicDataType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicDictionaryType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicEitherType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicEnumType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicJavaScriptType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicNumberType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicOptionalType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicRawType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicSharedObjectType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicStringType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicSwiftUIViewType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicTypedArrayType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicViewType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/DynamicTypes/DynamicVoidType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/Either.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Arguments/Enumerable.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Events/EventDispatcher.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/EventListener.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/EventListenersFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Events/EventObservingDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/Exception.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/ExceptionOrigin.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Uuidv5/Exceptions.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/AppDelegates/ExpoAppDelegateSubscriber.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/AppDelegates/ExpoAppDelegateSubscriberRepository.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Fabric/ExpoFabricView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/ReactDelegates/ExpoReactDelegate.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/ReactDelegates/ExpoReactDelegateHandler.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/ExpoRequestCdpInterceptor.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/ExpoRequestInterceptorProtocol.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/ExpoRuntime.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/ExpoSwiftUI.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ExpoView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/Field.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/FieldExtensions.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/FieldOption.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/FileSystemUtilities/FileSystemLegacyUtilities.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/FileSystemUtilities/FileSystemUtilities.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/GenericException.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/TypedArrays/GenericTypedArray.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/JavaScriptFunction.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Objects/JavaScriptObjectBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/JSI/JavaScriptRuntime.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/JavaScriptUtils.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/JSI/JavaScriptValue.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Events/LegacyEventEmitterCompat.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/Logger.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/LoggerTimer.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/LogHandlers.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/LogType.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/MainValueConverter.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Modules/Module.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Modules/ModuleDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Modules/ModuleDefinitionBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/ModuleDefinitionEncoder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ModuleFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/ModuleHolder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/AppDelegates/ModulePriorities.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/ModuleRegistry.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/ModulesProvider.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Legacy/NativeModulesProxy/NativeModulesProxyModule.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Platform/NSLabel.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Objects/ObjectDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Builders/ObjectDefinitionBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ObjectFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Logging/PersistentFileLog.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Platform/Platform.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Promise.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Objects/PropertyDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/PropertyFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/AppDelegates/ReactNativeFactoryProvider.swift /Users
+/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Records/Record.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/SharedObjects/SharedObject.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/SharedObjects/SharedObjectRegistry.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/SharedObjects/SharedRef.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUILayoutMetrics.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIShadowNodeProxy.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewDefinitionBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewDefinitionDefaultProps.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewFrameObserver.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewHost.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIViewProps.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Functions/SyncFunctionDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/SyncFunctionFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/TypedArrays/TypedArray.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Exceptions/UnexpectedException.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/UnimplementedExpoView.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/URLAuthenticationChallengeForwardSender.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/URLRequest+httpBodyData.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/DevTools/URLSessionSessionDelegateProxy.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Utilities.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Uuidv5/Uuidv5.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/SwiftUI/View+Modifiers.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ViewDefinition.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Builders/ViewDefinitionBuilder.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Api/Factories/ViewFactories.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ViewLifecycleMethod.swift /Users/expo/workingdir/build/mobile/node_modules/expo-modules-core/ios/Core/Views/ViewModuleWrapper.swift (in target 'ExpoModulesCore' from project 'Pods')
+(2 failures)
+Exit status: 65
++---------------------------------------+
+|           Build environment           |
++-------------+-------------------------+
+| xcode_path  | /Applications/Xcode.app |
+| gym_version | 2.220.0                 |
+| sdk         | iPhoneOS17.5.sdk        |
++-------------+-------------------------+
+Looks like fastlane ran into a build/archive error with your project
+It's hard to tell what's causing the error, so we wrote some guides on how
+to troubleshoot build and signing issues: https://docs.fastlane.tools/codesigning/getting-started/
+Before submitting an issue on GitHub, please follow the guide above and make
+sure your project is set up correctly.
+fastlane uses `xcodebuild` commands to generate your binary, you can see the
+the full commands printed out in yellow in the above log.
+Make sure to inspect the output above, as usually you'll find more error information there
+[!] Error building the application - see the log above
+Error: The "Run fastlane" step failed because of an error in the Xcode build process. We automatically detected following errors in your Xcode build logs:
+- value of type 'some View' has no member 'onGeometryChange'
+Refer to "Xcode Logs" below for additional, more detailed logs.
