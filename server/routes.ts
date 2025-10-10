@@ -740,16 +740,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })(req, res, next);
   });
 
-  app.post('/api/auth/apple/callback', (req, res, next) => {
-    const state = req.body.state as string;
-    const error = req.body.error as string;
+  // Apple callback - handle both GET and POST
+  app.all('/api/auth/apple/callback', (req, res, next) => {
+    console.log('🍎 [Apple Callback] Request received:', {
+      method: req.method,
+      query: req.query,
+      body: req.body,
+      headers: {
+        'content-type': req.get('content-type'),
+        'user-agent': req.get('user-agent')
+      }
+    });
     
-    // 記錄所有 body parameters
-    console.log('📥 Apple OAuth callback:', {
+    // Get state and error from body (POST) or query (GET)
+    const state = (req.body.state || req.query.state) as string;
+    const error = (req.body.error || req.query.error) as string;
+    const code = req.body.code || req.query.code;
+    
+    console.log('📥 Apple OAuth callback data:', {
+      method: req.method,
       state: state?.substring(0, 10) + '...',
       error,
-      hasCode: !!req.body.code,
-      allParams: Object.keys(req.body)
+      hasCode: !!code,
+      bodyParams: Object.keys(req.body),
+      queryParams: Object.keys(req.query)
     });
     
     if (error) {
