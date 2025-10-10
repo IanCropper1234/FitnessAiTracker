@@ -1,0 +1,46 @@
+(index):139 TrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+(index):110 TrainPro PWA: ServiceWorker registered successfully
+App.tsx:530 User signed out, clearing all cache
+App.tsx:550 Checking authentication status... (attempt 1)
+App.tsx:551  GET https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/api/auth/user 401 (Unauthorized)
+checkAuth @ App.tsx:551
+(anonymous) @ App.tsx:592
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=c66f5819:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=c66f5819:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=c66f5819:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=c66f5819:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=c66f5819:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=c66f5819:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=c66f5819:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=c66f5819:19328
+workLoop @ chunk-RPCDYKBN.js?v=c66f5819:197
+flushWork @ chunk-RPCDYKBN.js?v=c66f5819:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c66f5819:384
+App.tsx:558 Auth check response status: 401
+App.tsx:564 Not authenticated - no valid session
+App.tsx:568 Retrying authentication check in iOS PWA environment...
+App.tsx:550 Checking authentication status... (attempt 2)
+App.tsx:551  GET https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/api/auth/user 401 (Unauthorized)
+checkAuth @ App.tsx:551
+(anonymous) @ App.tsx:569
+setTimeout
+checkAuth @ App.tsx:569
+await in checkAuth
+(anonymous) @ App.tsx:592
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=c66f5819:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=c66f5819:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=c66f5819:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=c66f5819:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=c66f5819:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=c66f5819:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=c66f5819:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=c66f5819:19328
+workLoop @ chunk-RPCDYKBN.js?v=c66f5819:197
+flushWork @ chunk-RPCDYKBN.js?v=c66f5819:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=c66f5819:384
+App.tsx:558 Auth check response status: 401
+App.tsx:564 Not authenticated - no valid session
+page-transition.tsx:25 AnimatedPage: Page changed from  to /
+App.tsx:154 Redirecting to auth - no user found
+page-transition.tsx:25 AnimatedPage: Page changed from / to /auth
+page-transition.tsx:65 ✅ ANIMATION COMPLETED for page: /auth
