@@ -240,6 +240,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     return 'text-red-600';
   };
 
+  // State for collapsible cards
+  const [isVolumeTargetsOpen, setIsVolumeTargetsOpen] = useState(true);
+
   // Collapsible History Card Component
   const CollapsibleHistoryCard = ({ mesocycles, getPhaseColor }: { mesocycles: Mesocycle[], getPhaseColor: (phase: string) => string }) => {
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -524,41 +527,56 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
           <AnimatedTabsContent value="volume" className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Next Week Volume Targets
-                </CardTitle>
-                <CardDescription>
-                  Recommended training volume for next week based on current progress
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {recommendations.nextWeekVolume && recommendations.nextWeekVolume.length > 0 ? (
-                  <div className="space-y-3">
-                    {recommendations.nextWeekVolume.map((volume: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
-                        <div>
-                          <p className="font-medium">{volume.muscleGroupName || `Muscle Group ${volume.muscleGroupId}`}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">
-                            Week {volume.week} • {volume.phase}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold">{volume.targetSets}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">sets</p>
-                        </div>
+              <Collapsible open={isVolumeTargetsOpen} onOpenChange={setIsVolumeTargetsOpen}>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <TrendingUp className="h-5 w-5" />
+                          Next Week Volume Targets
+                        </CardTitle>
+                        <CardDescription>
+                          Recommended training volume for next week based on current progress
+                        </CardDescription>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p className="font-medium">No Active Mesocycle</p>
-                    <p className="text-sm">Create a mesocycle to view volume progression targets</p>
-                  </div>
-                )}
-              </CardContent>
+                      {isVolumeTargetsOpen ? (
+                        <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0 transition-transform duration-300" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0 transition-transform duration-300" />
+                      )}
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+                  <CardContent className="pt-0">
+                    {recommendations.nextWeekVolume && recommendations.nextWeekVolume.length > 0 ? (
+                      <div className="space-y-3">
+                        {recommendations.nextWeekVolume.map((volume: any, index: number) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <div>
+                              <p className="font-medium">{volume.muscleGroupName || `Muscle Group ${volume.muscleGroupId}`}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">
+                                Week {volume.week} • {volume.phase}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-lg font-bold">{volume.targetSets}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">sets</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p className="font-medium">No Active Mesocycle</p>
+                        <p className="text-sm">Create a mesocycle to view volume progression targets</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
             </Card>
           </AnimatedTabsContent>
 
