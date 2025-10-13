@@ -45,8 +45,25 @@
     <dict>
       <key>NSAllowsArbitraryLoads</key>
       <false/>
-      <key>NSAllowsLocalNetworking</key>
+      <key>NSAllowsArbitraryLoadsInWebContent</key>
       <true/>
+      <key>NSExceptionDomains</key>
+      <dict>
+        <key>mytrainpro.com</key>
+        <dict>
+          <key>NSIncludesSubdomains</key>
+          <true/>
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+          <false/>
+          <key>NSRequiresCertificateTransparency</key>
+          <false/>
+        </dict>
+        <key>localhost</key>
+        <dict>
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+        </dict>
+      </dict>
     </dict>
     <key>NSCameraUsageDescription</key>
     <string>MyTrainPro uses the camera to capture food images for AI-powered nutrition analysis and tracking.</string>
