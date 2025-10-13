@@ -18,7 +18,6 @@
     ],
     "privacy": "public",
     "scheme": "mytrainpro",
-    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -42,6 +41,20 @@
         "NSHealthShareUsageDescription": "MyTrainPro integrates with Apple Health to sync your fitness and nutrition data for comprehensive health tracking.",
         "NSHealthUpdateUsageDescription": "MyTrainPro can write workout and nutrition data to Apple Health to keep all your health information synchronized.",
         "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSAllowsArbitraryLoadsInWebContent": true,
+          "NSExceptionDomains": {
+            "mytrainpro.com": {
+              "NSIncludesSubdomains": true,
+              "NSExceptionAllowsInsecureHTTPLoads": false,
+              "NSRequiresCertificateTransparency": false
+            },
+            "localhost": {
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        },
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [

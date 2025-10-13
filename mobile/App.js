@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Component } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   AppState,
   Image,
+  SafeAreaView,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -19,7 +20,93 @@ import { AuthManager } from './auth/AuthManager';
 
 const { width, height } = Dimensions.get("window");
 
-export default function App() {
+// Error Boundary Component for crash protection
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('[ErrorBoundary] Caught error:', error, errorInfo);
+    this.setState({
+      error: error,
+      errorInfo: errorInfo
+    });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <SafeAreaView style={styles.errorContainer}>
+          <View style={styles.errorContent}>
+            <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
+            <Text style={styles.errorMessage}>
+              The app encountered an unexpected error. Please try restarting the app.
+            </Text>
+            <TouchableOpacity 
+              style={styles.retryButton}
+              onPress={() => this.setState({ hasError: false, error: null, errorInfo: null })}
+            >
+              <Text style={styles.retryButtonText}>Try Again</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Initial HTML for safe loading
+const getInitialHTML = () => `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .loader {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="loader"></div>
+    <p>Loading MyTrainPro...</p>
+  </div>
+</body>
+</html>
+`;
+
+// Main App Component
+function MainApp() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [webViewKey, setWebViewKey] = useState(0);
@@ -27,16 +114,71 @@ export default function App() {
   const [session, setSession] = useState(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isAppleSignInAvailable, setIsAppleSignInAvailable] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+  const [webViewReady, setWebViewReady] = useState(false);
+  const [loadTimeout, setLoadTimeout] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  
   const webViewRef = useRef(null);
   const backgroundTimeRef = useRef(null);
   const reloadAttemptsRef = useRef(0);
+  const loadTimeoutRef = useRef(null);
+  const retryCountRef = useRef(0);
+  const maxRetries = 3;
 
   const serverUrl = "https://mytrainpro.com";
 
   useEffect(() => {
+    checkNetworkConnection();
     checkExistingSession();
     checkAppleSignInAvailability();
+    setupLoadTimeout();
+    
+    return () => {
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+      }
+    };
   }, []);
+
+  // Network connectivity check
+  const checkNetworkConnection = async () => {
+    try {
+      // Try to fetch a small resource from the server
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(`${serverUrl}/api/health`, {
+        method: 'HEAD',
+        signal: controller.signal
+      }).catch(() => null);
+      
+      clearTimeout(timeoutId);
+      setIsConnected(response && response.ok);
+    } catch (error) {
+      console.log('[Network] Connection check failed:', error);
+      setIsConnected(false);
+    }
+  };
+
+  // Setup load timeout
+  const setupLoadTimeout = () => {
+    loadTimeoutRef.current = setTimeout(() => {
+      if (!webViewReady && retryCountRef.current < maxRetries) {
+        console.log('[Timeout] WebView load timeout, attempting retry...');
+        setLoadTimeout(true);
+        handleRetryLoad();
+      }
+    }, 15000); // 15 second timeout
+  };
+
+  const handleRetryLoad = () => {
+    retryCountRef.current++;
+    setLoadTimeout(false);
+    setError(null);
+    setWebViewKey(prev => prev + 1);
+    setupLoadTimeout();
+  };
 
   const checkExistingSession = async () => {
     try {
@@ -132,16 +274,55 @@ export default function App() {
   };
 
   const handleLoadStart = () => {
+    console.log('[WebView] Load started');
     setIsLoading(true);
     setError(null);
   };
 
   const handleLoadEnd = () => {
+    console.log('[WebView] Load ended');
     setIsLoading(false);
+    setWebViewReady(true);
+    setInitialLoadComplete(true);
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+    }
+  };
+
+  const handleLoadProgress = ({ nativeEvent }) => {
+    console.log('[WebView] Load progress:', nativeEvent.progress);
   };
 
   const handleNavigationStateChange = (navState) => {
-    console.log("Navigation to:", navState.url);
+    console.log("[WebView] Navigation to:", navState.url);
+  };
+
+  const handleMessage = (event) => {
+    try {
+      const message = JSON.parse(event.nativeEvent.data);
+      console.log('[WebView] Message received:', message.type);
+      
+      switch (message.type) {
+        case 'FORCE_REMOUNT_NEEDED':
+          console.log('[WebView] Force remount requested');
+          setWebViewKey(prev => prev + 1);
+          break;
+        case 'BLANK_PAGE_DETECTED':
+          console.log('[WebView] Blank page detected, reloading...');
+          if (webViewRef.current) {
+            webViewRef.current.reload();
+          }
+          break;
+        case 'WEB_VIEW_READY':
+          console.log('[WebView] Web view ready signal received');
+          setWebViewReady(true);
+          break;
+        default:
+          console.log('[WebView] Unknown message type:', message.type);
+      }
+    } catch (error) {
+      console.log('[WebView] Non-JSON message:', event.nativeEvent.data);
+    }
   };
 
   useEffect(() => {
@@ -199,16 +380,34 @@ export default function App() {
 
   const handleWebViewError = (syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
-    console.error("[App] WebView error:", nativeEvent);
+    console.error("[WebView] Error:", nativeEvent);
 
+    // Handle SSL certificate errors specifically
+    if (nativeEvent.code === -1202 || nativeEvent.description?.includes('SSL')) {
+      console.error('[WebView] SSL certificate error detected');
+      setError({
+        ...nativeEvent,
+        isSSLError: true
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    // Handle terminated processes
     if (
       nativeEvent.description?.includes("terminated") ||
       nativeEvent.description?.includes("crash") ||
       nativeEvent.code === -999
     ) {
-      console.log("[App] WebView process terminated, force re-mounting");
+      console.log("[WebView] Process terminated, force re-mounting");
       setWebViewKey((prev) => prev + 1);
       reloadAttemptsRef.current = 0;
+    } else if (retryCountRef.current < maxRetries) {
+      // Retry for other errors
+      setTimeout(() => {
+        console.log(`[WebView] Retrying load (attempt ${retryCountRef.current + 1}/${maxRetries})`);
+        handleRetryLoad();
+      }, 2000);
     } else {
       setError(nativeEvent);
     }
@@ -217,9 +416,28 @@ export default function App() {
   };
 
   const handleContentProcessDidTerminate = () => {
-    console.log("[App] WebView content process terminated by iOS");
+    console.log("[WebView] Content process terminated by iOS");
     setWebViewKey((prev) => prev + 1);
     reloadAttemptsRef.current = 0;
+  };
+
+  const handleHttpError = (syntheticEvent) => {
+    const { nativeEvent } = syntheticEvent;
+    console.error('[WebView] HTTP error:', nativeEvent.statusCode, nativeEvent.description);
+    
+    if (nativeEvent.statusCode >= 500) {
+      // Server error, show retry option
+      setError({
+        ...nativeEvent,
+        isServerError: true
+      });
+    } else if (nativeEvent.statusCode === 404) {
+      // Not found error
+      setError({
+        ...nativeEvent,
+        isNotFoundError: true
+      });
+    }
   };
 
   const injectedJavaScriptBeforeContentLoaded = session ? `
@@ -595,73 +813,6 @@ export default function App() {
     true;
   `;
 
-  const handleMessage = (event) => {
-    try {
-      const message = JSON.parse(event.nativeEvent.data);
-      console.log("Message from WebView:", message);
-
-      switch (message.type) {
-        case "READY":
-          console.log("WebView is ready");
-          setIsLoading(false);
-          break;
-        case "OAUTH_REQUEST":
-          console.log(`[App] OAuth request from WebView: ${message.provider}`);
-          if (message.provider === 'google') {
-            handleGoogleSignIn();
-          } else if (message.provider === 'apple') {
-            handleAppleSignIn();
-          }
-          break;
-        case "NAVIGATION":
-          break;
-        case "ERROR":
-          Alert.alert("Error", message.error);
-          break;
-        case "AUTO_RELOAD":
-          console.log(
-            `WebView auto-reload triggered: ${message.reason} (attempt ${message.attempt})`,
-          );
-          if (message.attempt === 1) {
-            console.log("First auto-reload attempt, refreshing session...");
-          }
-          break;
-        case "VISIBILITY_CHANGE":
-          console.log(
-            `WebView visibility: ${message.isVisible ? "visible" : "hidden"}`,
-          );
-          if (message.backgroundDuration) {
-            console.log(`Background duration: ${message.backgroundDuration}ms`);
-          }
-          break;
-        case "SESSION_PERSIST":
-          console.log("Session data persisted:", message.data);
-          break;
-        case "BLANK_PAGE_DETECTED":
-          console.log(`[App] WebView detected blank page: ${message.reason}`);
-          setTimeout(() => {
-            if (webViewRef.current) {
-              console.log("[App] React Native handling blank page with reload");
-              webViewRef.current.reload();
-            }
-          }, 500);
-          break;
-        case "FORCE_REMOUNT_NEEDED":
-          console.log(
-            "[App] WebView requested force re-mount due to:",
-            message.reason,
-          );
-          setWebViewKey((prev) => prev + 1);
-          reloadAttemptsRef.current = 0;
-          break;
-        default:
-          console.log("Unknown message type:", message.type);
-      }
-    } catch (error) {
-      console.error("Error parsing WebView message:", error);
-    }
-  };
-
   const userAgent = Platform.select({
     ios: "MyTrainPro-iOS/1.0.0 (iPhone; iOS 14.0) AppleWebKit/605.1.15 Safari/604.1",
     android:
@@ -711,31 +862,102 @@ export default function App() {
     );
   }
 
+  // Render error UI
   if (error) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <StatusBar
           barStyle="light-content"
           backgroundColor="#000000"
           translucent={true}
         />
         <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>Connection Error</Text>
+          <Text style={styles.errorTitle}>
+            {error.isSSLError ? 'Connection Security Issue' : 
+             error.isServerError ? 'Server Error' : 
+             error.isNotFoundError ? 'Page Not Found' :
+             'Unable to Load'}
+          </Text>
           <Text style={styles.errorMessage}>
-            Unable to load MyTrainPro. Please check your internet connection.
+            {error.isSSLError ? 
+              'There was a problem verifying the security of the connection.' :
+             error.isServerError ? 
+              'The server is temporarily unavailable. Please try again later.' :
+             error.isNotFoundError ?
+              'The requested page could not be found.' :
+              'We couldn\'t load the app. Please check your internet connection and try again.'}
           </Text>
           <TouchableOpacity
             style={styles.retryButton}
             onPress={() => {
               setError(null);
-              setIsLoading(true);
-              webViewRef.current?.reload();
+              retryCountRef.current = 0;
+              setWebViewKey(prev => prev + 1);
             }}
           >
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Render no connection UI
+  if (!isConnected) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor="#000000"
+          translucent={true}
+        />
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>No Internet Connection</Text>
+          <Text style={styles.errorMessage}>
+            Please check your internet connection and try again.
+          </Text>
+          <TouchableOpacity 
+            style={styles.retryButton}
+            onPress={async () => {
+              await checkNetworkConnection();
+              if (isConnected) {
+                setWebViewKey(prev => prev + 1);
+              }
+            }}
+          >
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Render timeout UI
+  if (loadTimeout && retryCountRef.current >= maxRetries) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor="#000000"
+          translucent={true}
+        />
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>Loading Timeout</Text>
+          <Text style={styles.errorMessage}>
+            The app is taking too long to load. Please try again.
+          </Text>
+          <TouchableOpacity 
+            style={styles.retryButton}
+            onPress={() => {
+              retryCountRef.current = 0;
+              setLoadTimeout(false);
+              setWebViewKey(prev => prev + 1);
+            }}
+          >
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -757,21 +979,44 @@ export default function App() {
       <WebView
         key={webViewKey}
         ref={webViewRef}
-        source={{ uri: serverUrl }}
+        source={initialLoadComplete ? 
+          { uri: serverUrl } : 
+          { 
+            html: getInitialHTML(),
+            baseUrl: serverUrl 
+          }
+        }
         style={styles.webview}
         onLoadStart={handleLoadStart}
-        onLoadEnd={handleLoadEnd}
+        onLoadEnd={() => {
+          handleLoadEnd();
+          // After initial HTML loads, navigate to the actual URL
+          if (!initialLoadComplete) {
+            setTimeout(() => {
+              if (webViewRef.current) {
+                setInitialLoadComplete(true);
+                webViewRef.current.injectJavaScript(`
+                  window.location.href = '${serverUrl}';
+                  true;
+                `);
+              }
+            }, 500);
+          }
+        }}
+        onLoadProgress={handleLoadProgress}
         onError={handleWebViewError}
+        onHttpError={handleHttpError}
         onNavigationStateChange={handleNavigationStateChange}
         onMessage={handleMessage}
         injectedJavaScriptBeforeContentLoaded={injectedJavaScriptBeforeContentLoaded}
         injectedJavaScript={injectedJavaScript}
-        userAgent={userAgent}
+        userAgent={`MyTrainPro/${Platform.OS === 'ios' ? 'iOS' : 'Android'} Mobile App`}
+        applicationNameForUserAgent="MyTrainPro"
         onContentProcessDidTerminate={handleContentProcessDidTerminate}
         onRenderProcessGone={handleContentProcessDidTerminate}
         javaScriptEnabled={true}
         domStorageEnabled={true}
-        startInLoadingState={false}
+        startInLoadingState={true}
         scalesPageToFit={false}
         scrollEnabled={true}
         showsHorizontalScrollIndicator={false}
@@ -790,22 +1035,37 @@ export default function App() {
         incognito={false}
         sharedCookiesEnabled={true}
         thirdPartyCookiesEnabled={true}
+        originWhitelist={['*']}
+        allowFileAccess={false}
+        allowFileAccessFromFileURLs={false}
+        allowUniversalAccessFromFileURLs={false}
+        allowsLinkPreview={false}
         onShouldStartLoadWithRequest={(request) => {
-          if (
-            request.url.includes("fitness-ai-tracker-c0109009.replit.app") ||
-            request.url.includes("mytrainpro.com")
-          ) {
+          // Allow all requests to mytrainpro.com
+          if (request.url.includes('mytrainpro.com')) {
             return true;
           }
-
-          if (
-            request.url.startsWith("http") ||
-            request.url.startsWith("https")
-          ) {
-            Linking.openURL(request.url);
-            return false;
+          
+          // Allow OAuth redirects
+          if (request.url.includes('accounts.google.com') || 
+              request.url.includes('appleid.apple.com')) {
+            return true;
           }
-
+          
+          // Allow custom scheme for OAuth callbacks
+          if (request.url.startsWith('mytrainpro://')) {
+            return true;
+          }
+          
+          // Block and open external URLs
+          if (request.url.startsWith('http://') || 
+              request.url.startsWith('https://')) {
+            if (!request.url.startsWith(serverUrl)) {
+              Linking.openURL(request.url);
+              return false;
+            }
+          }
+          
           return true;
         }}
         renderLoading={() => (
@@ -813,16 +1073,17 @@ export default function App() {
             <ActivityIndicator size="large" color="#2563eb" />
           </View>
         )}
-        onHttpError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.warn(
-            "HTTP Error:",
-            nativeEvent.statusCode,
-            nativeEvent.description,
-          );
-        }}
       />
     </View>
+  );
+}
+
+// Export with ErrorBoundary wrapper
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <MainApp />
+    </ErrorBoundary>
   );
 }
 
@@ -913,6 +1174,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     backgroundColor: "#000000",
+  },
+  errorContent: {
+    width: "100%",
+    maxWidth: 400,
+    alignItems: "center",
   },
   errorTitle: {
     fontSize: 24,
