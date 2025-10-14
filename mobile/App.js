@@ -824,6 +824,10 @@ function MainApp() {
       "MyTrainPro-Android/1.0.0 (Android 10; Mobile) Chrome/91.0.4472.120",
   });
 
+  // SKIP NATIVE AUTH - Load WebView directly to show website login
+  // This allows users to use the full website login functionality
+  // Uncomment the block below to re-enable native auth UI
+  /*
   if (!session && !isLoading) {
     return (
       <View style={styles.authContainer}>
@@ -866,6 +870,7 @@ function MainApp() {
       </View>
     );
   }
+  */
 
   // Render error UI
   if (error) {
