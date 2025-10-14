@@ -1,0 +1,87 @@
+~/workspace$ cd mobile
+rm -rf node_modules ios android
+npm install --legacy-peer-deps
+npx expo prebuild --platform ios
+eas build --platform ios --profile production
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+
+added 724 packages, and audited 725 packages in 14s
+
+79 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+✔ Created native directory
+› Using react-native@0.79.5 instead of recommended react-native@0.79.6.
+✔ Updated package.json | no changes
+» ios: withIosBuildProperties: ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead. https://docs.expo.dev/versions/latest/config/app/#newarchenabled
+» ios: ios.config.usesNonExemptEncryption: "ios.infoPlist.ITSAppUsesNonExemptEncryption" is set in the config. Ignoring abstract property "ios.config.usesNonExemptEncryption": false
+» ios: scheme: "ios.infoPlist.CFBundleURLTypes" is set in the config. Ignoring abstract property "scheme": mytrainpro
+» ios: name: "ios.infoPlist.CFBundleDisplayName" is set in the config. Ignoring abstract property "name": MyTrainPro
+» ios: ios.usesAppleSignIn: Install expo-apple-authentication to enable this feature https://docs.expo.dev/versions/latest/sdk/apple-authentication/#eas-build
+✔ Finished prebuild
+✔ Skipped installing CocoaPods because operating system is not on macOS.
+Resolved "production" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "production" environment on EAS.
+
+✔ Using remote iOS credentials (Expo server)
+
+If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.
+This is optional, but without Apple account access you will need to provide all the missing values manually and we can only run minimal validation on them.
+✔ Do you want to log in to your Apple account? … yes
+
+› Log in to your Apple Developer account to continue
+✔ Apple ID: … c0109009@gmail.com
+› Restoring session /home/runner/.app-store/auth/c0109009@gmail.com/cookie
+› Team Yuen Wai Lau (33K7F4WRBY)
+› Provider Yuen Wai Lau (128115264)
+✔ Logged in Local session
+✔ Bundle identifier registered com.trainpro.app
+✔ Synced capabilities: No updates
+✔ Synced capability identifiers: No updates
+✔ Fetched Apple distribution certificates
+✔ Fetched Apple provisioning profiles
+
+Project Credentials Configuration
+
+Project                   @liovyued/mytrainpro
+Bundle Identifier         com.trainpro.app
+                          
+App Store Configuration   
+                          
+Distribution Certificate  
+Serial Number             76DCB69F750172D23C8695F6C9D5FE8F
+Expiration Date           Wed, 14 Oct 2026 02:38:31 UTC
+Apple Team                33K7F4WRBY (Yuen Wai Lau (Individual))
+Updated                   5 hours ago
+                          
+Provisioning Profile      
+Developer Portal ID       D4R6ZXBHPV
+Status                    active
+Expiration                Wed, 14 Oct 2026 02:38:31 UTC
+Apple Team                33K7F4WRBY (Yuen Wai Lau (Individual))
+Updated                   5 hours ago
+                          
+All credentials are ready to build @liovyued/mytrainpro (com.trainpro.app)
+
+
+Compressing project files and uploading to EAS Build. Learn more: https://expo.fyi/eas-build-archive
+✔ Compressed project files 17s (190 MB)
+Your project archive is 190 MB. You can reduce its size and the time it takes to upload by excluding files that are unnecessary for the build process in .easignore file. Learn more: https://expo.fyi/eas-build-archive
+✔ Uploaded to EAS 33s
+✔ Computed project fingerprint
+
+See logs: https://expo.dev/accounts/liovyued/projects/mytrainpro/builds/c018218a-e22a-459c-b4a7-c46ff515c3ec
+
+Waiting for build to complete. You can press Ctrl+C to exit.
+✔ Build finished
+
+🍏 iOS app:
+https://expo.dev/artifacts/eas/pHNai99ox6BYeVKafyPKsC.ipa
+~/workspace/mobile$ 
