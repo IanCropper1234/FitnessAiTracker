@@ -1,0 +1,180 @@
+'~/workspace/mobile$ npm install --global eas-cli && npx create-expo-app mytrainpro && cd mytrainpro && eas init --id eba398ae-4ad6-49cd-9211-addb24859ebb
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@6.0.4: Glob versions prior to v9 are no longer supported
+npm warn deprecated rimraf@2.4.5: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated @oclif/screen@3.0.8: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated lodash.get@4.4.2: This package is deprecated. Use the optional chaining (?.) operator instead.
+npm warn deprecated sudo-prompt@9.1.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated @xmldom/xmldom@0.7.13: this version is no longer supported, please update to at least 0.8.*
+
+added 460 packages in 26s
+
+60 packages are looking for funding
+  run `npm fund` for details
+Need to install the following packages:
+create-expo-app@3.5.3
+Ok to proceed? (y) y
+
+Creating an Expo project using the default template.
+
+To choose from all available templates (https://github.com/expo/expo/tree/main/templates) pass in the --template arg:
+  $ npx create-expo-app --template
+
+To choose from all available examples (https://github.com/expo/examples) pass in the --example arg:
+  $ npx create-expo-app --example
+
+✔ Downloaded and extracted project files.
+> npm install
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'react-native@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-babel-transformer@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-cache@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-cache-key@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-config@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-core@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-file-map@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-resolver@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-runtime@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-source-map@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-transform-plugins@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-transform-worker@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/babel-preset@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/babel-plugin-codegen@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/codegen@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-symbolicate@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'ob1@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'metro-minify-terser@0.83.1',
+npm warn EBADENGINE   required: { node: '>=20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/assets-registry@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/community-cli-plugin@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/gradle-plugin@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/js-polyfills@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/virtualized-lists@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/dev-middleware@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@react-native/debugger-frontend@0.81.4',
+npm warn EBADENGINE   required: { node: '>= 20.19.4' },
+npm warn EBADENGINE   current: { node: 'v20.19.3', npm: '11.6.0' }
+npm warn EBADENGINE }
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+
+added 996 packages, and audited 997 packages in 1m
+
+183 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+✅ Your project is ready!
+
+To run your project, navigate to the directory and run one of the following npm commands.
+
+- cd mytrainpro
+- npm run android
+- npm run ios # you need to use macOS to build the iOS project - use the Expo app if you need to do iOS development without a Mac
+- npm run web
+✔ Project successfully linked (ID: eba398ae-4ad6-49cd-9211-addb24859ebb) (modified app.json)'
