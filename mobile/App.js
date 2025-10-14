@@ -118,6 +118,7 @@ function MainApp() {
   const [webViewReady, setWebViewReady] = useState(false);
   const [loadTimeout, setLoadTimeout] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [showWebViewAuth, setShowWebViewAuth] = useState(false);
   
   const webViewRef = useRef(null);
   const backgroundTimeRef = useRef(null);
@@ -824,11 +825,9 @@ function MainApp() {
       "MyTrainPro-Android/1.0.0 (Android 10; Mobile) Chrome/91.0.4472.120",
   });
 
-  // SKIP NATIVE AUTH - Load WebView directly to show website login
-  // This allows users to use the full website login functionality
-  // Uncomment the block below to re-enable native auth UI
-  /*
-  if (!session && !isLoading) {
+  // HYBRID AUTH MODE - Native OAuth + WebView for Email/Password
+  // This provides the best of both worlds
+  if (!session && !isLoading && !showWebViewAuth) {
     return (
       <View style={styles.authContainer}>
         <StatusBar
@@ -865,12 +864,24 @@ function MainApp() {
                 onPress={handleAppleSignIn}
               />
             )}
+            
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>OR</Text>
+              <View style={styles.dividerLine} />
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.emailButton}
+              onPress={() => setShowWebViewAuth(true)}
+            >
+              <Text style={styles.emailButtonText}>Continue with Email</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
     );
   }
-  */
 
   // Render error UI
   if (error) {
@@ -1143,6 +1154,38 @@ const styles = StyleSheet.create({
     height: 50,
   },
   buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  divider: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 20,
+    width: "100%",
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#333333",
+  },
+  dividerText: {
+    color: "#999999",
+    fontSize: 14,
+    marginHorizontal: 10,
+  },
+  emailButton: {
+    backgroundColor: "transparent",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 50,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  emailButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
