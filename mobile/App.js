@@ -127,7 +127,8 @@ function MainApp() {
   const retryCountRef = useRef(0);
   const maxRetries = 3;
 
-  const serverUrl = "https://mytrainpro.com";
+  // Use login page when not authenticated, main page when authenticated
+  const serverUrl = session ? "https://mytrainpro.com" : "https://mytrainpro.com/login";
 
   useEffect(() => {
     checkNetworkConnection();
