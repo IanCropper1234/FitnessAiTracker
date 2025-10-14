@@ -17,6 +17,15 @@ node_modules/
 .git/
 .gitignore
 
+# Replit specific files
+.local/
+.replit/
+.upm/
+.cache/
+.config/
+replit.nix
+.replit
+
 # Development files
 *.log
 *.tmp

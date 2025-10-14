@@ -1,0 +1,50 @@
+# EAS Build ignore file - Root level
+# Prevents Replit internal files from being copied
+
+# Replit internal state files
+.local/
+.replit/
+.upm/
+.cache/
+.config/
+replit.nix
+.replit
+
+# Git files
+.git/
+.gitignore
+
+# Node modules
+node_modules/
+
+# Build artifacts
+dist/
+build/
+ios/
+android/
+
+# Development files
+*.log
+*.tmp
+.DS_Store
+.vscode/
+.idea/
+
+# Test files
+__tests__/
+*.test.js
+*.spec.js
+coverage/
+
+# Documentation
+*.md
+docs/
+README*
+
+# Environment files
+.env*
+!.env.production
+
+# Temporary files
+tmp/
+temp/
