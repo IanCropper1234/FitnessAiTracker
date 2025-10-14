@@ -115,12 +115,8 @@
       "expo-apple-authentication",
       "expo-secure-store",
       "expo-web-browser",
-      [
-        "expo-auth-session",
-        {
-          "addGeneratedScheme": false
-        }
-      ]
+      "expo-auth-session",
+      "expo-crypto"
     ],
     "extra": {
       "eas": {
