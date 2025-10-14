@@ -1,0 +1,36 @@
+# EAS Build ignore file
+# Reduces upload size for faster builds
+
+# iOS build artifacts
+ios/build/
+ios/Pods/
+ios/*.xcworkspace/
+ios/*.xcodeproj/
+
+# Android artifacts (if any)
+android/
+
+# Node modules (EAS will install fresh)
+node_modules/
+
+# Git files
+.git/
+.gitignore
+
+# Development files
+*.log
+*.tmp
+.DS_Store
+
+# Test files
+__tests__/
+*.test.js
+*.spec.js
+
+# Documentation
+*.md
+docs/
+
+# Local environment files
+.env.local
+.env.development

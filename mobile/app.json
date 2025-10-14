@@ -29,7 +29,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",
-      "buildNumber": "29",
+      "buildNumber": "30",
       "icon": "./assets/icon.png",
       "usesAppleSignIn": true,
       "infoPlist": {
@@ -111,7 +111,9 @@
             "newArchEnabled": false
           }
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
