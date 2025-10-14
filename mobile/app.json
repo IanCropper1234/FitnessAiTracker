@@ -115,7 +115,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "b0fa7770-552d-4612-8f93-3b8944c63ef3"
+        "projectId": "YOUR-NEW-PROJECT-ID-HERE"
       },
       "googleClientIdWeb": "497657957131-8gb7mmtgbknc78qdovbs8hff1b2263r9.apps.googleusercontent.com",
       "googleClientIdIos": "497657957131-l96b41913u5g99k0flv7usfdj410iu21.apps.googleusercontent.com"
