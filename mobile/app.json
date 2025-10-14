@@ -112,8 +112,15 @@
           }
         }
       ],
+      "expo-apple-authentication",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-auth-session",
+        {
+          "addGeneratedScheme": false
+        }
+      ]
     ],
     "extra": {
       "eas": {
