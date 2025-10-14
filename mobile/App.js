@@ -195,8 +195,13 @@ function MainApp() {
   };
 
   const checkAppleSignInAvailability = async () => {
-    const available = await AuthManager.isAppleSignInAvailable();
-    setIsAppleSignInAvailable(available);
+    try {
+      const available = await AuthManager.isAppleSignInAvailable();
+      setIsAppleSignInAvailable(available);
+    } catch (error) {
+      console.log("[Auth] Apple Sign In availability check failed:", error);
+      setIsAppleSignInAvailable(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {

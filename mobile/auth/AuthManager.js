@@ -397,6 +397,16 @@ export class AuthManager {
   }
 
   static async isAppleSignInAvailable() {
-    return await AppleAuthentication.isAvailableAsync();
+    try {
+      // Check if the module is available first
+      if (!AppleAuthentication || !AppleAuthentication.isAvailableAsync) {
+        console.log('[AuthManager] Apple Authentication module not available');
+        return false;
+      }
+      return await AppleAuthentication.isAvailableAsync();
+    } catch (error) {
+      console.log('[AuthManager] Apple Sign In availability check error:', error);
+      return false;
+    }
   }
 }
