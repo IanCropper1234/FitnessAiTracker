@@ -6,7 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { encode as btoa, decode as atob } from 'base-64';
+import base64 from 'base-64';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -73,7 +73,7 @@ export class AuthManager {
 
   // Base64url encode for raw strings
   static base64UrlEncodeRaw(str) {
-    return btoa(str)
+    return base64.encode(str)
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
@@ -107,16 +107,16 @@ export class AuthManager {
       let base64Url = parts[1];
 
       // Convert base64url to base64
-      let base64 = base64Url
+      let base64String = base64Url
         .replace(/-/g, '+')
         .replace(/_/g, '/');
 
       // Add padding if needed
-      const paddingNeeded = (4 - (base64.length % 4)) % 4;
-      base64 += '='.repeat(paddingNeeded);
+      const paddingNeeded = (4 - (base64String.length % 4)) % 4;
+      base64String += '='.repeat(paddingNeeded);
 
       // Decode base64 to string
-      const jsonString = atob(base64);
+      const jsonString = base64.decode(base64String);
 
       // Parse JSON
       return JSON.parse(jsonString);
