@@ -118,6 +118,13 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 ### iOS App Development Strategy
 TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Complete Expo configuration exists in `mobile/` directory with EAS Build setup. Development is on Replit with cloud-based building, eliminating the need for macOS/Xcode.
 
+### OAuth Implementation Fix (October 2025)
+- **Fixed Native OAuth Token Verification**: Updated backend to accept native iOS client IDs
+  - Apple OAuth: Now accepts both web service ID and iOS bundle ID ('com.trainpro.app') as valid audiences
+  - Google OAuth: Properly validates iOS client ID alongside web client ID
+  - Enhanced error logging to show received vs expected audiences for debugging
+- **Environment Variables**: GOOGLE_CLIENT_ID_WEB, GOOGLE_CLIENT_ID_IOS, APPLE_SERVICES_ID configured
+
 ## External Dependencies
 
 - **Database**: Neon PostgreSQL serverless database
