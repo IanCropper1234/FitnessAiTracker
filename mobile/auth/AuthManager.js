@@ -180,6 +180,13 @@ export class AuthManager {
     }
   }
 
+  // Helper function to encode form data for React Native
+  static encodeFormData(params) {
+    return Object.keys(params)
+      .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+      .join('&');
+  }
+
   // Exchange authorization code for ID token with PKCE
   static async exchangeGoogleCode(code, codeVerifier, redirectUri, nonce) {
     const clientId = Platform.OS === 'ios' 
@@ -190,13 +197,13 @@ export class AuthManager {
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
+      body: this.encodeFormData({
         code,
         client_id: clientId,
         redirect_uri: redirectUri,
         grant_type: 'authorization_code',
         code_verifier: codeVerifier
-      }).toString()
+      })
     });
 
     if (!tokenResponse.ok) {
@@ -270,7 +277,7 @@ export class AuthManager {
       
       console.log('[Google OAuth] Constructed cookie:', {
         cookieName: data.cookieName,
-        sessionId: data.sessionId.substring(0, 10) + '...'
+        sessionId: data.sessionId ? data.sessionId.substring(0, 10) + '...' : 'none'
       });
     }
     

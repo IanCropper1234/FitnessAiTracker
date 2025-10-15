@@ -29,7 +29,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",
-      "buildNumber": "36",
+      "buildNumber": "37",
       "icon": "./assets/icon.png",
       "usesAppleSignIn": true,
       "infoPlist": {

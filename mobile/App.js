@@ -301,6 +301,7 @@ function MainApp() {
     try {
       await AuthManager.clearSession();
       setSession(null);
+      setShowWebViewAuth(false);  // Reset to native auth mode
       setWebViewKey(prev => prev + 1);
     } catch (error) {
       console.error("[Auth] Sign out error:", error);
