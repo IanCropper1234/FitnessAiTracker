@@ -6,7 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import base64 from 'base-64';
+import { Buffer } from 'buffer';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -73,7 +73,9 @@ export class AuthManager {
 
   // Base64url encode for raw strings
   static base64UrlEncodeRaw(str) {
-    return base64.encode(str)
+    // Use Buffer for reliable base64 encoding in React Native
+    const base64Str = Buffer.from(str, 'utf-8').toString('base64');
+    return base64Str
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
@@ -115,8 +117,8 @@ export class AuthManager {
       const paddingNeeded = (4 - (base64String.length % 4)) % 4;
       base64String += '='.repeat(paddingNeeded);
 
-      // Decode base64 to string
-      const jsonString = base64.decode(base64String);
+      // Decode base64 to string using Buffer
+      const jsonString = Buffer.from(base64String, 'base64').toString('utf-8');
 
       // Parse JSON
       return JSON.parse(jsonString);
