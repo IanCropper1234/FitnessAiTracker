@@ -187,10 +187,29 @@ function MainApp() {
       const savedSession = await AuthManager.getSession();
       if (savedSession) {
         console.log("[Auth] Found existing session:", savedSession);
-        setSession(savedSession);
+        
+        // Validate session is recent (within last 7 days)
+        const sessionAge = Date.now() - (savedSession.timestamp || 0);
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        
+        if (sessionAge > sevenDays) {
+          console.log("[Auth] Session expired, clearing...");
+          await AuthManager.clearSession();
+          setSession(null);
+        } else if (!savedSession.user || !savedSession.sessionId) {
+          console.log("[Auth] Invalid session structure, clearing...");
+          await AuthManager.clearSession();
+          setSession(null);
+        } else {
+          // Valid session found
+          setSession(savedSession);
+        }
       }
     } catch (error) {
       console.error("[Auth] Error loading session:", error);
+      // Clear potentially corrupted session
+      await AuthManager.clearSession();
+      setSession(null);
     } finally {
       setIsLoading(false);
     }
