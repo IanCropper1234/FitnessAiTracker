@@ -184,13 +184,6 @@ function MainApp() {
 
   const checkExistingSession = async () => {
     try {
-      // TEMPORARY FIX: Force clear session to ensure login page shows
-      // Remove this line after testing is complete
-      console.log("[Auth] DEBUG MODE: Force clearing session for testing");
-      await AuthManager.clearSession();
-      setSession(null);
-      
-      /* Original session check code - uncomment after testing
       const savedSession = await AuthManager.getSession();
       if (savedSession) {
         console.log("[Auth] Found existing session:", savedSession);
@@ -212,7 +205,6 @@ function MainApp() {
           setSession(savedSession);
         }
       }
-      */
     } catch (error) {
       console.error("[Auth] Error loading session:", error);
       // Clear potentially corrupted session
