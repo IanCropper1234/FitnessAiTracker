@@ -6,7 +6,6 @@ import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { Buffer } from 'buffer';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -41,25 +40,31 @@ export class AuthManager {
   }
 
   // Generate PKCE challenge using cryptographically secure random
+  // Uses ONLY expo-crypto to avoid any polyfill issues
   static async generatePKCE() {
     try {
-      // Generate code verifier from random bytes
+      // Generate 43-character base64url string (minimum for PKCE)
+      // Using hex encoding which is guaranteed to work in React Native
       const randomBytes = await Crypto.getRandomBytesAsync(32);
-      const codeVerifier = this.base64UrlEncodeRaw(
-        Array.from(randomBytes).map(b => String.fromCharCode(b)).join('')
-      );
+      const hexString = Array.prototype.map.call(randomBytes, x => ('00' + x.toString(16)).slice(-2)).join('');
+      const codeVerifier = hexString.substring(0, 43); // PKCE requires 43-128 chars
 
-      // Generate SHA-256 code challenge
-      const hashBase64 = await Crypto.digestStringAsync(
+      console.log('[AuthManager] Code verifier length:', codeVerifier.length);
+
+      // Generate SHA-256 hash and get base64url encoding
+      const hashDigest = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
         codeVerifier,
         { encoding: Crypto.CryptoEncoding.BASE64 }
       );
 
-      // Convert to URL-safe base64
-      const codeChallenge = this.base64ToBase64Url(hashBase64);
+      // Convert standard base64 to base64url (safe for URLs)
+      const codeChallenge = hashDigest
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
 
-      console.log('[AuthManager] PKCE generated:', {
+      console.log('[AuthManager] PKCE generated successfully:', {
         verifierLength: codeVerifier.length,
         challengeLength: codeChallenge.length
       });
@@ -71,24 +76,6 @@ export class AuthManager {
     }
   }
 
-  // Base64url encode for raw strings
-  static base64UrlEncodeRaw(str) {
-    // Use Buffer for reliable base64 encoding in React Native
-    const base64Str = Buffer.from(str, 'utf-8').toString('base64');
-    return base64Str
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
-  }
-
-  // Convert base64 to base64url
-  static base64ToBase64Url(base64Str) {
-    return base64Str
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
-  }
-
   // Generate cryptographically secure nonce
   static async generateNonce() {
     const randomBytes = await Crypto.getRandomBytesAsync(16);
@@ -97,7 +84,7 @@ export class AuthManager {
       .join('');
   }
 
-  // Decode base64url JWT payload (robust version)
+  // Decode base64url JWT payload using only native APIs
   static decodeJWTPayload(token) {
     try {
       const parts = token.split('.');
@@ -117,8 +104,17 @@ export class AuthManager {
       const paddingNeeded = (4 - (base64String.length % 4)) % 4;
       base64String += '='.repeat(paddingNeeded);
 
-      // Decode base64 to string using Buffer
-      const jsonString = Buffer.from(base64String, 'base64').toString('utf-8');
+      // Manual base64 decoding without Buffer
+      // This works in all JavaScript environments
+      const binaryString = atob(base64String);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      
+      // Convert bytes to UTF-8 string
+      const decoder = new TextDecoder('utf-8');
+      const jsonString = decoder.decode(bytes);
 
       // Parse JSON
       return JSON.parse(jsonString);
