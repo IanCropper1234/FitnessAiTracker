@@ -1,0 +1,158 @@
+error	17:09:18.975444+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:19.285362+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:19.702817+0800	wifip2pd	XPCSession[com.apple.mDNSResponder:mDNSResponder 24AFF858-2171-4A1E-9F93-416E67A67ADB] was invalidated
+error	17:09:20.246414+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:20.887521+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:21.041059+0800	thermalmonitord	<Error> could not find `cpu-avg-limiter-input-w2r property
+error	17:09:21.041157+0800	thermalmonitord	<Error> Failed to read `cpu-avg-limiter-input-w2r
+error	17:09:21.101262+0800	wifid	WiFiLQAMgrLinkRecommendationNotify: channel score: chq=3, tx-lat=4, rx-lat=5, tx-loss=5, rx-loss=5, txPer=0.0%, p95-lat=7, RT=0x0, link-recommendation=0x0
+error	17:09:21.531209+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:21.848237+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:22.429343+0800	MyTrainPro	[Google OAuth] ====== Sign in failed ======
+error	17:09:22.430007+0800	MyTrainPro	'[Google OAuth] Error:', 'undefined is not a function'
+error	17:09:22.430577+0800	MyTrainPro	'[Google OAuth] Error details:', { name: 'TypeError',
+  code: undefined,
+  stack: 'TypeError: undefined is not a function\n    at ?anon_0_ (/Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/BuildProductsPath/Release-iphoneos/main.jsbundle:65884:54)\n    at next (native)\n    at asyncGeneratorStep (/Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/BuildProductsPath/Release-iphoneos/main.jsbundle:6534:19)\n    at _next (/Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/BuildProductsPath/Release-iphoneos/main.jsbundle:6548:29)\n    at tryCallOne (address at InternalBytecode.js:1:1180)\n    at anonymous (address at InternalBytecode.js:1:1874)\n    at apply (native)\n    at anonymous (/Users/expo/Library/Developer/Xc<…>
+error	17:09:22.442594+0800	backboardd	cycle detected between [70619-21D] -> [70619-173]
+error	17:09:22.443286+0800	backboardd	cycle detected between [70619-21D] -> [70619-173]
+error	17:09:22.830241+0800	nanotimekitcompaniond	Creating a CLKDevice without an PDRDevice: (null)
+error	17:09:22.830741+0800	nanotimekitcompaniond	<private>has no material, defaulting to light aluminum
+error	17:09:22.839293+0800	nanotimekitcompaniond	Couldn't find bridge record - Error Domain=NSOSStatusErrorDomain Code=-10814 "(null)" UserInfo={_LSFile=LSBindingEvaluator.mm, _LSLine=1938, _LSFunction=runEvaluator}
+error	17:09:23.130413+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:23.378652+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:23.378762+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:23.378777+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:23.378789+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:23.378808+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:23.378859+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:23.378865+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:23.537611+0800	wifid	LQM-WiFi: WeightAvgLQM isPosted=1 rssi=<-67:0> snr=<23:0>txRate=<288235:288235> rxRate=<648529:0>
+error	17:09:23.538350+0800	wifid	LQM-WiFi: rxStart=2650 rxBadPLCP=249 rxBadFCS=152
+error	17:09:23.538533+0800	wifid	LQM-WiFi: txRTSFrm=17 txCTSFrm=6 txAllFrm=35
+error	17:09:23.538965+0800	wifid	LQM-WiFi: rxBeaconMbss=42 rxDataUcastMbss=6 rxCNTRLUcast=71 txBACK=0 rxDataMcast=69, rxMgmtMcast=0
+error	17:09:23.538992+0800	wifid	LQM-WiFi: rxMpduInAmpdu=69 rxholes=0 rxPER=0 rxdup=1 rxaddbareq=0 txaddbaresp=0 txdelba=0 rxdelba=0
+error	17:09:23.539011+0800	wifid	LQM-WiFi: WME RX MSDUs in tids 0:24538029, 1:1752974, 2:462, 3:6312, 4:54636, 5:9180, 6:76, 7:67
+error	17:09:23.539057+0800	wifid	LQM-WiFi: BTCoexExtStats1: bt_gnt_dur=0 [us] btc_status=0x2 bt_req_type_map=0xc003ee bt_req_cnt=472 bt_prempt_cnt=0 bt_grant_cnt=0
+error	17:09:23.539076+0800	wifid	LQM-WiFi: BTCoexExtStats2: wlan_tx_denial_cnt = 0 wlan_rx_denial_cnt = 0 bt_SCO_rw_gnt_cnt = 0 bt_SCO_rs_gnt_cnt = 0 bt_SCO_rw_deny_cnt = 0 bt_SCO_rs_deny_cnt = 0 max_sco_consecutive_deny_cnt = 0
+error	17:09:23.539088+0800	wifid	LQM-WiFi: rxMulti=0 rxUndec=0
+error	17:09:23.539098+0800	wifid	LQM-WiFi: BTCoexExtStats3: bt_a2dp_gnt_cnt = 0 bt_a2dp_deny_cnt = 0 bt_crtpri_grant_cnt = 0 wifi_tx_denial_lt5ms = 0 wifi_tx_denial_lt30ms = 0, wifi_tx_denial_lt60ms = 0, wifi_tx_denial_ge60ms = 0
+error	17:09:23.539125+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> BE<4 0 0 0 0 0 0 0 0 0 0> (5009ms)
+error	17:09:23.539139+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> BK<0 0 0 0 0 0 0 0 0 0 0> (5009ms)
+error	17:09:23.539223+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> VI<0 0 0 0 0 0 0 0 0 0 0> (5009ms)
+error	17:09:23.539233+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> VO<2 0 0 0 0 0 0 0 0 0 0> (5009ms)
+error	17:09:23.539242+0800	wifid	LQM-WiFi: L3 Control VO TX(00:00:00:00:00:00) Success=0 NoACK=0 Expired=0 OtherErr=0
+error	17:09:24.099188+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:25.338846+0800	mobile_storage_proxy	nw_socket_handle_socket_event [C25:2] Socket SO_ERROR [54: Connection reset by peer]
+error	17:09:25.338931+0800	mobile_storage_proxy	nw_protocol_socket_set_no_wake_from_sleep [C25:2] setsockopt SO_NOWAKEFROMSLEEP failed [22: Invalid argument]
+error	17:09:25.338953+0800	mobile_storage_proxy	nw_protocol_socket_set_no_wake_from_sleep setsockopt SO_NOWAKEFROMSLEEP failed [22: Invalid argument]
+error	17:09:25.339720+0800	mobile_storage_proxy	nw_socket_handle_socket_event [C27:2] Socket SO_ERROR [54: Connection reset by peer]
+error	17:09:25.339735+0800	mobile_storage_proxy	nw_protocol_socket_set_no_wake_from_sleep [C27:2] setsockopt SO_NOWAKEFROMSLEEP failed [22: Invalid argument]
+error	17:09:25.339749+0800	mobile_storage_proxy	nw_protocol_socket_set_no_wake_from_sleep setsockopt SO_NOWAKEFROMSLEEP failed [22: Invalid argument]
+error	17:09:25.340271+0800	mobile_storage_proxy	nw_protocol_socket_reset_linger [C25:2] setsockopt SO_LINGER failed [22: Invalid argument]
+error	17:09:25.340435+0800	mobile_storage_proxy	nw_protocol_socket_reset_linger [C27:2] setsockopt SO_LINGER failed [22: Invalid argument]
+error	17:09:25.573594+0800	backboardd	cycle detected between [70619-21D] -> [70619-173]
+error	17:09:25.573972+0800	backboardd	cycle detected between [70619-21D] -> [70619-173]
+error	17:09:26.029592+0800	thermalmonitord	<Error> could not find `cpu-avg-limiter-input-w2r property
+error	17:09:26.029624+0800	thermalmonitord	<Error> Failed to read `cpu-avg-limiter-input-w2r
+error	17:09:26.102349+0800	wifid	WiFiLQAMgrLinkRecommendationNotify: channel score: chq=3, tx-lat=5, rx-lat=5, tx-loss=5, rx-loss=5, txPer=0.0%, p95-lat=3, RT=0x0, link-recommendation=0x0
+error	17:09:26.137307+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:26.137365+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:26.137598+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:26.137765+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:26.137962+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:26.138542+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:26.138655+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:26.658098+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:27.205902+0800	dasd	Dispatching call to deprecated registration callback for <private>, this may lead to priority problems. Switch to non-deprecated _CDContextualChangeRegistration APIs.
+error	17:09:27.883917+0800	bluetoothd	sendSmartRoutingInformation: Failed to send SR info message with status = 122
+error	17:09:27.883963+0800	bluetoothd	### SendSmartRoutingInformation failed: BT_ERROR_NOT_CONNECTED 'SendSmartRoutingInformation failed'
+error	17:09:28.554117+0800	wifid	LQM-WiFi: WeightAvgLQM isPosted=1 rssi=<-67:0> snr=<23:0>txRate=<301745:301745> rxRate=<648529:0>
+error	17:09:28.554143+0800	wifid	LQM-WiFi: rxStart=2056 rxBadPLCP=255 rxBadFCS=177
+error	17:09:28.555537+0800	wifid	LQM-WiFi: txRTSFrm=8 txCTSFrm=5 txAllFrm=17
+error	17:09:28.555581+0800	wifid	LQM-WiFi: rxBeaconMbss=44 rxDataUcastMbss=5 rxCNTRLUcast=63 txBACK=0 rxDataMcast=70, rxMgmtMcast=0
+error	17:09:28.556282+0800	wifid	LQM-WiFi: rxMpduInAmpdu=70 rxholes=0 rxPER=0 rxdup=0 rxaddbareq=0 txaddbaresp=0 txdelba=0 rxdelba=0
+error	17:09:28.557159+0800	wifid	LQM-WiFi: WME RX MSDUs in tids 0:24538034, 1:1752974, 2:462, 3:6312, 4:54636, 5:9180, 6:76, 7:67
+error	17:09:28.557287+0800	wifid	LQM-WiFi: BTCoexExtStats1: bt_gnt_dur=0 [us] btc_status=0x2 bt_req_type_map=0xc003ee bt_req_cnt=337 bt_prempt_cnt=0 bt_grant_cnt=0
+error	17:09:28.557446+0800	wifid	LQM-WiFi: BTCoexExtStats2: wlan_tx_denial_cnt = 0 wlan_rx_denial_cnt = 0 bt_SCO_rw_gnt_cnt = 0 bt_SCO_rs_gnt_cnt = 0 bt_SCO_rw_deny_cnt = 0 bt_SCO_rs_deny_cnt = 0 max_sco_consecutive_deny_cnt = 0
+error	17:09:28.557461+0800	wifid	LQM-WiFi: rxMulti=0 rxUndec=0
+error	17:09:28.557475+0800	wifid	LQM-WiFi: BTCoexExtStats3: bt_a2dp_gnt_cnt = 0 bt_a2dp_deny_cnt = 0 bt_crtpri_grant_cnt = 0 wifi_tx_denial_lt5ms = 0 wifi_tx_denial_lt30ms = 0, wifi_tx_denial_lt60ms = 0, wifi_tx_denial_ge60ms = 0
+error	17:09:28.557495+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> BE<7 0 0 0 0 0 0 0 0 0 0> (5000ms)
+error	17:09:28.557662+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> BK<0 0 0 0 0 0 0 0 0 0 0> (5000ms)
+error	17:09:28.557677+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> VI<0 0 0 0 0 0 0 0 0 0 0> (5000ms)
+error	17:09:28.557687+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> VO<11 0 0 0 0 0 0 0 0 0 0> (5000ms)
+error	17:09:28.557707+0800	wifid	LQM-WiFi: L3 Control VO TX(00:00:00:00:00:00) Success=0 NoACK=0 Expired=0 OtherErr=0
+error	17:09:28.764538+0800	duetexpertd	Event class '<private>' missing from NSKeyedUnarchiver allowedClasses
+error	17:09:28.764791+0800	duetexpertd	Event class '<private>' missing from NSKeyedUnarchiver allowedClasses
+error	17:09:28.765319+0800	duetexpertd	Event class '<private>' missing from NSKeyedUnarchiver allowedClasses
+error	17:09:28.765484+0800	duetexpertd	Event class '<private>' missing from NSKeyedUnarchiver allowedClasses
+error	17:09:28.765635+0800	duetexpertd	Event class '<private>' missing from NSKeyedUnarchiver allowedClasses
+error	17:09:29.224214+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:29.541462+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:29.893649+0800	MyTrainPro	[Google OAuth] ====== Sign in failed ======
+error	17:09:29.894201+0800	MyTrainPro	'[Google OAuth] Error:', 'undefined is not a function'
+error	17:09:29.894777+0800	MyTrainPro	'[Google OAuth] Error details:', { name: 'TypeError',
+  code: undefined,
+  stack: 'TypeError: undefined is not a function\n    at ?anon_0_ (/Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/BuildProductsPath/Release-iphoneos/main.jsbundle:65884:54)\n    at next (native)\n    at asyncGeneratorStep (/Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/BuildProductsPath/Release-iphoneos/main.jsbundle:6534:19)\n    at _next (/Users/expo/Library/Developer/Xcode/DerivedData/MyTrainPro-fqcujbttqvbpiwcjxcxplltffawj/Build/Intermediates.noindex/ArchiveIntermediates/MyTrainPro/BuildProductsPath/Release-iphoneos/main.jsbundle:6548:29)\n    at tryCallOne (address at InternalBytecode.js:1:1180)\n    at anonymous (address at InternalBytecode.js:1:1874)\n    at apply (native)\n    at anonymous (/Users/expo/Library/Developer/Xc<…>
+error	17:09:29.907226+0800	backboardd	cycle detected between [70619-21D] -> [70619-173]
+error	17:09:29.907979+0800	backboardd	cycle detected between [70619-21D] -> [70619-173]
+error	17:09:30.181437+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:30.661912+0800	backboardd	range-in for pathIndex with existing contact -- using existing: pathIndex: 1; touchIdentifier: 51388; touching; locked; destinations: (
+    (touchStream|filterDetachedTouches); contextID: 0xDBE0EB87; clientPort: 0x1A48BB,
+    (hitTest); contextID: 0xDEDFCF1C; clientPort: 0x157E7B; inheritedSceneHostSettings: <identifier: sceneID:com.trainpro.app-default; touchBehavior: foreground>
+)
+error	17:09:31.031512+0800	thermalmonitord	<Error> could not find `cpu-avg-limiter-input-w2r property
+error	17:09:31.031548+0800	thermalmonitord	<Error> Failed to read `cpu-avg-limiter-input-w2r
+error	17:09:31.105125+0800	wifid	WiFiLQAMgrLinkRecommendationNotify: channel score: chq=3, tx-lat=5, rx-lat=5, tx-loss=5, rx-loss=5, txPer=0.0%, p95-lat=5, RT=0x0, link-recommendation=0x0
+error	17:09:31.173583+0800	backboardd	cycle detected between [70619-21D] -> [70619-173]
+error	17:09:31.174597+0800	backboardd	cycle detected between [70619-21D] -> [70619-173]
+error	17:09:31.729695+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:31.730093+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:31.730132+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:31.730638+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:31.730705+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:31.730717+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:31.730801+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:09:31.785490+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:32.549787+0800	mobile_storage_proxy	nw_read_request_report [C31] Receive failed with error "Connection reset by peer"
+error	17:09:32.550570+0800	mobile_storage_proxy	[C31 IPv6#4380153d.61971 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.550578+0800	mobile_storage_proxy	[C31 IPv6#4380153d.61971 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.551157+0800	mobile_storage_proxy	[C32 IPv6#4380153d.61971 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.551162+0800	mobile_storage_proxy	[C32 IPv6#4380153d.61971 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.564040+0800	mobile_storage_proxy	nw_read_request_report [C33] Receive failed with error "Connection reset by peer"
+error	17:09:32.564438+0800	mobile_storage_proxy	[C33 IPv6#4380153d.61974 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.564444+0800	mobile_storage_proxy	[C33 IPv6#4380153d.61974 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.565036+0800	mobile_storage_proxy	[C34 IPv6#4380153d.61974 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.565085+0800	mobile_storage_proxy	[C34 IPv6#4380153d.61974 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.573112+0800	mobile_storage_proxy	nw_read_request_report [C35] Receive failed with error "Connection reset by peer"
+error	17:09:32.573335+0800	mobile_storage_proxy	[C35 IPv6#4380153d.61975 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.573348+0800	mobile_storage_proxy	[C35 IPv6#4380153d.61975 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.573837+0800	mobile_storage_proxy	[C36 IPv6#4380153d.61975 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:32.573920+0800	mobile_storage_proxy	[C36 IPv6#4380153d.61975 tcp, local: fd19:8251:e314::1.62060, definite, attribution: developer, server, prohibit joining protocols] is already cancelled, ignoring cancel
+error	17:09:33.009187+0800	nanotimekitcompaniond	Creating a CLKDevice without an PDRDevice: (null)
+error	17:09:33.009888+0800	nanotimekitcompaniond	<private>has no material, defaulting to light aluminum
+error	17:09:33.018265+0800	nanotimekitcompaniond	Couldn't find bridge record - Error Domain=NSOSStatusErrorDomain Code=-10814 "(null)" UserInfo={_LSFile=LSBindingEvaluator.mm, _LSLine=1938, _LSFunction=runEvaluator}
+error	17:09:33.062719+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:33.379271+0800	bluetoothd	sendSmartRoutingInformation: Failed to send SR info message with status = 122
+error	17:09:33.379301+0800	bluetoothd	### SendSmartRoutingInformation failed: BT_ERROR_NOT_CONNECTED 'SendSmartRoutingInformation failed'
+error	17:09:33.579817+0800	wifid	LQM-WiFi: WeightAvgLQM isPosted=1 rssi=<-67:0> snr=<23:0>txRate=<332664:332664> rxRate=<648529:0>
+error	17:09:33.579833+0800	wifid	LQM-WiFi: rxStart=2066 rxBadPLCP=244 rxBadFCS=102
+error	17:09:33.579935+0800	wifid	LQM-WiFi: txRTSFrm=9 txCTSFrm=7 txAllFrm=21
+error	17:09:33.579968+0800	wifid	LQM-WiFi: rxBeaconMbss=46 rxDataUcastMbss=7 rxCNTRLUcast=86 txBACK=0 rxDataMcast=58, rxMgmtMcast=0
+error	17:09:33.579981+0800	wifid	LQM-WiFi: rxMpduInAmpdu=63 rxholes=0 rxPER=0 rxdup=1 rxaddbareq=0 txaddbaresp=0 txdelba=0 rxdelba=0
+error	17:09:33.579991+0800	wifid	LQM-WiFi: WME RX MSDUs in tids 0:24538040, 1:1752974, 2:462, 3:6312, 4:54636, 5:9180, 6:76, 7:67
+error	17:09:33.580059+0800	wifid	LQM-WiFi: BTCoexExtStats1: bt_gnt_dur=0 [us] btc_status=0x2 bt_req_type_map=0xc003ee bt_req_cnt=858 bt_prempt_cnt=0 bt_grant_cnt=0
+error	17:09:33.580073+0800	wifid	LQM-WiFi: BTCoexExtStats2: wlan_tx_denial_cnt = 0 wlan_rx_denial_cnt = 0 bt_SCO_rw_gnt_cnt = 0 bt_SCO_rs_gnt_cnt = 0 bt_SCO_rw_deny_cnt = 0 bt_SCO_rs_deny_cnt = 0 max_sco_consecutive_deny_cnt = 0
+error	17:09:33.580084+0800	wifid	LQM-WiFi: rxMulti=0 rxUndec=0
+error	17:09:33.580094+0800	wifid	LQM-WiFi: BTCoexExtStats3: bt_a2dp_gnt_cnt = 0 bt_a2dp_deny_cnt = 0 bt_crtpri_grant_cnt = 0 wifi_tx_denial_lt5ms = 0 wifi_tx_denial_lt30ms = 0, wifi_tx_denial_lt60ms = 0, wifi_tx_denial_ge60ms = 0
+error	17:09:33.580116+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> BE<4 0 0 0 0 0 0 0 0 0 0> (4992ms)
+error	17:09:33.580130+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> BK<0 0 0 0 0 0 0 0 0 0 0> (4992ms)
+error	17:09:33.580162+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> VI<0 0 0 0 0 0 0 0 0 0 0> (4992ms)
+error	17:09:33.580172+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> VO<2 0 0 0 0 0 0 0 0 0 0> (4992ms)
+error	17:09:33.580182+0800	wifid	LQM-WiFi: L3 Control VO TX(00:00:00:00:00:00) Success=0 NoACK=0 Expired=0 OtherErr=0
+error	17:09:33.704741+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:34.023546+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+fault	17:09:34.105484+0800	apsd	Unexpected replacement of connection in <private>
+fault	17:09:34.105503+0800	apsd	Unexpected nilling of connection via setter in <private>
+error	17:09:34.346067+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:09:34.613487+0800	ReportCrash	Footprint changed while analyzing – attempting to adjust more owned unmapped physical footprint than is present in the process by 81920 bytes
+error	17:09:34.663520+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
