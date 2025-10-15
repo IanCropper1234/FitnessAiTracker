@@ -184,6 +184,13 @@ function MainApp() {
 
   const checkExistingSession = async () => {
     try {
+      // TEMPORARY FIX: Always clear session on app start to show native login page
+      // This ensures users can test the new Google OAuth flow
+      console.log("[Auth] DEBUG MODE: Force clearing all sessions for OAuth testing");
+      await AuthManager.clearSession();
+      setSession(null);
+      
+      /* COMMENTED OUT - Will restore after OAuth testing is complete
       const savedSession = await AuthManager.getSession();
       if (savedSession) {
         console.log("[Auth] Found existing session:", savedSession);
@@ -205,6 +212,7 @@ function MainApp() {
           setSession(savedSession);
         }
       }
+      */
     } catch (error) {
       console.error("[Auth] Error loading session:", error);
       // Clear potentially corrupted session
