@@ -116,13 +116,34 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Training Dashboard Cards Redesign**: Redesigned training statistics cards with clean color-coded layout, displaying authentic training data only: Total Sessions, Total Volume, Average Session Time.
 
 ### iOS App Development Strategy
-TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Complete Expo configuration exists in `mobile/` directory with EAS Build setup. Development is on Replit with cloud-based building, eliminating the need for macOS/Xcode.
+TrainPro **migrated from Expo to Capacitor** (October 2025) for improved stability and unlimited local builds.
 
-### OAuth Implementation Fix (October 2025)
-- **Fixed Native OAuth Token Verification**: Updated backend to accept native iOS client IDs
-  - Apple OAuth: Now accepts both web service ID and iOS bundle ID ('com.trainpro.app') as valid audiences
-  - Google OAuth: Properly validates iOS client ID alongside web client ID
-  - Enhanced error logging to show received vs expected audiences for debugging
+**Current Implementation: Capacitor WebView Architecture**
+- **Framework**: Capacitor 7 with iOS platform
+- **Architecture**: Pure WebView loading mytrainpro.com (no native OAuth code needed)
+- **Build Process**: Local Xcode builds on macOS (unlimited, no cloud dependency)
+- **OAuth Flow**: Web-based OAuth (Google/Apple) handled entirely by backend
+- **Session Management**: Automatic cookie handling via Capacitor
+- **Configuration**: `capacitor.config.ts` with iOS-specific settings
+- **Bundle ID**: com.trainpro.app
+
+**Migration Rationale:**
+- Expo free tier limit: 15 iOS builds/month (exceeded during OAuth debugging)
+- Capacitor advantages: Unlimited local builds, simpler WebView architecture, automatic cookie management
+- No need for native OAuth plugins - all authentication handled by existing Web backend
+- Complete Xcode project in `ios/` directory for full control
+
+**Build Instructions:**
+- See `CAPACITOR_BUILD_GUIDE.md` for complete local build and TestFlight deployment guide
+- Requires: macOS with Xcode 15+, Apple Developer Account ($99/year)
+
+### OAuth Implementation (Web-Based)
+- **Web OAuth Flow**: All authentication handled by mytrainpro.com backend
+  - Apple OAuth: Validates web service ID ('com.trainpro.app' bundle ID as secondary audience)
+  - Google OAuth: Validates both web and iOS client IDs
+  - Enhanced error logging for debugging
+- **Callback URLs**: Standard web callbacks (https://mytrainpro.com/api/auth/[provider]/callback)
+- **Mobile Integration**: Capacitor WebView automatically handles cookies and session persistence
 - **Environment Variables**: GOOGLE_CLIENT_ID_WEB, GOOGLE_CLIENT_ID_IOS, APPLE_SERVICES_ID configured
 
 ## External Dependencies
