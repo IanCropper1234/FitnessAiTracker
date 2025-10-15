@@ -1,3 +1,4 @@
+
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -12,29 +13,65 @@ WebBrowser.maybeCompleteAuthSession();
 const BACKEND_URL = 'https://mytrainpro.com';
 
 export class AuthManager {
-  // Generate PKCE challenge using cryptographically secure random
-  static async generatePKCE() {
-    // Generate code verifier from random bytes
-    const randomBytes = await Crypto.getRandomBytesAsync(32);
-    const codeVerifier = this.base64UrlEncodeRaw(
-      Array.from(randomBytes).map(b => String.fromCharCode(b)).join('')
-    );
-    
-    // Generate SHA-256 code challenge
-    // digestStringAsync returns base64 when encoding is BASE64
-    const hashBase64 = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      codeVerifier,
-      { encoding: Crypto.CryptoEncoding.BASE64 }
-    );
-    
-    // hashBase64 is already base64, only convert to URL-safe (no btoa!)
-    const codeChallenge = this.base64ToBase64Url(hashBase64);
-    
-    return { codeVerifier, codeChallenge };
+  // Get the correct Google Client ID based on platform
+  static getGoogleClientId() {
+    const config = Constants.expoConfig?.extra;
+
+    let clientId;
+    if (Platform.OS === 'ios') {
+      clientId = config?.googleClientIdIos;
+    } else if (Platform.OS === 'android') {
+      clientId = config?.googleClientIdAndroid;
+    } else {
+      clientId = config?.googleClientIdWeb;
+    }
+
+    console.log('[AuthManager] Platform:', Platform.OS);
+    console.log('[AuthManager] Client ID configured:', clientId ? 'Yes' : 'No');
+
+    if (!clientId) {
+      throw new Error(`Google Client ID for ${Platform.OS} not configured in app.json`);
+    }
+
+    if (clientId.startsWith('$') || clientId.includes('YOUR_')) {
+      throw new Error('Google Client ID is a placeholder. Please configure real Client ID in app.json');
+    }
+
+    return clientId;
   }
 
-  // Base64url encode for raw strings (needs btoa)
+  // Generate PKCE challenge using cryptographically secure random
+  static async generatePKCE() {
+    try {
+      // Generate code verifier from random bytes
+      const randomBytes = await Crypto.getRandomBytesAsync(32);
+      const codeVerifier = this.base64UrlEncodeRaw(
+        Array.from(randomBytes).map(b => String.fromCharCode(b)).join('')
+      );
+
+      // Generate SHA-256 code challenge
+      const hashBase64 = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        codeVerifier,
+        { encoding: Crypto.CryptoEncoding.BASE64 }
+      );
+
+      // Convert to URL-safe base64
+      const codeChallenge = this.base64ToBase64Url(hashBase64);
+
+      console.log('[AuthManager] PKCE generated:', {
+        verifierLength: codeVerifier.length,
+        challengeLength: codeChallenge.length
+      });
+
+      return { codeVerifier, codeChallenge };
+    } catch (error) {
+      console.error('[AuthManager] PKCE generation failed:', error);
+      throw error;
+    }
+  }
+
+  // Base64url encode for raw strings
   static base64UrlEncodeRaw(str) {
     return btoa(str)
       .replace(/\+/g, '-')
@@ -42,17 +79,9 @@ export class AuthManager {
       .replace(/=/g, '');
   }
 
-  // Convert already base64-encoded string to base64url (only replace characters)
+  // Convert base64 to base64url
   static base64ToBase64Url(base64Str) {
     return base64Str
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
-  }
-
-  // Legacy method for backward compatibility
-  static base64UrlEncode(str) {
-    return btoa(str)
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
@@ -66,58 +95,84 @@ export class AuthManager {
       .join('');
   }
 
+  // Decode base64url JWT payload (robust version)
+  static decodeJWTPayload(token) {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        throw new Error('Invalid JWT format');
+      }
+
+      // Get payload (second part)
+      let base64Url = parts[1];
+
+      // Convert base64url to base64
+      let base64 = base64Url
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+      // Add padding if needed
+      const paddingNeeded = (4 - (base64.length % 4)) % 4;
+      base64 += '='.repeat(paddingNeeded);
+
+      // Decode base64 to string
+      const jsonString = atob(base64);
+
+      // Parse JSON
+      return JSON.parse(jsonString);
+    } catch (error) {
+      console.error('[AuthManager] JWT decode error:', error);
+      throw new Error(`Failed to decode JWT: ${error.message}`);
+    }
+  }
+
   // Google Sign In with PKCE
   static async signInWithGoogle() {
+    let hasCleanedUp = false;
+
     try {
-      const clientId = Platform.OS === 'ios' 
-        ? Constants.expoConfig?.extra?.googleClientIdIos
-        : Constants.expoConfig?.extra?.googleClientIdWeb;
-
-      // Diagnostic logs
-      console.log('[Google OAuth] Starting Google Sign In...');
+      console.log('[Google OAuth] ====== Starting Google Sign In ======');
       console.log('[Google OAuth] Platform:', Platform.OS);
-      console.log('[Google OAuth] Client ID:', clientId ? clientId.substring(0, 30) + '...' : 'NOT CONFIGURED');
 
-      // Validate client ID configuration
-      if (!clientId) {
-        throw new Error('Google Client ID not configured. Please check app.json configuration.');
-      }
+      // Get client ID with validation
+      const clientId = this.getGoogleClientId();
+      console.log('[Google OAuth] Client ID:', clientId.substring(0, 30) + '...');
 
-      if (clientId.startsWith('$')) {
-        throw new Error('Google Client ID contains environment variable placeholder. Please run: node scripts/configure-app-json.js');
-      }
-
+      // Create redirect URI
       const redirectUri = AuthSession.makeRedirectUri({
         scheme: 'mytrainpro',
         path: 'auth/google'
       });
-
       console.log('[Google OAuth] Redirect URI:', redirectUri);
 
-      // Generate PKCE parameters using cryptographically secure random
+      // Generate PKCE parameters
       const { codeVerifier, codeChallenge } = await this.generatePKCE();
-      
-      // Generate cryptographically secure state for CSRF protection
+
+      // Generate state and nonce
       const state = await this.generateNonce();
-      
-      // Generate cryptographically secure nonce for ID token validation
       const nonce = await this.generateNonce();
 
-      // Store state, nonce, and code verifier for verification
+      console.log('[Google OAuth] Generated security parameters');
+
+      // Store parameters securely
       await SecureStore.setItemAsync('oauth_state', state);
       await SecureStore.setItemAsync('oauth_nonce', nonce);
       await SecureStore.setItemAsync('oauth_code_verifier', codeVerifier);
 
-      // Build authorization URL with PKCE (Authorization Code flow)
+      // Build authorization URL
       const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
         `client_id=${encodeURIComponent(clientId)}&` +
         `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-        `response_type=code&` +  // Authorization Code flow (not id_token)
+        `response_type=code&` +
         `scope=${encodeURIComponent('openid profile email')}&` +
         `state=${encodeURIComponent(state)}&` +
         `nonce=${encodeURIComponent(nonce)}&` +
         `code_challenge=${encodeURIComponent(codeChallenge)}&` +
-        `code_challenge_method=S256`;
+        `code_challenge_method=S256&` +
+        `access_type=offline&` +
+        `prompt=select_account`;
+
+      console.log('[Google OAuth] Opening browser for authentication...');
 
       // Start OAuth session
       const result = await AuthSession.startAsync({
@@ -125,174 +180,244 @@ export class AuthManager {
         returnUrl: redirectUri
       });
 
+      console.log('[Google OAuth] Browser closed, result type:', result.type);
+
+      // Handle cancelled
+      if (result.type === 'cancel') {
+        console.log('[Google OAuth] User cancelled sign in');
+        hasCleanedUp = true;
+        await this.cleanupOAuthData();
+        return { success: false, error: 'Google sign in cancelled' };
+      }
+
+      // Handle error
+      if (result.type === 'error') {
+        console.error('[Google OAuth] OAuth error:', result.error);
+        hasCleanedUp = true;
+        await this.cleanupOAuthData();
+        return { 
+          success: false, 
+          error: `Google sign in error: ${result.error?.message || 'Unknown error'}` 
+        };
+      }
+
+      // Handle success
       if (result.type === 'success' && result.params.code) {
-        // Verify state parameter to prevent CSRF attacks
+        console.log('[Google OAuth] Authorization code received');
+
+        // Verify state parameter (CSRF protection)
         const savedState = await SecureStore.getItemAsync('oauth_state');
         if (result.params.state !== savedState) {
+          console.error('[Google OAuth] State mismatch!');
+          hasCleanedUp = true;
+          await this.cleanupOAuthData();
           throw new Error('State parameter mismatch - possible CSRF attack');
         }
 
-        // Retrieve stored nonce and code verifier
+        // Retrieve stored parameters
         const savedNonce = await SecureStore.getItemAsync('oauth_nonce');
         const savedCodeVerifier = await SecureStore.getItemAsync('oauth_code_verifier');
 
-        // Exchange authorization code for tokens
+        console.log('[Google OAuth] Exchanging authorization code for tokens...');
+
+        // Exchange code for tokens
         const sessionData = await this.exchangeGoogleCode(
           result.params.code,
           savedCodeVerifier,
           redirectUri,
           savedNonce
         );
-        
-        // Clear stored OAuth data
-        await SecureStore.deleteItemAsync('oauth_state');
-        await SecureStore.deleteItemAsync('oauth_nonce');
-        await SecureStore.deleteItemAsync('oauth_code_verifier');
-        
+
+        // Clean up OAuth data
+        hasCleanedUp = true;
+        await this.cleanupOAuthData();
+
+        // Save session
         await this.saveSession(sessionData);
+
+        console.log('[Google OAuth] ====== Sign in successful ======');
         return { success: true, sessionData };
       }
 
-      console.log('[Google OAuth] User cancelled sign in');
-      return { success: false, error: 'Google sign in cancelled' };
+      // Unknown result type
+      console.error('[Google OAuth] Unexpected result type:', result.type);
+      hasCleanedUp = true;
+      await this.cleanupOAuthData();
+      return { success: false, error: 'Unexpected OAuth result' };
+
     } catch (error) {
-      console.error('[Google OAuth] Detailed error:', {
-        message: error.message,
-        code: error.code,
+      console.error('[Google OAuth] ====== Sign in failed ======');
+      console.error('[Google OAuth] Error:', error.message);
+      console.error('[Google OAuth] Error details:', {
         name: error.name,
+        code: error.code,
         stack: error.stack
       });
-      
-      // Clean up on error
-      try {
-        await SecureStore.deleteItemAsync('oauth_state');
-        await SecureStore.deleteItemAsync('oauth_nonce');
-        await SecureStore.deleteItemAsync('oauth_code_verifier');
-      } catch (cleanupError) {
-        console.error('[Google OAuth] Cleanup error:', cleanupError);
+
+      // Clean up on error if not already done
+      if (!hasCleanedUp) {
+        try {
+          await this.cleanupOAuthData();
+        } catch (cleanupError) {
+          console.error('[Google OAuth] Cleanup error:', cleanupError);
+        }
       }
-      
+
       return { 
         success: false, 
-        error: `Google sign in failed: ${error.message}`,
-        details: error.code || error.name
+        error: error.message || 'Google sign in failed',
+        details: {
+          code: error.code,
+          name: error.name
+        }
       };
     }
   }
 
-  // Helper function to encode form data for React Native
+  // Clean up OAuth temporary data
+  static async cleanupOAuthData() {
+    try {
+      await SecureStore.deleteItemAsync('oauth_state');
+      await SecureStore.deleteItemAsync('oauth_nonce');
+      await SecureStore.deleteItemAsync('oauth_code_verifier');
+      console.log('[AuthManager] OAuth data cleaned up');
+    } catch (error) {
+      console.error('[AuthManager] Cleanup error:', error);
+    }
+  }
+
+  // Helper function to encode form data
   static encodeFormData(params) {
     return Object.keys(params)
       .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
       .join('&');
   }
 
-  // Exchange authorization code for ID token with PKCE
+  // Exchange authorization code for tokens
   static async exchangeGoogleCode(code, codeVerifier, redirectUri, nonce) {
-    const clientId = Platform.OS === 'ios' 
-      ? Constants.expoConfig?.extra?.googleClientIdIos
-      : Constants.expoConfig?.extra?.googleClientIdWeb;
+    try {
+      const clientId = this.getGoogleClientId();
 
-    // 1. Exchange code for tokens at Google
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: this.encodeFormData({
-        code,
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        grant_type: 'authorization_code',
-        code_verifier: codeVerifier
-      })
-    });
+      console.log('[Google OAuth] Step 1: Exchanging code at Google...');
 
-    if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.json().catch(() => ({}));
-      console.error('Token exchange failed:', errorData);
-      throw new Error(`Token exchange failed: ${errorData.error || 'Unknown error'}`);
-    }
-
-    const tokens = await tokenResponse.json();
-    
-    // 2. Decode ID token payload (Fix: Add padding)
-    const idTokenParts = tokens.id_token.split('.');
-    if (idTokenParts.length !== 3) {
-      throw new Error('Invalid ID token format');
-    }
-    
-    let idTokenPayloadBase64Url = idTokenParts[1];
-    
-    // Convert base64url → base64
-    let standardBase64 = idTokenPayloadBase64Url
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-    
-    // Fix: Add padding ('=' characters) until length % 4 === 0
-    while (standardBase64.length % 4 !== 0) {
-      standardBase64 += '=';
-    }
-    
-    // Use base-64 package's decode (atob) - works in React Native
-    const idTokenPayload = JSON.parse(atob(standardBase64));
-    
-    // 3. Verify nonce
-    if (idTokenPayload.nonce !== nonce) {
-      throw new Error('Nonce mismatch - possible token replay attack');
-    }
-
-    // 4. Send ID token AND nonce to backend
-    const backendResponse = await fetch(`${BACKEND_URL}/api/auth/google/mobile`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        idToken: tokens.id_token,
-        nonce: nonce
-      }),
-      credentials: 'include'
-    });
-
-    if (!backendResponse.ok) {
-      const errorData = await backendResponse.json().catch(() => ({}));
-      console.error('Backend authentication failed:', errorData);
-      throw new Error('Backend authentication failed');
-    }
-
-    const data = await backendResponse.json();
-    
-    console.log('[Google OAuth] Backend response:', {
-      hasUser: !!data.user,
-      hasSessionId: !!data.sessionId,
-      hasCookieName: !!data.cookieName
-    });
-    
-    // Construct mobile-specific cookie string for WebView injection
-    // Note: Fetch API cannot access httpOnly cookies from Set-Cookie header
-    // So we use the mobile-specific cookie returned in the response body
-    let cookieString = '';
-    if (data.sessionId && data.cookieName) {
-      // Build cookie string that JavaScript can set
-      const maxAge = 7 * 24 * 60 * 60; // 1 week in seconds
-      const secure = BACKEND_URL.startsWith('https') ? '; Secure' : '';
-      cookieString = `${data.cookieName}=${data.sessionId}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
-      
-      console.log('[Google OAuth] Constructed cookie:', {
-        cookieName: data.cookieName,
-        sessionId: data.sessionId ? data.sessionId.substring(0, 10) + '...' : 'none'
+      // Exchange code for tokens at Google
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: this.encodeFormData({
+          code,
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code',
+          code_verifier: codeVerifier
+        })
       });
+
+      if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        console.error('[Google OAuth] Token exchange failed:', errorText);
+
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
+
+        throw new Error(`Token exchange failed: ${errorData.error || errorData.error_description || 'Unknown error'}`);
+      }
+
+      const tokens = await tokenResponse.json();
+      console.log('[Google OAuth] Received tokens from Google');
+
+      // Decode and verify ID token
+      console.log('[Google OAuth] Step 2: Decoding ID token...');
+      const idTokenPayload = this.decodeJWTPayload(tokens.id_token);
+
+      console.log('[Google OAuth] ID token payload:', {
+        sub: idTokenPayload.sub,
+        email: idTokenPayload.email,
+        hasNonce: !!idTokenPayload.nonce
+      });
+
+      // Verify nonce
+      if (idTokenPayload.nonce !== nonce) {
+        console.error('[Google OAuth] Nonce mismatch!');
+        throw new Error('Nonce mismatch - possible token replay attack');
+      }
+
+      console.log('[Google OAuth] Step 3: Authenticating with backend...');
+
+      // Send to backend
+      const backendResponse = await fetch(`${BACKEND_URL}/api/auth/google/mobile`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+          idToken: tokens.id_token,
+          nonce: nonce,
+          platform: Platform.OS
+        }),
+        credentials: 'include'
+      });
+
+      if (!backendResponse.ok) {
+        const errorText = await backendResponse.text();
+        console.error('[Google OAuth] Backend authentication failed:', errorText);
+
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { message: errorText };
+        }
+
+        throw new Error(`Backend authentication failed: ${errorData.message || errorData.error || 'Unknown error'}`);
+      }
+
+      const data = await backendResponse.json();
+
+      console.log('[Google OAuth] Backend response:', {
+        hasUser: !!data.user,
+        userEmail: data.user?.email,
+        hasSessionId: !!data.sessionId,
+        hasCookieName: !!data.cookieName
+      });
+
+      // Construct cookie string
+      let cookieString = '';
+      if (data.sessionId && data.cookieName) {
+        const maxAge = 7 * 24 * 60 * 60; // 1 week
+        const secure = BACKEND_URL.startsWith('https') ? '; Secure' : '';
+        cookieString = `${data.cookieName}=${data.sessionId}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+
+        console.log('[Google OAuth] Cookie constructed:', {
+          cookieName: data.cookieName,
+          hasSessionId: !!data.sessionId
+        });
+      }
+
+      return {
+        user: data.user,
+        cookies: cookieString,
+        sessionId: data.sessionId,
+        timestamp: Date.now(),
+        provider: 'google'
+      };
+
+    } catch (error) {
+      console.error('[Google OAuth] Code exchange error:', error);
+      throw error;
     }
-    
-    return {
-      user: data.user,
-      cookies: cookieString,
-      sessionId: data.sessionId,
-      timestamp: Date.now()
-    };
   }
 
+  // Apple Sign In
   static async signInWithApple() {
     try {
-      console.log('[Apple OAuth] Starting Apple Sign In...');
-      
+      console.log('[Apple OAuth] ====== Starting Apple Sign In ======');
+
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -300,119 +425,183 @@ export class AuthManager {
         ],
       });
 
-      console.log('[Apple OAuth] Received credential:', {
+      console.log('[Apple OAuth] Credential received:', {
         hasIdentityToken: !!credential.identityToken,
         hasUser: !!credential.user,
-        hasEmail: !!credential.email,
-        hasFullName: !!credential.fullName
+        hasEmail: !!credential.email
       });
 
-      if (credential.identityToken) {
-        console.log('[Apple OAuth] Exchanging identity token with backend...');
-        const sessionData = await this.exchangeAppleToken(
-          credential.identityToken,
-          credential.user || null,
-          credential.fullName
-        );
-        await this.saveSession(sessionData);
-        console.log('[Apple OAuth] Sign in successful');
-        return { success: true, sessionData };
+      if (!credential.identityToken) {
+        throw new Error('No identity token received from Apple');
       }
 
-      console.log('[Apple OAuth] No identity token received');
-      return { success: false, error: 'Apple sign in failed: No identity token received' };
+      console.log('[Apple OAuth] Exchanging token with backend...');
+
+      const sessionData = await this.exchangeAppleToken(
+        credential.identityToken,
+        credential.user || null,
+        credential.fullName
+      );
+
+      await this.saveSession(sessionData);
+
+      console.log('[Apple OAuth] ====== Sign in successful ======');
+      return { success: true, sessionData };
+
     } catch (error) {
-      console.error('[Apple OAuth] Detailed error:', {
-        message: error.message,
-        code: error.code,
-        name: error.name,
-        stack: error.stack
-      });
-      
+      console.error('[Apple OAuth] ====== Sign in failed ======');
+      console.error('[Apple OAuth] Error:', error.message);
+
+      if (error.code === 'ERR_CANCELED') {
+        return { success: false, error: 'Apple sign in cancelled' };
+      }
+
       return { 
         success: false, 
-        error: `Apple sign in failed: ${error.message}`,
-        details: error.code || error.name
+        error: error.message || 'Apple sign in failed',
+        details: {
+          code: error.code,
+          name: error.name
+        }
       };
     }
   }
 
+  // Exchange Apple identity token
   static async exchangeAppleToken(identityToken, user, fullName) {
-    const response = await fetch(`${BACKEND_URL}/api/auth/apple/mobile`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        identityToken,
-        user: fullName ? {
-          fullName: {
-            givenName: fullName.givenName,
-            familyName: fullName.familyName
-          }
-        } : null
-      }),
-      credentials: 'include'
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Token exchange failed');
-    }
-
-    const data = await response.json();
-    
-    console.log('[Apple OAuth] Backend response:', {
-      hasUser: !!data.user,
-      hasSessionId: !!data.sessionId,
-      hasCookieName: !!data.cookieName
-    });
-    
-    // Construct mobile-specific cookie string for WebView injection
-    // Note: Fetch API cannot access httpOnly cookies from Set-Cookie header
-    // So we use the mobile-specific cookie returned in the response body
-    let cookieString = '';
-    if (data.sessionId && data.cookieName) {
-      // Build cookie string that JavaScript can set
-      const maxAge = 7 * 24 * 60 * 60; // 1 week in seconds
-      const secure = BACKEND_URL.startsWith('https') ? '; Secure' : '';
-      cookieString = `${data.cookieName}=${data.sessionId}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
-      
-      console.log('[Apple OAuth] Constructed cookie:', {
-        cookieName: data.cookieName,
-        sessionId: data.sessionId.substring(0, 10) + '...'
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/auth/apple/mobile`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+          identityToken,
+          user: fullName ? {
+            fullName: {
+              givenName: fullName.givenName,
+              familyName: fullName.familyName
+            }
+          } : null,
+          platform: Platform.OS
+        }),
+        credentials: 'include'
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[Apple OAuth] Backend error:', errorText);
+
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { message: errorText };
+        }
+
+        throw new Error(errorData.message || 'Token exchange failed');
+      }
+
+      const data = await response.json();
+
+      console.log('[Apple OAuth] Backend response:', {
+        hasUser: !!data.user,
+        hasSessionId: !!data.sessionId
+      });
+
+      // Construct cookie string
+      let cookieString = '';
+      if (data.sessionId && data.cookieName) {
+        const maxAge = 7 * 24 * 60 * 60;
+        const secure = BACKEND_URL.startsWith('https') ? '; Secure' : '';
+        cookieString = `${data.cookieName}=${data.sessionId}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+      }
+
+      return {
+        user: data.user,
+        cookies: cookieString,
+        sessionId: data.sessionId,
+        timestamp: Date.now(),
+        provider: 'apple'
+      };
+
+    } catch (error) {
+      console.error('[Apple OAuth] Token exchange error:', error);
+      throw error;
     }
-    
-    return {
-      user: data.user,
-      cookies: cookieString,
-      sessionId: data.sessionId,
-      timestamp: Date.now()
-    };
   }
 
+  // Session management
   static async saveSession(session) {
-    await SecureStore.setItemAsync('user_session', JSON.stringify(session));
+    try {
+      await SecureStore.setItemAsync('user_session', JSON.stringify(session));
+      console.log('[AuthManager] Session saved');
+    } catch (error) {
+      console.error('[AuthManager] Failed to save session:', error);
+      throw error;
+    }
   }
 
   static async getSession() {
-    const sessionStr = await SecureStore.getItemAsync('user_session');
-    return sessionStr ? JSON.parse(sessionStr) : null;
+    try {
+      const sessionStr = await SecureStore.getItemAsync('user_session');
+      if (!sessionStr) {
+        return null;
+      }
+
+      const session = JSON.parse(sessionStr);
+
+      // Validate session
+      if (!session.user || !session.sessionId) {
+        console.log('[AuthManager] Invalid session structure');
+        await this.clearSession();
+        return null;
+      }
+
+      // Check expiry (7 days)
+      const age = Date.now() - (session.timestamp || 0);
+      const maxAge = 7 * 24 * 60 * 60 * 1000;
+
+      if (age > maxAge) {
+        console.log('[AuthManager] Session expired');
+        await this.clearSession();
+        return null;
+      }
+
+      console.log('[AuthManager] Valid session found');
+      return session;
+
+    } catch (error) {
+      console.error('[AuthManager] Failed to get session:', error);
+      await this.clearSession();
+      return null;
+    }
   }
 
   static async clearSession() {
-    await SecureStore.deleteItemAsync('user_session');
+    try {
+      await SecureStore.deleteItemAsync('user_session');
+      console.log('[AuthManager] Session cleared');
+    } catch (error) {
+      console.error('[AuthManager] Failed to clear session:', error);
+    }
   }
 
   static async isAppleSignInAvailable() {
     try {
-      // Check if the module is available first
+      if (Platform.OS !== 'ios') {
+        return false;
+      }
+
       if (!AppleAuthentication || !AppleAuthentication.isAvailableAsync) {
         console.log('[AuthManager] Apple Authentication module not available');
         return false;
       }
+
       return await AppleAuthentication.isAvailableAsync();
     } catch (error) {
-      console.log('[AuthManager] Apple Sign In availability check error:', error);
+      console.error('[AuthManager] Apple availability check error:', error);
       return false;
     }
   }
