@@ -591,12 +591,12 @@ export default function Auth({ onSuccess }: AuthProps) {
                   encrypted and never shared with third parties.
                 </p>
                 <div className="flex justify-center space-x-4 text-sm">
-                  <Link href="/privacy-policy">
-                    <a className="text-blue-400 hover:text-blue-300 underline">Privacy Policy</a>
+                  <Link href="/privacy-policy" className="text-blue-400 hover:text-blue-300 underline">
+                    Privacy Policy
                   </Link>
                   <span className="text-gray-500">•</span>
-                  <Link href="/terms-of-service">
-                    <a className="text-blue-400 hover:text-blue-300 underline">Terms of Service</a>
+                  <Link href="/terms-of-service" className="text-blue-400 hover:text-blue-300 underline">
+                    Terms of Service
                   </Link>
                 </div>
               </div>
@@ -616,11 +616,11 @@ export default function Auth({ onSuccess }: AuthProps) {
               </div>
               
               <div className="flex space-x-6 text-sm text-gray-400">
-                <Link href="/privacy-policy">
-                  <a className="hover:text-white transition-colors">Privacy</a>
+                <Link href="/privacy-policy" className="hover:text-white transition-colors">
+                  Privacy
                 </Link>
-                <Link href="/terms-of-service">
-                  <a className="hover:text-white transition-colors">Terms</a>
+                <Link href="/terms-of-service" className="hover:text-white transition-colors">
+                  Terms
                 </Link>
                 <a href="mailto:support@trainpro.app" className="hover:text-white transition-colors">
                   Contact
