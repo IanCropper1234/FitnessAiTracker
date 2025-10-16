@@ -618,12 +618,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // OAuth state management for CSRF protection
-  interface OAuthStateData {
-    timestamp: number;
-    redirectUrl?: string;
-    isApp?: boolean;
-  }
-  const oauthStates = new Map<string, OAuthStateData>();
+  const oauthStates = new Map<string, { timestamp: number; redirectUrl?: string }>();
   
   // Clean up expired states every hour
   setInterval(() => {
@@ -642,23 +637,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const redirectUrl = req.query.redirect as string || '/';
     const isApp = req.query.app === '1'; // Check if from Capacitor app
     
-    console.log('🔵 [Google OAuth] Initial request:', {
-      app: req.query.app,
-      isApp,
-      userAgent: req.get('User-Agent'),
-      state: state.substring(0, 10) + '...',
-      redirectUrl
-    });
-    
     oauthStates.set(state, { 
       timestamp: Date.now(),
       redirectUrl,
       isApp // Store app flag
-    });
-    
-    console.log('🔵 [Google OAuth] State data stored:', {
-      state: state.substring(0, 10) + '...',
-      stateData: oauthStates.get(state)
     });
 
     passport.authenticate('google', {
@@ -691,12 +673,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     const stateData = oauthStates.get(state)!;
-    console.log('🔵 [Google OAuth Callback] State data retrieved:', {
-      state: state.substring(0, 10) + '...',
-      stateData,
-      userAgent: req.get('User-Agent')
-    });
-    
     oauthStates.delete(state);
 
     passport.authenticate('google', { session: false }, async (err: any, user: any) => {
@@ -732,22 +708,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if request is from Capacitor app
         const isApp = stateData.isApp || req.get('User-Agent')?.includes('MyTrainPro-iOS');
         
-        console.log('🔵 [Google OAuth Callback] Deep link check:', {
-          stateIsApp: stateData.isApp,
-          userAgentCheck: req.get('User-Agent')?.includes('MyTrainPro-iOS'),
-          finalIsApp: isApp
-        });
-        
         if (isApp) {
           // App environment: redirect to deep link
           const deepLink = `mytrainpro://auth/callback?session=${req.sessionID}&userId=${user.userId}`;
-          console.log(`📱 [Google OAuth] Redirecting to app via deep link: ${deepLink}`);
+          console.log(`📱 Redirecting to app via deep link: ${deepLink}`);
           return res.redirect(deepLink);
         }
         
         // Web environment: normal redirect
         const redirectUrl = stateData.redirectUrl || '/';
-        console.log(`🌐 [Google OAuth] Redirecting to web: ${redirectUrl}`);
         res.redirect(redirectUrl);
       } catch (error) {
         console.error('Session creation error:', error);
@@ -756,19 +725,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })(req, res, next);
   });
 
-  // Apple Sign In routes - handle both GET and POST
-  app.all('/api/auth/apple', (req, res, next) => {
-    const isApp = req.query.app === '1'; // Check if from Capacitor app
-    
+  // Apple Sign In routes
+  app.post('/api/auth/apple', (req, res, next) => {
     console.log('🍎 [Apple OAuth] Initial request received:', {
       method: req.method,
       url: req.url,
-      app: req.query.app,
-      isApp,
-      userAgent: req.get('User-Agent'),
+      query: req.query,
       body: req.body,
       headers: {
         'content-type': req.get('content-type'),
+        'user-agent': req.get('user-agent'),
         'host': req.get('host'),
         'x-forwarded-host': req.get('x-forwarded-host')
       }
@@ -783,17 +749,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Generate CSRF state token
     const state = randomBytes(32).toString('hex');
     const redirectUrl = req.body.redirect || '/';
+    const isApp = req.query.app === '1'; // Check if from Capacitor app
     
     oauthStates.set(state, { 
       timestamp: Date.now(),
       redirectUrl,
       isApp // Store app flag
     });
-    
-    console.log('🍎 [Apple OAuth] State data stored:', {
-      state: state.substring(0, 10) + '...',
-      stateData: oauthStates.get(state)
-    });
+
+    console.log('🍎 [Apple OAuth] Calling passport.authenticate with state:', state.substring(0, 10) + '...', 'isApp:', isApp);
     
     passport.authenticate('apple', {
       state,
@@ -838,12 +802,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     const stateData = oauthStates.get(state)!;
-    console.log('🍎 [Apple OAuth Callback] State data retrieved:', {
-      state: state.substring(0, 10) + '...',
-      stateData,
-      userAgent: req.get('User-Agent')
-    });
-    
     oauthStates.delete(state);
 
     passport.authenticate('apple', { session: false }, async (err: any, user: any) => {
@@ -879,16 +837,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if request is from Capacitor app
         const isApp = stateData.isApp || req.get('User-Agent')?.includes('MyTrainPro-iOS');
         
-        console.log('🍎 [Apple OAuth Callback] Deep link check:', {
-          stateIsApp: stateData.isApp,
-          userAgentCheck: req.get('User-Agent')?.includes('MyTrainPro-iOS'),
-          finalIsApp: isApp
-        });
-        
         if (isApp) {
           // App environment: use HTML redirect (POST can't redirect to custom scheme directly)
           const deepLink = `mytrainpro://auth/callback?session=${req.sessionID}&userId=${user.userId}`;
-          console.log(`📱 [Apple OAuth] Redirecting to app via deep link: ${deepLink}`);
+          console.log(`📱 Redirecting to app via deep link: ${deepLink}`);
           
           return res.send(`
             <!DOCTYPE html>

@@ -4,25 +4,14 @@
 MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provide intelligent, adaptive training, and comprehensive nutrition and workout management. It leverages evidence-based periodization methodology combined with AI recommendations to offer personalized coaching at scale. The platform aims to capture a significant share of the digital fitness market by providing a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
 ## Recent Changes
-### OAuth Deep Linking Implementation for iOS App (October 16, 2025)
-- **Complete OAuth Flow for Capacitor iOS App**:
-  - **Environment Detection**: Uses `Capacitor.isNativePlatform()` API to detect app environment
-  - **Client-Side Implementation** (`client/src/pages/auth.tsx`):
-    - Detects Capacitor environment and adds `?app=1` parameter to OAuth URLs
-    - Supports both Google and Apple OAuth providers
-  - **Server-Side Handling** (`server/routes.ts`):
-    - Detects app environment via `?app=1` parameter or `MyTrainPro-iOS` User-Agent
-    - Redirects to `mytrainpro://auth/callback?session=${sessionID}&userId=${userId}` for app users
-    - Uses HTML meta refresh for Apple OAuth (POST callback compatibility)
-  - **Deep Link Handler** (`client/src/utils/capacitorAuth.ts`):
-    - Listens for `appUrlOpen` events in Capacitor
-    - Parses session and user ID from deep link
-    - Restores session and redirects to app dashboard
-  - **iOS Configuration** (`ios/App/App/Info.plist`):
-    - URL scheme `mytrainpro` registered for deep linking
-  - **Capacitor Settings** (`capacitor.config.ts`):
-    - OAuth domains whitelisted in `allowNavigation` to prevent external browser opening
-  - **Test Page** (`/oauth-test`): Diagnostic page to verify OAuth configuration and test deep linking
+### OAuth Deep Linking Fix for iOS App (October 16, 2025)
+- **Fixed OAuth Flow for Capacitor iOS App**:
+  - Enhanced environment detection using `Capacitor.isNativePlatform()` API
+  - Added `?app=1` query parameter for OAuth requests from app environment
+  - Server properly redirects to `mytrainpro://auth/callback` deep link after OAuth success
+  - Deep link handler in `capacitorAuth.ts` processes OAuth callback and restores session
+  - iOS Info.plist already configured with `mytrainpro` URL scheme
+  - OAuth flow now correctly returns users to app instead of staying in browser
 
 ### Professional Landing Page Redesign (October 16, 2025)
 - **Complete Auth Page Transformation**: Redesigned `/auth` as professional app landing page
