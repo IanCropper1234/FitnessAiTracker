@@ -248,10 +248,7 @@ export default function Auth({ onSuccess }: AuthProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      {/* iOS Safe Area Top */}
-      <div className="h-[env(safe-area-inset-top)] bg-gray-900" />
-      
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 ios-pwa-container">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
@@ -260,9 +257,9 @@ export default function Auth({ onSuccess }: AuthProps) {
       </div>
 
       {/* Navigation Bar */}
-      <nav className="relative z-50 border-b border-gray-800 bg-gray-900/50 backdrop-blur-xl pt-[env(safe-area-inset-top)]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <nav className="relative z-50 border-b border-gray-800 bg-gray-900/50 backdrop-blur-xl ios-sticky-header -mx-4 px-4">
+        <div className="w-full">
+          <div className="flex items-center justify-between h-[44px]">
             <div className="flex items-center">
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
@@ -310,7 +307,7 @@ export default function Auth({ onSuccess }: AuthProps) {
               exit={{ opacity: 0, height: 0 }}
               className="md:hidden bg-gray-900/95 backdrop-blur-xl border-t border-gray-800"
             >
-              <div className="px-4 py-4 space-y-3 pb-[env(safe-area-inset-bottom)]">
+              <div className="px-4 py-4 space-y-3">
                 <a href="#features" className="block text-gray-300 hover:text-white transition-colors">Features</a>
                 <a href="#testimonials" className="block text-gray-300 hover:text-white transition-colors">Testimonials</a>
                 <a href="#pricing" className="block text-gray-300 hover:text-white transition-colors">Pricing</a>
