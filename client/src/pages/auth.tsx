@@ -18,6 +18,7 @@ import { SiGoogle, SiApple } from "react-icons/si";
 import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistrationForm";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
+import { Capacitor } from '@capacitor/core';
 
 interface User {
   id: number;
@@ -126,10 +127,30 @@ export default function Auth({ onSuccess }: AuthProps) {
   const handleOAuthSignIn = async (provider: 'google' | 'apple') => {
     setIsLoading(true);
     try {
-      const isDesktop = window.innerWidth >= 768;
-      const authUrl = provider === 'google' 
+      // Check if running in Capacitor app
+      const isCapacitorApp = Capacitor.isNativePlatform() || false;
+      const userAgent = window.navigator.userAgent;
+      const isMyTrainProApp = userAgent.includes('MyTrainPro-iOS') || isCapacitorApp;
+      
+      console.log('[Auth] OAuth Sign In - Environment Detection:', {
+        isCapacitorApp,
+        userAgent,
+        isMyTrainProApp,
+        provider
+      });
+      
+      // Construct auth URL with app parameter if in Capacitor
+      let authUrl = provider === 'google' 
         ? `/api/auth/google`
         : `/api/auth/apple`;
+      
+      if (isMyTrainProApp) {
+        authUrl += '?app=1'; // Add app parameter for deep link handling
+        console.log('[Auth] Added app=1 parameter for Capacitor environment');
+      }
+      
+      // Determine if we should use popup (desktop) or redirect (mobile/app)
+      const isDesktop = !isMyTrainProApp && window.innerWidth >= 768;
       
       if (isDesktop) {
         const width = 500;
@@ -137,6 +158,7 @@ export default function Auth({ onSuccess }: AuthProps) {
         const left = (window.screen.width - width) / 2;
         const top = (window.screen.height - height) / 2;
         
+        console.log('[Auth] Opening OAuth popup for desktop');
         const popup = window.open(
           authUrl,
           `${provider}Auth`,
@@ -155,6 +177,8 @@ export default function Auth({ onSuccess }: AuthProps) {
           }
         }, 500);
       } else {
+        // Mobile or Capacitor app - use redirect
+        console.log('[Auth] Redirecting for mobile/app OAuth:', authUrl);
         window.location.href = authUrl;
       }
     } catch (error) {
