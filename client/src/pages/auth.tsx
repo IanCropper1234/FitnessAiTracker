@@ -245,9 +245,6 @@ export default function Auth({ onSuccess }: AuthProps) {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center space-x-3"
               >
-                <div className="p-2 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl shadow-lg">
-                  <Dumbbell className="h-6 w-6 text-white" />
-                </div>
                 <span className="text-2xl font-bold text-white">MyTrainPro</span>
               </motion.div>
             </div>
@@ -609,9 +606,6 @@ export default function Auth({ onSuccess }: AuthProps) {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="flex items-center space-x-3 mb-4 md:mb-0">
-                <div className="p-2 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl">
-                  <Dumbbell className="h-5 w-5 text-white" />
-                </div>
                 <span className="text-xl font-bold text-white">MyTrainPro</span>
               </div>
               
