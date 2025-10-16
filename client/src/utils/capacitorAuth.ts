@@ -31,9 +31,20 @@ export function setupCapacitorOAuthListener() {
         if (sessionId && userId) {
           console.log('[Capacitor Auth] OAuth successful! Session:', sessionId, 'User:', userId);
           
-          // Reload to dashboard to use new session
-          // The session cookie is already set by the backend
-          window.location.href = '/dashboard';
+          // Mark onboarding as completed for OAuth users
+          // OAuth users shouldn't see the first-time user animation
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('trainpro-onboarding-completed', 'true');
+            console.log('[Capacitor Auth] Marked onboarding as completed for OAuth user');
+          }
+          
+          // Small delay to ensure session cookie is properly set before reload
+          // This prevents race conditions and loading issues
+          console.log('[Capacitor Auth] Waiting for session to sync...');
+          setTimeout(() => {
+            console.log('[Capacitor Auth] Reloading to root path with session');
+            window.location.replace('/');
+          }, 300);
         } else {
           console.error('[Capacitor Auth] Missing session or userId in callback');
           window.location.href = '/login?error=oauth_callback_failed';
