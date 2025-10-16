@@ -353,6 +353,28 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[20px] pr-[20px] mt-[25px] mb-[25px]">
+        {/* OAuth Testing Button for iOS App - Fixed Position */}
+        {typeof window !== 'undefined' && window.navigator.userAgent.includes('MyTrainPro-iOS') && (
+          <div className="fixed top-4 right-4 z-50 bg-orange-500 rounded-lg shadow-lg p-3">
+            <p className="text-white text-xs mb-1">OAuth Test</p>
+            <Button
+              onClick={() => {
+                // Sign out first to test OAuth
+                fetch('/api/auth/signout', { 
+                  method: 'POST',
+                  credentials: 'include'
+                }).then(() => {
+                  window.location.href = '/oauth-test';
+                });
+              }}
+              className="bg-white text-orange-500 hover:bg-gray-100"
+              size="sm"
+            >
+              Test OAuth Login
+            </Button>
+          </div>
+        )}
+        
         <div className="w-full max-w-none space-y-4">
           {/* Enhanced Date Selector */}
           <div className="flex items-center justify-center py-1 mt-[-8px] mb-[-8px]">
