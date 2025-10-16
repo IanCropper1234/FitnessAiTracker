@@ -207,6 +207,7 @@ const translations: Record<Language, Record<string, string>> = {
     "submit": "提交",
     "loading": "載入中...",
     "welcome": "歡迎使用TrainPro",
+    "welcome_back": "歡迎回來",
     "sign_in": "登入",
     "sign_up": "註冊",
     "email": "電子信箱",
