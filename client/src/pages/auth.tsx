@@ -357,20 +357,49 @@ export default function Auth({ onSuccess }: AuthProps) {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-20 bg-gray-900/50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="features" className="py-20 bg-gray-900/50 relative overflow-hidden">
+          {/* Decorative Background Elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-blue-500/5 rotate-45" />
+            </div>
+          </div>
+          
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* Section Header */}
             <motion.div 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-4"
             >
-              <h2 className="text-4xl font-bold text-white mb-4">
-                Everything You Need to Succeed
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-full mb-6">
+                <Zap className="h-4 w-4 text-purple-400" />
+                <span className="text-sm text-purple-300 font-medium">CORE CAPABILITIES</span>
+              </div>
+              
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                Premium Features
               </h2>
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                Cutting-edge technology meets proven fitness science
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Everything You Need to Succeed in Your Fitness Journey
               </p>
+              <p className="text-base text-gray-400 max-w-2xl mx-auto mt-2">
+                Cutting-edge AI technology meets proven fitness science to deliver personalized results
+              </p>
+            </motion.div>
+            
+            {/* Decorative Divider */}
+            <motion.div 
+              initial={{ width: 0 }}
+              whileInView={{ width: "100%" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="mx-auto mb-16"
+            >
+              <div className="h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent max-w-md mx-auto" />
             </motion.div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
