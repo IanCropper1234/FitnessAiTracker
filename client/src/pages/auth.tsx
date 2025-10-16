@@ -35,6 +35,7 @@ export default function Auth({ onSuccess }: AuthProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("signin");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAuthForm, setShowAuthForm] = useState(false);
 
   const signUpMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; name: string }) => {
@@ -253,10 +254,17 @@ export default function Auth({ onSuccess }: AuthProps) {
               <a href="#testimonials" className="text-gray-300 hover:text-white transition-colors">Testimonials</a>
               <a href="#pricing" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
               <Button 
-                onClick={() => document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  setShowAuthForm(!showAuthForm);
+                  if (!showAuthForm) {
+                    setTimeout(() => {
+                      document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }
+                }}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               >
-                Get Started
+                Sign In / Sign Up
               </Button>
             </div>
 
@@ -285,11 +293,16 @@ export default function Auth({ onSuccess }: AuthProps) {
                 <Button 
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' });
+                    setShowAuthForm(!showAuthForm);
+                    if (!showAuthForm) {
+                      setTimeout(() => {
+                        document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }
                   }}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  Get Started
+                  Sign In / Sign Up
                 </Button>
               </div>
             </motion.div>
@@ -323,39 +336,22 @@ export default function Auth({ onSuccess }: AuthProps) {
               and intelligent nutrition tracking. Join thousands achieving their dream physique.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex justify-center">
               <Button 
-                onClick={() => document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  setShowAuthForm(!showAuthForm);
+                  if (!showAuthForm) {
+                    setTimeout(() => {
+                      document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }
+                }}
                 size="lg"
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-6 text-lg shadow-2xl shadow-purple-500/25"
               >
-                Start Free Trial
+                Sign In / Sign Up
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button 
-                variant="outline"
-                size="lg"
-                className="border-gray-600 text-gray-300 hover:bg-gray-800 px-8 py-6 text-lg"
-              >
-                Watch Demo
-              </Button>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-4"
-                >
-                  <stat.icon className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                  <div className="text-3xl font-bold text-white">{stat.number}</div>
-                  <div className="text-sm text-gray-400">{stat.label}</div>
-                </motion.div>
-              ))}
             </div>
           </motion.div>
         </section>
@@ -461,15 +457,16 @@ export default function Auth({ onSuccess }: AuthProps) {
           </div>
         </section>
 
-        {/* Auth Form Section */}
-        <section id="auth-form" className="py-20 bg-gray-900/50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
+        {/* Auth Form Section - Only show when showAuthForm is true */}
+        {showAuthForm && (
+          <section id="auth-form" className="py-20 bg-gray-900/50">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-md mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
                 <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
                   <CardHeader>
                     <CardTitle className="text-2xl text-center text-white">
@@ -574,6 +571,7 @@ export default function Auth({ onSuccess }: AuthProps) {
             </div>
           </div>
         </section>
+        )}
 
         {/* Privacy Notice */}
         <section className="py-12 bg-gray-900/30">
