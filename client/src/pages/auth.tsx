@@ -340,6 +340,20 @@ export default function Auth({ onSuccess }: AuthProps) {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
+            {/* Temporary OAuth Test Button for iOS App Testing */}
+            {Capacitor.isNativePlatform() && (
+              <div className="mb-6 p-4 bg-orange-500/20 border border-orange-500/50 rounded-lg">
+                <p className="text-orange-300 text-sm mb-2">iOS App OAuth Testing</p>
+                <Button 
+                  onClick={() => window.location.href = '/oauth-test'}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  size="sm"
+                >
+                  Open OAuth Test Page
+                </Button>
+              </div>
+            )}
+            
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-full mb-6">
               <Sparkles className="h-4 w-4 text-purple-400" />
               <span className="text-sm text-purple-300">Powered by Advanced AI</span>
