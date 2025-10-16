@@ -8,6 +8,14 @@ const config: CapacitorConfig = {
     // Production: Load from mytrainpro.com
     url: 'https://mytrainpro.com',
     cleartext: false,
+    // Allow OAuth navigation - prevent opening in external browser
+    allowNavigation: [
+      'https://mytrainpro.com',
+      'https://accounts.google.com',
+      'https://appleid.apple.com',
+      'https://*.google.com',
+      'https://*.apple.com'
+    ],
     // For local development, uncomment these:
     // url: 'http://localhost:5000',
     // cleartext: true

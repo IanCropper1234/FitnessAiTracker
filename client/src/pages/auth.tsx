@@ -223,32 +223,49 @@ export default function Auth({ onSuccess }: AuthProps) {
     signInMutation.mutate(data);
   };
 
-  // Check if running in Capacitor iOS app
+  // Check if running in Capacitor iOS app - use multiple detection methods
   const isCapacitorApp = () => {
+    // Method 1: Check Capacitor API (most reliable)
+    if (typeof (window as any).Capacitor !== 'undefined') {
+      const isNative = (window as any).Capacitor?.isNativePlatform?.();
+      console.log('[Auth] Capacitor API detected, isNativePlatform:', isNative);
+      if (isNative) return true;
+    }
+    
+    // Method 2: Check User-Agent
     const userAgent = navigator.userAgent || '';
-    return userAgent.includes('MyTrainPro-iOS') || userAgent.includes('Capacitor');
+    const hasAppUA = userAgent.includes('MyTrainPro-iOS') || userAgent.includes('Capacitor');
+    console.log('[Auth] User-Agent:', userAgent);
+    console.log('[Auth] Has app UA:', hasAppUA);
+    
+    return hasAppUA;
   };
 
   const handleGoogleOAuth = () => {
     console.log('[Auth] Google OAuth clicked');
+    const isApp = isCapacitorApp();
+    console.log('[Auth] Is Capacitor app:', isApp);
     
     // If in Capacitor app, add app parameter to callback
-    if (isCapacitorApp()) {
-      console.log('[Auth] Detected Capacitor app environment');
+    if (isApp) {
+      console.log('[Auth] Redirecting with app=1 parameter');
       window.location.href = '/api/auth/google?app=1';
       return;
     }
     
     // Otherwise use web OAuth
+    console.log('[Auth] Using web OAuth (no app parameter)');
     window.location.href = '/api/auth/google';
   };
   
   const handleAppleOAuth = () => {
     console.log('[Auth] Apple OAuth clicked');
+    const isApp = isCapacitorApp();
+    console.log('[Auth] Is Capacitor app:', isApp);
     
     // If in Capacitor app, add app parameter
-    if (isCapacitorApp()) {
-      console.log('[Auth] Detected Capacitor app environment');
+    if (isApp) {
+      console.log('[Auth] Submitting form with app=1 parameter');
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = '/api/auth/apple?app=1';
@@ -258,6 +275,7 @@ export default function Auth({ onSuccess }: AuthProps) {
     }
     
     // Otherwise use web OAuth
+    console.log('[Auth] Using web OAuth (no app parameter)');
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/api/auth/apple';
