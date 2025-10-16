@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-    <title>TrainPro - AI-Powered Fitness Coach</title>
+    <title>MyTrainPro - AI-Powered Fitness Coach</title>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -11,7 +11,7 @@
     <!-- iOS Meta Tags for PWA - Enhanced for iPhone 12 mini -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="TrainPro" />
+    <meta name="apple-mobile-web-app-title" content="MyTrainPro" />
     <meta name="mobile-web-app-capable" content="yes" />
     
     <!-- iOS Touch Icons -->
@@ -34,19 +34,19 @@
     <!-- SEO Meta Tags -->
     <meta name="description" content="Complete Renaissance Periodization training and nutrition coaching with AI-powered recommendations. Track workouts, log nutrition, and optimize your fitness journey." />
     <meta name="keywords" content="fitness, workout tracker, nutrition, Renaissance Periodization, AI coach, bodybuilding, strength training" />
-    <meta name="author" content="TrainPro" />
+    <meta name="author" content="MyTrainPro" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://trainpro.app/" />
-    <meta property="og:title" content="TrainPro - AI-Powered Fitness Coach" />
+    <meta property="og:url" content="https://mytrainpro.app/" />
+    <meta property="og:title" content="MyTrainPro - AI-Powered Fitness Coach" />
     <meta property="og:description" content="Complete Renaissance Periodization training and nutrition coaching with AI-powered recommendations" />
     <meta property="og:image" content="/icons/icon-512x512.png" />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://trainpro.app/" />
-    <meta property="twitter:title" content="TrainPro - AI-Powered Fitness Coach" />
+    <meta property="twitter:url" content="https://mytrainpro.app/" />
+    <meta property="twitter:title" content="MyTrainPro - AI-Powered Fitness Coach" />
     <meta property="twitter:description" content="Complete Renaissance Periodization training and nutrition coaching with AI-powered recommendations" />
     <meta property="twitter:image" content="/icons/icon-512x512.png" />
     <script>
@@ -73,15 +73,15 @@
             const registration = await navigator.serviceWorker.register('/sw.js', {
               scope: '/'
             });
-            console.log('TrainPro PWA: ServiceWorker registered successfully');
+            console.log('MyTrainPro PWA: ServiceWorker registered successfully');
             
             // Check for updates
             registration.addEventListener('updatefound', () => {
-              console.log('TrainPro PWA: Update found, installing...');
+              console.log('MyTrainPro PWA: Update found, installing...');
             });
             
           } catch (error) {
-            console.error('TrainPro PWA: ServiceWorker registration failed:', error);
+            console.error('MyTrainPro PWA: ServiceWorker registration failed:', error);
           }
         });
       }
@@ -100,9 +100,9 @@
       window.addEventListener('load', () => {
         if (isIOSDevice()) {
           if (isInStandaloneMode()) {
-            console.log('TrainPro PWA: Running as standalone app on iOS');
+            console.log('MyTrainPro PWA: Running as standalone app on iOS');
           } else {
-            console.log('TrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen');
+            console.log('MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen');
           }
         }
       });
@@ -112,14 +112,14 @@
       window.addEventListener('beforeinstallprompt', (e) => {
         // Store the event for later use
         deferredPrompt = e;
-        console.log('TrainPro PWA: Install prompt available');
+        console.log('MyTrainPro PWA: Install prompt available');
         
         // Store for later use when user clicks install button
         // Note: prompt() can only be called in response to user gesture
       });
 
       window.addEventListener('appinstalled', (evt) => {
-        console.log('TrainPro PWA: Successfully installed');
+        console.log('MyTrainPro PWA: Successfully installed');
         deferredPrompt = null;
       });
     </script>

@@ -206,7 +206,7 @@ export default function Auth({ onSuccess }: AuthProps) {
     {
       name: "Michael Chen",
       role: "Competitive Bodybuilder",
-      content: "TrainPro's periodization system helped me gain 15lbs of muscle in my last bulking phase. The AI adjustments are spot-on.",
+      content: "MyTrainPro's periodization system helped me gain 15lbs of muscle in my last bulking phase. The AI adjustments are spot-on.",
       rating: 5
     },
     {
@@ -218,7 +218,7 @@ export default function Auth({ onSuccess }: AuthProps) {
     {
       name: "David Park",
       role: "Personal Trainer",
-      content: "I recommend TrainPro to all my clients. The science-based approach sets it apart from every other fitness app.",
+      content: "I recommend MyTrainPro to all my clients. The science-based approach sets it apart from every other fitness app.",
       rating: 5
     }
   ];
@@ -248,7 +248,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                 <div className="p-2 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl shadow-lg">
                   <Dumbbell className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-white">TrainPro</span>
+                <span className="text-2xl font-bold text-white">MyTrainPro</span>
               </motion.div>
             </div>
             
@@ -612,7 +612,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                 <div className="p-2 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl">
                   <Dumbbell className="h-5 w-5 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">TrainPro</span>
+                <span className="text-xl font-bold text-white">MyTrainPro</span>
               </div>
               
               <div className="flex space-x-6 text-sm text-gray-400">
@@ -622,13 +622,13 @@ export default function Auth({ onSuccess }: AuthProps) {
                 <Link href="/terms-of-service" className="hover:text-white transition-colors">
                   Terms
                 </Link>
-                <a href="mailto:support@trainpro.app" className="hover:text-white transition-colors">
+                <a href="mailto:support@mytrainpro.app" className="hover:text-white transition-colors">
                   Contact
                 </a>
               </div>
               
               <div className="text-sm text-gray-400 mt-4 md:mt-0">
-                © {new Date().getFullYear()} TrainPro. All rights reserved.
+                © {new Date().getFullYear()} MyTrainPro. All rights reserved.
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 {
-  "name": "TrainPro - AI-Powered Fitness Coach",
-  "short_name": "TrainPro",
+  "name": "MyTrainPro - AI-Powered Fitness Coach",
+  "short_name": "MyTrainPro",
   "description": "Complete Renaissance Periodization training and nutrition coaching with AI-powered recommendations",
   "start_url": "/",
   "display": "standalone",

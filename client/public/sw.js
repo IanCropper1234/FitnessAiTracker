@@ -1,5 +1,5 @@
-// Service Worker for TrainPro PWA - iOS Compatible
-const CACHE_NAME = 'trainpro-v22';
+// Service Worker for MyTrainPro PWA - iOS Compatible
+const CACHE_NAME = 'mytrainpro-v22';
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -10,26 +10,26 @@ const urlsToCache = [
 
 // Install event - cache essential resources
 self.addEventListener('install', (event) => {
-  console.log('TrainPro Service Worker installing...');
+  console.log('MyTrainPro Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('TrainPro cache opened');
+        console.log('MyTrainPro cache opened');
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('TrainPro essential resources cached');
+        console.log('MyTrainPro essential resources cached');
         return self.skipWaiting(); // Activate immediately
       })
       .catch((error) => {
-        console.error('TrainPro service worker install failed:', error);
+        console.error('MyTrainPro service worker install failed:', error);
       })
   );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('TrainPro Service Worker activating...');
+  console.log('MyTrainPro Service Worker activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -41,7 +41,7 @@ self.addEventListener('activate', (event) => {
         })
       );
     }).then(() => {
-      console.log('TrainPro Service Worker activated');
+      console.log('MyTrainPro Service Worker activated');
       return self.clients.claim(); // Take control of existing clients
     })
   );
