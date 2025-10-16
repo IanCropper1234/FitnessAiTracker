@@ -21,7 +21,7 @@ export function InstantLoadingScreen() {
           className="space-y-3"
         >
           <div className="text-4xl font-bold text-black dark:text-white">
-            TrainPro
+            MyTrainPro
           </div>
           <motion.div 
             className="w-12 h-0.5 bg-blue-600 mx-auto"

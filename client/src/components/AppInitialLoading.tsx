@@ -32,7 +32,7 @@ export function AppInitialLoading({ className }: AppInitialLoadingProps) {
           className="space-y-3"
         >
           <div className="text-4xl font-bold text-foreground">
-            TrainPro
+            MyTrainPro
           </div>
           <div className="w-12 h-0.5 bg-primary mx-auto" />
         </motion.div>
@@ -48,7 +48,7 @@ export function AppInitialLoading({ className }: AppInitialLoadingProps) {
         >
           <LoadingSpinner size="md" className="text-blue-600 mx-auto" />
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Initializing TrainPro...
+            Initializing MyTrainPro...
           </p>
         </motion.div>
       </div>
