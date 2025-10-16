@@ -137,9 +137,16 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       '/edit-template',
       '/template'
     ];
+    const publicPages = [
+      '/auth',
+      '/email-verification', 
+      '/privacy-policy',
+      '/terms-of-service'
+    ];
     const isProtectedPage = protectedPages.some(page => location.startsWith(page));
+    const isPublicPage = publicPages.some(page => location === page);
     
-    if (!user && location !== "/auth" && location !== "/email-verification") {
+    if (!user && !isPublicPage) {
       // Delay redirect for protected pages to allow auth recovery
       if (isProtectedPage) {
         console.log('Protected page detected, delaying auth redirect to allow recovery');
