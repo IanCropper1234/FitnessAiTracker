@@ -36,6 +36,7 @@ import EmailVerification from "./pages/email-verification";
 import EmailVerificationSuccess from "./pages/email-verification-success";
 import PrivacyPolicy from "./pages/privacy-policy";
 import TermsOfService from "./pages/terms-of-service";
+import Landing from "./pages/Landing";
 import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
 
