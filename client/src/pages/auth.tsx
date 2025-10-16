@@ -223,20 +223,19 @@ export default function Auth({ onSuccess }: AuthProps) {
     signInMutation.mutate(data);
   };
 
-  // Check if running in mobile app WebView
-  const isMobileApp = () => {
-    return typeof (window as any).ReactNativeWebView !== 'undefined' || 
-           document.body.classList.contains('mobile-app');
+  // Check if running in Capacitor iOS app
+  const isCapacitorApp = () => {
+    const userAgent = navigator.userAgent || '';
+    return userAgent.includes('MyTrainPro-iOS') || userAgent.includes('Capacitor');
   };
 
   const handleGoogleOAuth = () => {
-    // If in mobile app, use native OAuth
-    if (isMobileApp() && typeof (window as any).ReactNativeWebView !== 'undefined') {
-      console.log('[Auth] Requesting native Google OAuth');
-      (window as any).ReactNativeWebView.postMessage(JSON.stringify({
-        type: 'OAUTH_REQUEST',
-        provider: 'google'
-      }));
+    console.log('[Auth] Google OAuth clicked');
+    
+    // If in Capacitor app, add app parameter to callback
+    if (isCapacitorApp()) {
+      console.log('[Auth] Detected Capacitor app environment');
+      window.location.href = '/api/auth/google?app=1';
       return;
     }
     
@@ -245,13 +244,16 @@ export default function Auth({ onSuccess }: AuthProps) {
   };
   
   const handleAppleOAuth = () => {
-    // If in mobile app, use native OAuth
-    if (isMobileApp() && typeof (window as any).ReactNativeWebView !== 'undefined') {
-      console.log('[Auth] Requesting native Apple OAuth');
-      (window as any).ReactNativeWebView.postMessage(JSON.stringify({
-        type: 'OAUTH_REQUEST',
-        provider: 'apple'
-      }));
+    console.log('[Auth] Apple OAuth clicked');
+    
+    // If in Capacitor app, add app parameter
+    if (isCapacitorApp()) {
+      console.log('[Auth] Detected Capacitor app environment');
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/api/auth/apple?app=1';
+      document.body.appendChild(form);
+      form.submit();
       return;
     }
     
