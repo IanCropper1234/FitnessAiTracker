@@ -387,11 +387,13 @@ export default function Auth({ onSuccess }: AuthProps) {
                   <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl blur-xl"
                     style={{ backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))` }}
                   />
-                  <Card className="relative h-full bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-gray-600 transition-all duration-300">
-                    <CardHeader>
-                      <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${feature.gradient} mb-4`}>
+                  <Card className="relative h-full bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-gray-600 transition-all duration-300 overflow-hidden">
+                    <div className={`h-20 bg-gradient-to-r ${feature.gradient} flex items-center px-6`}>
+                      <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
                         <feature.icon className="h-6 w-6 text-white" />
                       </div>
+                    </div>
+                    <CardHeader className="pt-6">
                       <CardTitle className="text-white text-xl">{feature.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
