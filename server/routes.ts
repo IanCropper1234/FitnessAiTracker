@@ -709,10 +709,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const isApp = stateData.isApp || req.get('User-Agent')?.includes('MyTrainPro-iOS');
         
         if (isApp) {
-          // App environment: redirect to deep link
-          const deepLink = `mytrainpro://auth/callback?session=${req.sessionID}&userId=${user.userId}`;
-          console.log(`📱 Redirecting to app via deep link: ${deepLink}`);
-          return res.redirect(deepLink);
+          // App environment: redirect to web-based OAuth success page
+          console.log(`📱 App detected, redirecting to OAuth success page for session: ${req.sessionID}`);
+          // Redirect to a web page that the WebView can handle
+          return res.redirect(`/oauth-success?provider=google&session=${req.sessionID}&userId=${user.userId}`);
         }
         
         // Web environment: normal redirect
@@ -838,22 +838,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const isApp = stateData.isApp || req.get('User-Agent')?.includes('MyTrainPro-iOS');
         
         if (isApp) {
-          // App environment: use HTML redirect (POST can't redirect to custom scheme directly)
-          const deepLink = `mytrainpro://auth/callback?session=${req.sessionID}&userId=${user.userId}`;
-          console.log(`📱 Redirecting to app via deep link: ${deepLink}`);
-          
+          // App environment: redirect to web-based OAuth success page
+          console.log(`📱 App detected, redirecting to OAuth success page for session: ${req.sessionID}`);
+          // For Apple POST callback, we need to send HTML that redirects
           return res.send(`
             <!DOCTYPE html>
             <html>
               <head>
-                <meta http-equiv="refresh" content="0;url=${deepLink}">
+                <meta http-equiv="refresh" content="0;url=/oauth-success?provider=apple&session=${req.sessionID}&userId=${user.userId}">
                 <title>Redirecting to MyTrainPro...</title>
               </head>
               <body>
                 <script>
-                  window.location.href = '${deepLink}';
+                  window.location.href = '/oauth-success?provider=apple&session=${req.sessionID}&userId=${user.userId}';
                 </script>
-                <p>Redirecting to MyTrainPro app...</p>
+                <p>Completing sign in...</p>
               </body>
             </html>
           `);

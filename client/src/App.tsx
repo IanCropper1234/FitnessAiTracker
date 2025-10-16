@@ -15,6 +15,7 @@ import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { TimezoneUtils } from "@shared/utils/timezone";
 import { useVisibilityDetection } from "./hooks/useVisibilityDetection";
 import Auth from "./pages/auth";
+import OAuthSuccess from "./pages/oauth-success";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
 import { AddFood } from "./pages/add-food";
@@ -139,6 +140,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
     ];
     const publicPages = [
       '/auth',
+      '/oauth-success',
       '/email-verification', 
       '/privacy-policy',
       '/terms-of-service'
@@ -231,6 +233,15 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
                 <div className="animate-pulse text-gray-600 dark:text-gray-400">Loading dashboard...</div>
               </div>
             )}
+          </AnimatedPage>
+        </Route>
+        <Route path="/oauth-success">
+          <AnimatedPage>
+            <OAuthSuccess onSuccess={() => {
+              console.log('OAuth success, refreshing auth status');
+              // The OAuth success page will handle the redirect
+              window.location.reload();
+            }} />
           </AnimatedPage>
         </Route>
         <Route path="/auth">
