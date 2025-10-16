@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.trainpro.app',
   appName: 'MyTrainPro',
-  webDir: 'dist/public',
+  // No webDir - we're loading from remote URL only
   server: {
     // Production: Load from mytrainpro.com
     url: 'https://mytrainpro.com',

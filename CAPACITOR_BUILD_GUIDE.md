@@ -30,16 +30,40 @@ node --version
 
 ## 🛠️ Step 1: 在 Replit 準備代碼
 
-### 1.1 同步 Capacitor 配置
+### 1.1 確認配置正確
+
+**重要：** 確保 `capacitor.config.ts` 配置如下：
+
+```typescript
+const config: CapacitorConfig = {
+  appId: 'com.trainpro.app',
+  appName: 'MyTrainPro',
+  // ✅ 不設置 webDir - 直接載入遠程 URL
+  server: {
+    url: 'https://mytrainpro.com',  // ✅ 載入生產網站
+    cleartext: false
+  }
+}
+```
+
+**⚠️ 常見錯誤：** 如果設置了 `webDir: 'dist/public'`，app 會載入舊的本地文件而不是最新的遠程網站！
+
+### 1.2 同步 Capacitor 配置
 ```bash
 cd /path/to/your/project
+
+# 清理舊文件（如果存在）
+rm -rf ios/App/App/public
+rm -rf dist/public/*
+
+# 同步配置到 iOS
 npx cap sync ios
 ```
 
 這會：
-- 複製 Web 資源到 iOS 項目
 - 更新原生配置
 - 安裝插件
+- 準備 iOS 項目
 
 ### 1.2 下載項目到本地 Mac
 
@@ -196,8 +220,9 @@ server: {
 
 然後：
 1. 在 Replit 啟動開發服務器
-2. 在 Xcode 運行到真機或模擬器
-3. App 會加載本地服務器
+2. 清理並同步：`npx cap sync ios`
+3. 在 Xcode 運行到真機或模擬器
+4. App 會加載本地服務器
 
 **上線前記得改回：**
 ```typescript
@@ -206,6 +231,31 @@ server: {
   cleartext: false
 }
 ```
+
+### Q: App 顯示舊版本怎麼辦？
+
+這通常是因為配置錯誤。解決方案：
+
+1. **確認配置正確**：
+   ```bash
+   # 不應該有 webDir 配置！
+   cat capacitor.config.ts | grep webDir
+   # 應該沒有輸出
+   ```
+
+2. **清理舊文件**：
+   ```bash
+   rm -rf ios/App/App/public
+   rm -rf dist/public/*
+   ```
+
+3. **重新同步和建構**：
+   ```bash
+   npx cap sync ios
+   # 在 Xcode 中 Clean Build (⌘⇧K) 並重新 Archive
+   ```
+
+📖 詳細說明請參考 `CAPACITOR_FIX_INSTRUCTIONS.md`
 
 ### Q: 建構失敗怎麼辦？
 
