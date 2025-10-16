@@ -445,12 +445,9 @@ export default function Auth({ onSuccess }: AuthProps) {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center space-x-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600" />
-                        <div>
-                          <div className="text-white font-semibold">{testimonial.name}</div>
-                          <div className="text-gray-400 text-sm">{testimonial.role}</div>
-                        </div>
+                      <div>
+                        <div className="text-white font-semibold">{testimonial.name}</div>
+                        <div className="text-gray-400 text-sm">{testimonial.role}</div>
                       </div>
                     </CardContent>
                   </Card>
