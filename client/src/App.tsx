@@ -55,6 +55,7 @@ import { InstantLoadingScreen } from "@/components/InstantLoadingScreen";
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
 import { initializeWorkoutSettings } from "@/hooks/useSettings";
 import { AnimatePresence } from "framer-motion";
+import { setupCapacitorOAuthListener } from "@/utils/capacitorAuth";
 
 interface User {
   id: number;
@@ -501,6 +502,11 @@ function AppContent() {
   // Setup global error handling - must be at top level
   useEffect(() => {
     setupGlobalErrorHandling();
+  }, []);
+
+  // Setup Capacitor OAuth deep link listener
+  useEffect(() => {
+    setupCapacitorOAuthListener();
   }, []);
 
   // Clear cache when user changes to prevent data leakage
