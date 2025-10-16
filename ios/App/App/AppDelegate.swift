@@ -75,8 +75,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        // Called when the app was launched with a url. Feel free to add additional processing here,
-        // but if you want the App API to support tracking app url opens, make sure to keep this call
+        print("📱 [Deep Link] App opened with URL: \(url.absoluteString)")
+        
+        // Handle mytrainpro:// OAuth callback
+        if url.scheme == "mytrainpro" && url.host == "auth" && url.path == "/callback" {
+            print("✅ [Deep Link] OAuth callback detected")
+            
+            // Parse query parameters
+            if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+               let queryItems = components.queryItems {
+                
+                var params: [String: String] = [:]
+                for item in queryItems {
+                    if let value = item.value {
+                        params[item.name] = value
+                    }
+                }
+                
+                if let sessionId = params["session"], let userId = params["userId"] {
+                    print("📱 [Deep Link] Session ID: \(sessionId), User ID: \(userId)")
+                    
+                    // Notify WebView about successful OAuth
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("capacitorOAuthSuccess"),
+                        object: nil,
+                        userInfo: ["sessionId": sessionId, "userId": userId]
+                    )
+                    
+                    return true
+                }
+            }
+        }
+        
+        // Fallback to Capacitor default handler
         return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
     }
 
