@@ -9,10 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { ExternalLink, Mail, Lock } from "lucide-react";
+import { ExternalLink, Mail, Lock, Dumbbell, Activity, Brain, Shield } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistrationForm";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "wouter";
 
 interface User {
   id: number;
@@ -284,14 +285,63 @@ export default function Auth({ onSuccess }: AuthProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
-      <Card className="border-2 text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-sm w-full max-w-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 pl-[10px] pr-[10px]">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-black dark:text-white">TrainPro</CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-400">
-            {t("welcome") || "AI-Powered Fitness Platform"}
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-black flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl space-y-6">
+        {/* App Introduction Section */}
+        <div className="text-center space-y-4 mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
+            Welcome to TrainPro
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Your AI-powered fitness companion for intelligent training and nutrition management. 
+            Get personalized recommendations based on evidence-based methodology.
+          </p>
+          
+          {/* Feature Highlights */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 max-w-3xl mx-auto">
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800">
+              <Dumbbell className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Smart Training</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">AI-powered workout recommendations</p>
+            </div>
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800">
+              <Activity className="w-8 h-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Nutrition Tracking</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">AI-assisted food recognition</p>
+            </div>
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800">
+              <Brain className="w-8 h-8 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Evidence-Based</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Scientific periodization principles</p>
+            </div>
+          </div>
+
+          {/* Data Usage Notice */}
+          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-6 max-w-2xl mx-auto">
+            <div className="flex items-start gap-3">
+              <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-left">
+                <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-1">
+                  How We Use Your Data
+                </h4>
+                <p className="text-xs text-blue-800 dark:text-blue-200">
+                  We request access to your email and profile information to create your account and provide personalized fitness recommendations. 
+                  Your data is used solely to deliver AI-powered training and nutrition insights, track your progress, and improve your experience. 
+                  We never share your personal information with third parties without your consent.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Authentication Card */}
+        <Card className="border-2 text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-sm w-full max-w-md mx-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 pl-[10px] pr-[10px]">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-black dark:text-white">Sign In or Sign Up</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-400">
+              Choose your preferred method to get started
+            </CardDescription>
+          </CardHeader>
         <CardContent className="p-5 pt-2 pl-[0px] pr-[0px]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800 relative overflow-hidden transition-all duration-300 ease-in-out p-1 rounded-lg">
@@ -444,6 +494,30 @@ export default function Auth({ onSuccess }: AuthProps) {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Privacy Policy and Terms Links */}
+      <div className="text-center max-w-md mx-auto pt-6 pb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          By signing in, you agree to our terms and policies
+        </p>
+        <div className="flex justify-center gap-6 text-sm">
+          <Link href="/privacy-policy">
+            <a className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" data-testid="link-privacy-policy">
+              <Shield className="w-3 h-3" />
+              Privacy Policy
+            </a>
+          </Link>
+          <Link href="/terms-of-service">
+            <a className="text-blue-600 dark:text-blue-400 hover:underline" data-testid="link-terms">
+              Terms of Service
+            </a>
+          </Link>
+        </div>
+        <p className="text-xs text-gray-500 dark:text-gray-500 mt-4">
+          © {new Date().getFullYear()} TrainPro. All rights reserved.
+        </p>
+      </div>
+      </div>
     </div>
   );
 }
