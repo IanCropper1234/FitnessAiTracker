@@ -3,6 +3,19 @@
 ## Overview
 TrainPro is an enterprise-grade AI-powered fitness platform designed to provide intelligent, adaptive training, and comprehensive nutrition and workout management. It leverages evidence-based periodization methodology combined with AI recommendations to offer personalized coaching at scale. The platform aims to capture a significant share of the digital fitness market by providing a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
+## Recent Changes
+### Professional Landing Page Redesign (October 16, 2025)
+- **Complete Auth Page Transformation**: Redesigned `/auth` as professional app landing page
+  - Added animated hero section with gradient background effects and call-to-action buttons
+  - Implemented responsive navigation bar with smooth scroll navigation and mobile hamburger menu
+  - Created 4 animated feature cards showcasing AI Intelligence, Scientific Periodization, Precision Nutrition, and Personalized Programs
+  - Added statistics section displaying active users (50K+), success rate (98%), app rating (4.9), and AI support (24/7)
+  - Implemented testimonials section with user reviews from fitness enthusiasts and professionals
+  - Enhanced with Framer Motion animations for all interactive sections
+  - Professional gradient color scheme with purple-to-blue theme and glassmorphism effects
+  - Optimized for both desktop and mobile viewing experiences
+  - Maintained OAuth compliance with privacy notice and legal links
+
 ## User Preferences
 **Communication Language**:
 - Agent responses: Traditional Chinese (ZH-TW) for technical explanations and general communication
