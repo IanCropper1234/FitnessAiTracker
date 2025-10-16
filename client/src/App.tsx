@@ -43,6 +43,7 @@ import { NotFound } from "./components/NotFound";
 import TrainingAnalytics from "./pages/training-analytics";
 import AIExerciseRecommendations from "./pages/ai-exercise-recommendations";
 import EnhancedNutritionAI from "./pages/enhanced-nutrition-ai";
+import OAuthTest from "./pages/oauth-test";
 import { AnimatedPage } from "./components/page-transition";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -392,6 +393,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/enhanced-nutrition-ai">
           <AnimatedPage>
             {user ? <EnhancedNutritionAI /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/oauth-test">
+          <AnimatedPage>
+            <OAuthTest />
           </AnimatedPage>
         </Route>
         <Route>
