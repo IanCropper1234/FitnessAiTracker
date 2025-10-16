@@ -88,8 +88,8 @@ export default function Auth({ onSuccess }: AuthProps) {
     onSuccess: (data) => {
       if (data && data.user) {
         toast({
-          title: t("welcome_back") || "Welcome back",
-          description: `${t("welcome_back") || "Welcome back"} ${data.user.name || 'User'}!`
+          title: t("auth.welcome_back") || "Welcome back",
+          description: `${t("auth.welcome_back") || "Welcome back"} ${data.user.name || 'User'}!`
         });
         onSuccess(data.user);
       } else {
