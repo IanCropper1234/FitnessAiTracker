@@ -4,7 +4,7 @@
 MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provide intelligent, adaptive training, and comprehensive nutrition and workout management. It leverages evidence-based periodization methodology combined with AI recommendations to offer personalized coaching at scale. The platform aims to capture a significant share of the digital fitness market by providing a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
 ## Recent Changes
-### OAuth Deep Linking Complete Fix for iOS App (October 17, 2025)
+### OAuth Deep Linking Fix with Manual Return Button for iOS App (October 17, 2025)
 - **Enhanced OAuth Flow for Capacitor iOS App**:
   - Fixed iOS AppDelegate.swift to properly import Capacitor and handle deep links
   - OAuth success page now uses multiple methods to trigger deep link (location.href and window.open)
