@@ -21,11 +21,13 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
         const provider = params.get('provider');
         const sessionId = params.get('session');
         const userId = params.get('userId');
+        const isApp = params.get('app') === '1';
 
         console.log('[OAuth Success] Processing OAuth callback:', {
           provider,
           sessionId: sessionId?.substring(0, 10) + '...',
           userId,
+          isApp,
           isCapacitor: Capacitor.isNativePlatform()
         });
 
@@ -33,20 +35,43 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
           throw new Error('Missing session or user information');
         }
 
-        // Mark onboarding as completed for OAuth users
-        localStorage.setItem('trainpro-onboarding-completed', 'true');
-        console.log('[OAuth Success] Marked onboarding as completed');
-
         // Show success briefly
         setStatus('success');
         setMessage(`Successfully signed in with ${provider === 'apple' ? 'Apple' : 'Google'}`);
 
-        // Wait a moment to show success, then redirect
-        setTimeout(() => {
-          console.log('[OAuth Success] Redirecting to dashboard...');
-          onSuccess();
-          setLocation('/');
-        }, 1500);
+        // If this is from the app (opened in external browser), use deep link to return to app
+        if (isApp || !Capacitor.isNativePlatform()) {
+          // We're in an external browser after OAuth, need to return to app using deep link
+          console.log('[OAuth Success] Redirecting to app via deep link...');
+          
+          // Try deep link first
+          const deepLink = `mytrainpro://auth/callback?session=${sessionId}&userId=${userId}`;
+          console.log('[OAuth Success] Attempting deep link:', deepLink);
+          
+          // Attempt to open the deep link
+          window.location.href = deepLink;
+          
+          // Also set a fallback in case deep link doesn't work
+          setTimeout(() => {
+            setMessage('Please return to the MyTrainPro app');
+            // If still here after 2 seconds, show message to manually return to app
+            setStatus('success');
+          }, 2000);
+        } else {
+          // We're in the app's WebView, can navigate normally
+          console.log('[OAuth Success] In app WebView, navigating normally...');
+          
+          // Mark onboarding as completed for OAuth users
+          localStorage.setItem('trainpro-onboarding-completed', 'true');
+          console.log('[OAuth Success] Marked onboarding as completed');
+          
+          // Wait a moment to show success, then redirect
+          setTimeout(() => {
+            console.log('[OAuth Success] Redirecting to dashboard...');
+            onSuccess();
+            setLocation('/');
+          }, 1500);
+        }
 
       } catch (error) {
         console.error('[OAuth Success] Error processing OAuth callback:', error);
