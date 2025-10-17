@@ -725,6 +725,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })(req, res, next);
   });
 
+  // Session restoration endpoint for OAuth deep link returns
+  app.get('/api/auth/restore-session', async (req, res) => {
+    const { sessionId, userId, redirect } = req.query;
+    
+    console.log('[Session Restore] Request received:', {
+      sessionId: sessionId ? (sessionId as string).substring(0, 10) + '...' : 'missing',
+      userId,
+      redirect,
+      currentSessionId: req.sessionID
+    });
+    
+    if (!sessionId || !userId) {
+      console.error('[Session Restore] Missing required parameters');
+      return res.redirect('/auth?error=invalid_session');
+    }
+    
+    try {
+      // Validate that the user exists
+      const user = await storage.getUser(parseInt(userId as string));
+      if (!user) {
+        console.error('[Session Restore] User not found:', userId);
+        return res.redirect('/auth?error=user_not_found');
+      }
+      
+      // Set up the session
+      const session = req.session as any;
+      session.userId = user.id;
+      session.provider = 'oauth';
+      session.loginTime = Date.now();
+      session.userAgent = req.get('User-Agent') || 'unknown';
+      session.clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+      
+      // Save session before redirecting
+      await new Promise<void>((resolve, reject) => {
+        session.save((err: any) => {
+          if (err) {
+            console.error('[Session Restore] Failed to save session:', err);
+            reject(err);
+          } else {
+            console.log(`[Session Restore] ✅ Session restored for user ${user.id}`);
+            resolve();
+          }
+        });
+      });
+      
+      // Redirect to the requested path or dashboard
+      const redirectPath = (redirect as string) || '/';
+      console.log(`[Session Restore] Redirecting to: ${redirectPath}`);
+      res.redirect(redirectPath);
+      
+    } catch (error) {
+      console.error('[Session Restore] Error:', error);
+      res.redirect('/auth?error=session_restore_failed');
+    }
+  });
+
   // Apple Sign In routes
   app.post('/api/auth/apple', (req, res, next) => {
     console.log('🍎 [Apple OAuth] Initial request received:', {

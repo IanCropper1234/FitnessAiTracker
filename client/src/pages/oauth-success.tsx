@@ -39,30 +39,39 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
         setStatus('success');
         setMessage(`Successfully signed in with ${provider === 'apple' ? 'Apple' : 'Google'}`);
 
-        // If this is from the app (opened in external browser), use deep link to return to app
-        if (isApp || !Capacitor.isNativePlatform()) {
-          // We're in an external browser after OAuth, need to return to app using deep link
-          console.log('[OAuth Success] Redirecting to app via deep link...');
+        // Determine if we're in external browser or app WebView
+        const isInAppWebView = Capacitor.isNativePlatform();
+        const isFromAppOAuth = isApp === true; // URL param indicates OAuth initiated from app
+        
+        console.log('[OAuth Success] Environment check:', {
+          isInAppWebView,
+          isFromAppOAuth,
+          needsDeepLink: isFromAppOAuth && !isInAppWebView
+        });
+
+        if (isFromAppOAuth && !isInAppWebView) {
+          // We're in an external browser after OAuth from app, need deep link to return
+          console.log('[OAuth Success] In external browser, using deep link to return to app...');
           
-          // Try deep link first
+          // Try deep link immediately
           const deepLink = `mytrainpro://auth/callback?session=${sessionId}&userId=${userId}`;
-          console.log('[OAuth Success] Attempting deep link:', deepLink);
+          console.log('[OAuth Success] Triggering deep link:', deepLink);
           
-          // Attempt to open the deep link
+          // Use location.href to trigger the deep link
           window.location.href = deepLink;
           
-          // Also set a fallback in case deep link doesn't work
+          // Show fallback message after a delay
           setTimeout(() => {
-            setMessage('Please return to the MyTrainPro app');
-            // If still here after 2 seconds, show message to manually return to app
+            setMessage('If the app did not open, please return to MyTrainPro manually');
             setStatus('success');
           }, 2000);
         } else {
-          // We're in the app's WebView, can navigate normally
-          console.log('[OAuth Success] In app WebView, navigating normally...');
+          // We're either in the app's WebView or this is a web-only OAuth
+          console.log('[OAuth Success] In app WebView or web browser, navigating normally...');
           
           // Mark onboarding as completed for OAuth users
           localStorage.setItem('trainpro-onboarding-completed', 'true');
+          localStorage.setItem('mytrainpro-onboarding-completed', 'true'); // Also set with new prefix
           console.log('[OAuth Success] Marked onboarding as completed');
           
           // Wait a moment to show success, then redirect

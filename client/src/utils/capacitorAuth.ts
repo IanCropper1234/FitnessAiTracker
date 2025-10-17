@@ -35,16 +35,19 @@ export function setupCapacitorOAuthListener() {
           // OAuth users shouldn't see the first-time user animation
           if (typeof window !== 'undefined') {
             localStorage.setItem('trainpro-onboarding-completed', 'true');
+            localStorage.setItem('mytrainpro-onboarding-completed', 'true');
             console.log('[Capacitor Auth] Marked onboarding as completed for OAuth user');
+            
+            // Store session info temporarily to help with session restoration
+            localStorage.setItem('oauth-session-id', sessionId);
+            localStorage.setItem('oauth-user-id', userId);
+            console.log('[Capacitor Auth] Stored OAuth session info for restoration');
           }
           
-          // Small delay to ensure session cookie is properly set before reload
-          // This prevents race conditions and loading issues
-          console.log('[Capacitor Auth] Waiting for session to sync...');
-          setTimeout(() => {
-            console.log('[Capacitor Auth] Reloading to root path with session');
-            window.location.replace('/');
-          }, 300);
+          // Redirect to a special URL that will trigger session restoration
+          console.log('[Capacitor Auth] Redirecting to session restoration endpoint...');
+          // Use the session restoration endpoint to ensure cookies are set
+          window.location.href = `/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`;
         } else {
           console.error('[Capacitor Auth] Missing session or userId in callback');
           window.location.href = '/login?error=oauth_callback_failed';
