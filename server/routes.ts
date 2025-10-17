@@ -781,8 +781,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Apple Sign In routes
-  app.post('/api/auth/apple', (req, res, next) => {
+  // Apple Sign In routes - handle both GET and POST
+  app.all('/api/auth/apple', (req, res, next) => {
+    // Only handle GET and POST methods
+    if (req.method !== 'GET' && req.method !== 'POST') {
+      return res.status(405).send('Method Not Allowed');
+    }
+    
     console.log('🍎 [Apple OAuth] Initial request received:', {
       method: req.method,
       url: req.url,
@@ -804,7 +809,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Generate CSRF state token
     const state = randomBytes(32).toString('hex');
-    const redirectUrl = req.body.redirect || '/';
+    // Get redirect URL from query (GET) or body (POST)
+    const redirectUrl = req.query.redirect as string || req.body.redirect || '/';
     // Check if from Capacitor app - from query param or User-Agent
     const isApp = req.query.app === '1' || req.get('user-agent')?.includes('MyTrainPro-iOS');
     
