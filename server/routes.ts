@@ -869,6 +869,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!user || !user.userId) {
         console.error('No user returned from Apple Sign In');
+        // Check if this is from app and redirect appropriately
+        const isApp = stateData.isApp || req.get('User-Agent')?.includes('MyTrainPro-iOS');
+        if (isApp) {
+          return res.redirect('/auth?error=oauth_failed');
+        }
         return res.redirect('/login?error=no_user');
       }
 
@@ -898,18 +903,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // App environment: redirect to web-based OAuth success page with app flag
           console.log(`📱 App detected, redirecting to OAuth success page for session: ${req.sessionID}`);
           // For Apple POST callback, we need to send HTML that redirects
+          // Use https URL for Universal Links as fallback
+          const redirectUrl = `/oauth-success?provider=apple&session=${req.sessionID}&userId=${user.userId}&app=1`;
           return res.send(`
             <!DOCTYPE html>
             <html>
               <head>
-                <meta http-equiv="refresh" content="0;url=/oauth-success?provider=apple&session=${req.sessionID}&userId=${user.userId}&app=1">
+                <meta http-equiv="refresh" content="0;url=${redirectUrl}">
                 <title>Redirecting to MyTrainPro...</title>
               </head>
               <body>
                 <script>
-                  window.location.href = '/oauth-success?provider=apple&session=${req.sessionID}&userId=${user.userId}&app=1';
+                  // Try to redirect immediately
+                  window.location.href = '${redirectUrl}';
                 </script>
                 <p>Completing sign in...</p>
+                <p><a href="${redirectUrl}">Click here if not redirected</a></p>
               </body>
             </html>
           `);

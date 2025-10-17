@@ -50,37 +50,56 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
         });
 
         if (isFromAppOAuth && !isInAppWebView) {
-          // We're in an external browser after OAuth from app, need deep link to return
-          console.log('[OAuth Success] In external browser, showing return button...');
+          // We're in an external browser after OAuth from app
+          console.log('[OAuth Success] In external browser, showing return options...');
           
           const deepLink = `mytrainpro://auth/callback?session=${sessionId}&userId=${userId}`;
           console.log('[OAuth Success] Deep link URL:', deepLink);
           
-          // Don't try to auto-trigger the deep link due to iOS security restrictions
-          // Instead, show a prominent button immediately
+          // Store session info for manual app return
+          localStorage.setItem('pending-oauth-session', JSON.stringify({
+            sessionId,
+            userId,
+            provider,
+            timestamp: Date.now()
+          }));
+          
           setMessage(
             <div className="space-y-4">
               <p className="text-center text-sm text-muted-foreground">
-                Sign in successful! Tap below to return to the app.
+                Sign in successful! Choose how to return to the app:
               </p>
+              
+              {/* Option 1: Deep Link (may not work if URL scheme not registered) */}
               <a 
                 href={deepLink}
                 className="block w-full px-6 py-3 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 active:scale-95 transition-transform"
                 data-testid="button-return-app"
               >
-                Return to MyTrainPro App
+                Open MyTrainPro App
               </a>
-              <div className="text-center">
-                <a 
-                  href={`/app-redirect?session=${sessionId}&userId=${userId}`}
-                  className="text-xs text-primary underline"
-                  data-testid="link-alternative-redirect"
-                >
-                  Alternative redirect (if button above doesn't work)
-                </a>
+              
+              {/* Option 2: Universal Link */}
+              <a 
+                href={`https://mytrainpro.com/app-redirect?session=${sessionId}&userId=${userId}`}
+                className="block w-full px-6 py-3 bg-secondary text-secondary-foreground text-center rounded-lg font-medium hover:bg-secondary/90"
+                data-testid="button-universal-link"
+              >
+                Alternative: Open via Universal Link
+              </a>
+              
+              {/* Option 3: Manual instructions */}
+              <div className="border rounded-lg p-3 bg-muted/50">
+                <p className="text-xs font-medium mb-1">Manual Return:</p>
+                <ol className="text-xs text-muted-foreground space-y-1">
+                  <li>1. Close this browser tab</li>
+                  <li>2. Open MyTrainPro app</li>
+                  <li>3. You'll be automatically signed in</li>
+                </ol>
               </div>
+              
               <p className="text-xs text-center text-muted-foreground">
-                Or close this browser and open MyTrainPro app manually.
+                Session saved. The app will detect your login when you return.
               </p>
             </div>
           );

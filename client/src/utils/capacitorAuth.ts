@@ -14,6 +14,14 @@ export function setupCapacitorOAuthListener() {
 
   console.log('[Capacitor Auth] Setting up OAuth deep link listener');
 
+  // Check for pending OAuth session on app resume
+  App.addListener('appStateChange', (state: { isActive: boolean }) => {
+    if (state.isActive) {
+      console.log('[Capacitor Auth] App became active, checking for pending OAuth...');
+      checkPendingOAuthSession();
+    }
+  });
+
   // Listen for app URL open events (deep links)
   App.addListener('appUrlOpen', (data: { url: string }) => {
     console.log('[Capacitor Auth] App URL opened:', data.url);
@@ -58,7 +66,43 @@ export function setupCapacitorOAuthListener() {
     }
   });
 
+  // Check for pending OAuth on startup
+  checkPendingOAuthSession();
+  
   console.log('[Capacitor Auth] OAuth listener setup complete');
+}
+
+/**
+ * Check for pending OAuth session from external browser
+ */
+function checkPendingOAuthSession() {
+  try {
+    const pendingOAuth = localStorage.getItem('pending-oauth-session');
+    if (pendingOAuth) {
+      const { sessionId, userId, timestamp } = JSON.parse(pendingOAuth);
+      
+      // Check if session is less than 5 minutes old
+      const age = Date.now() - timestamp;
+      if (age < 5 * 60 * 1000) {
+        console.log('[Capacitor Auth] Found pending OAuth session, restoring...');
+        
+        // Clear the pending session
+        localStorage.removeItem('pending-oauth-session');
+        
+        // Mark onboarding as completed
+        localStorage.setItem('trainpro-onboarding-completed', 'true');
+        localStorage.setItem('mytrainpro-onboarding-completed', 'true');
+        
+        // Restore the session
+        window.location.href = `/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`;
+      } else {
+        console.log('[Capacitor Auth] Pending OAuth session too old, clearing...');
+        localStorage.removeItem('pending-oauth-session');
+      }
+    }
+  } catch (error) {
+    console.error('[Capacitor Auth] Error checking pending OAuth:', error);
+  }
 }
 
 /**
