@@ -51,39 +51,40 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
 
         if (isFromAppOAuth && !isInAppWebView) {
           // We're in an external browser after OAuth from app, need deep link to return
-          console.log('[OAuth Success] In external browser, using deep link to return to app...');
+          console.log('[OAuth Success] In external browser, showing return button...');
           
-          // Try deep link immediately
           const deepLink = `mytrainpro://auth/callback?session=${sessionId}&userId=${userId}`;
-          console.log('[OAuth Success] Triggering deep link:', deepLink);
+          console.log('[OAuth Success] Deep link URL:', deepLink);
           
-          // Attempt multiple methods to trigger the deep link
-          // Method 1: Direct location change
-          window.location.href = deepLink;
-          
-          // Method 2: Also try window.open as fallback (some browsers handle this better)
-          setTimeout(() => {
-            if (document.hasFocus()) {
-              // Only try window.open if page still has focus (user hasn't switched away)
-              window.open(deepLink, '_self');
-            }
-          }, 100);
-          
-          // Show fallback message and button after a delay
-          setTimeout(() => {
-            setMessage(
-              <div className="space-y-3">
-                <p>If the app did not open automatically, please tap the button below:</p>
+          // Don't try to auto-trigger the deep link due to iOS security restrictions
+          // Instead, show a prominent button immediately
+          setMessage(
+            <div className="space-y-4">
+              <p className="text-center text-sm text-muted-foreground">
+                Sign in successful! Tap below to return to the app.
+              </p>
+              <a 
+                href={deepLink}
+                className="block w-full px-6 py-3 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 active:scale-95 transition-transform"
+                data-testid="button-return-app"
+              >
+                Return to MyTrainPro App
+              </a>
+              <div className="text-center">
                 <a 
-                  href={deepLink}
-                  className="inline-block px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                  href={`/app-redirect?session=${sessionId}&userId=${userId}`}
+                  className="text-xs text-primary underline"
+                  data-testid="link-alternative-redirect"
                 >
-                  Return to MyTrainPro App
+                  Alternative redirect (if button above doesn't work)
                 </a>
               </div>
-            );
-            setStatus('success');
-          }, 2000);
+              <p className="text-xs text-center text-muted-foreground">
+                Or close this browser and open MyTrainPro app manually.
+              </p>
+            </div>
+          );
+          setStatus('success');
         } else {
           // We're either in the app's WebView or this is a web-only OAuth
           console.log('[OAuth Success] In app WebView or web browser, navigating normally...');

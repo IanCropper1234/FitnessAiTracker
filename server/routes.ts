@@ -805,7 +805,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Generate CSRF state token
     const state = randomBytes(32).toString('hex');
     const redirectUrl = req.body.redirect || '/';
-    const isApp = req.query.app === '1'; // Check if from Capacitor app
+    // Check if from Capacitor app - from query param or User-Agent
+    const isApp = req.query.app === '1' || req.get('user-agent')?.includes('MyTrainPro-iOS');
     
     oauthStates.set(state, { 
       timestamp: Date.now(),

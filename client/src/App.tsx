@@ -16,6 +16,7 @@ import { TimezoneUtils } from "@shared/utils/timezone";
 import { useVisibilityDetection } from "./hooks/useVisibilityDetection";
 import Auth from "./pages/auth";
 import OAuthSuccess from "./pages/oauth-success";
+import AppRedirect from "./pages/app-redirect";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
 import { AddFood } from "./pages/add-food";
@@ -242,6 +243,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
               // The OAuth success page will handle the redirect
               window.location.reload();
             }} />
+          </AnimatedPage>
+        </Route>
+        <Route path="/app-redirect">
+          <AnimatedPage>
+            <AppRedirect />
           </AnimatedPage>
         </Route>
         <Route path="/auth">
