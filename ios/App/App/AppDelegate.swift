@@ -1,5 +1,5 @@
 import UIKit
-// Capacitor import removed - using React Native WebView instead
+import Capacitor
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -77,37 +77,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         print("📱 [Deep Link] App opened with URL: \(url.absoluteString)")
         
-        // Handle mytrainpro:// OAuth callback
-        if url.scheme == "mytrainpro" && url.host == "auth" && url.path == "/callback" {
-            print("✅ [Deep Link] OAuth callback detected")
-            
-            // Parse query parameters
-            if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-               let queryItems = components.queryItems {
-                
-                var params: [String: String] = [:]
-                for item in queryItems {
-                    if let value = item.value {
-                        params[item.name] = value
-                    }
-                }
-                
-                if let sessionId = params["session"], let userId = params["userId"] {
-                    print("📱 [Deep Link] Session ID: \(sessionId), User ID: \(userId)")
-                    
-                    // Notify WebView about successful OAuth
-                    NotificationCenter.default.post(
-                        name: NSNotification.Name("capacitorOAuthSuccess"),
-                        object: nil,
-                        userInfo: ["sessionId": sessionId, "userId": userId]
-                    )
-                    
-                    return true
-                }
-            }
-        }
-        
-        // Fallback to Capacitor default handler
+        // Let Capacitor handle all deep links through its default handler
+        // This will trigger the appUrlOpen event in the JavaScript code
         return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
     }
 

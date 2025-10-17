@@ -11,7 +11,7 @@ interface OAuthSuccessProps {
 export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
   const [, setLocation] = useLocation();
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
-  const [message, setMessage] = useState('Completing sign in...');
+  const [message, setMessage] = useState<React.ReactNode>('Completing sign in...');
 
   useEffect(() => {
     const handleOAuthSuccess = async () => {
@@ -57,12 +57,31 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
           const deepLink = `mytrainpro://auth/callback?session=${sessionId}&userId=${userId}`;
           console.log('[OAuth Success] Triggering deep link:', deepLink);
           
-          // Use location.href to trigger the deep link
+          // Attempt multiple methods to trigger the deep link
+          // Method 1: Direct location change
           window.location.href = deepLink;
           
-          // Show fallback message after a delay
+          // Method 2: Also try window.open as fallback (some browsers handle this better)
           setTimeout(() => {
-            setMessage('If the app did not open, please return to MyTrainPro manually');
+            if (document.hasFocus()) {
+              // Only try window.open if page still has focus (user hasn't switched away)
+              window.open(deepLink, '_self');
+            }
+          }, 100);
+          
+          // Show fallback message and button after a delay
+          setTimeout(() => {
+            setMessage(
+              <div className="space-y-3">
+                <p>If the app did not open automatically, please tap the button below:</p>
+                <a 
+                  href={deepLink}
+                  className="inline-block px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                >
+                  Return to MyTrainPro App
+                </a>
+              </div>
+            );
             setStatus('success');
           }, 2000);
         } else {
@@ -107,7 +126,7 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
                 <Loader2 className="h-12 w-12 text-primary animate-spin" />
                 <div className="text-center space-y-2">
                   <h2 className="text-xl font-semibold">Completing Sign In</h2>
-                  <p className="text-sm text-muted-foreground">{message}</p>
+                  <div className="text-sm text-muted-foreground">{message}</div>
                 </div>
               </>
             )}
@@ -119,8 +138,7 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
                 </div>
                 <div className="text-center space-y-2">
                   <h2 className="text-xl font-semibold">Sign In Successful!</h2>
-                  <p className="text-sm text-muted-foreground">{message}</p>
-                  <p className="text-xs text-muted-foreground">Redirecting to dashboard...</p>
+                  <div className="text-sm text-muted-foreground">{message}</div>
                 </div>
               </>
             )}
@@ -132,7 +150,7 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
                 </div>
                 <div className="text-center space-y-2">
                   <h2 className="text-xl font-semibold">Authentication Failed</h2>
-                  <p className="text-sm text-muted-foreground">{message}</p>
+                  <div className="text-sm text-muted-foreground">{message}</div>
                   <p className="text-xs text-muted-foreground">Redirecting to login...</p>
                 </div>
               </>
