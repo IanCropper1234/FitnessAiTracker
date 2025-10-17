@@ -6,14 +6,14 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provid
 ## Recent Changes
 ### OAuth Deep Linking Complete Fix for iOS App (October 17, 2025)
 - **Enhanced OAuth Flow for Capacitor iOS App**:
-  - Fixed OAuth success page logic to properly detect external browser vs app WebView
-  - Added session restoration endpoint `/api/auth/restore-session` for deep link returns
-  - Updated `capacitorAuth.ts` to call session restoration endpoint instead of simple reload
-  - OAuth success page now correctly triggers `mytrainpro://auth/callback` deep link when `app=1` parameter is present
-  - Deep link handler stores OAuth session info and redirects to restoration endpoint
-  - Server-side session restoration validates user and properly sets session cookies
-  - iOS system now properly prompts user to return to app after OAuth completion
-  - Both Google and Apple OAuth flows now correctly return users to the app dashboard
+  - Fixed iOS AppDelegate.swift to properly import Capacitor and handle deep links
+  - OAuth success page now uses multiple methods to trigger deep link (location.href and window.open)
+  - Added fallback button "Return to MyTrainPro App" if automatic deep link doesn't trigger
+  - Session restoration endpoint `/api/auth/restore-session` validates and restores user session
+  - Updated `capacitorAuth.ts` to call session restoration endpoint after deep link return
+  - OAuth success page correctly detects external browser vs app WebView using `Capacitor.isNativePlatform()`
+  - Both Google and Apple OAuth flows add `app=1` parameter for proper deep link handling
+  - iOS system shows "Allow mytrainpro.com to switch apps?" prompt with deep link URL
 
 ### Professional Landing Page Redesign (October 16, 2025)
 - **Complete Auth Page Transformation**: Redesigned `/auth` as professional app landing page
