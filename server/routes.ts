@@ -745,18 +745,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/check-pending-oauth', async (req, res) => {
     const { deviceId } = req.body;
     
-    console.log('[Pending OAuth Check] Request received from device:', deviceId?.substring(0, 10) + '...');
+    console.log('[Pending OAuth Check] Request received from device:', deviceId);
     
     try {
+      console.log('[Pending OAuth Check] Querying database...');
+      
       // Find the most recent unconsumed pending session
       const pending = await db.query.pendingOAuthSessions.findFirst({
         where: and(
           isNotNull(pendingOAuthSessions.sessionId),
-          sql`${pendingOAuthSessions.consumed_at} IS NULL`,
-          sql`${pendingOAuthSessions.expires_at} > NOW()`
+          sql`${pendingOAuthSessions.consumedAt} IS NULL`,
+          sql`${pendingOAuthSessions.expiresAt} > NOW()`
         ),
         orderBy: [desc(pendingOAuthSessions.createdAt)]
       });
+      
+      console.log('[Pending OAuth Check] Query result:', pending);
       
       if (!pending) {
         console.log('[Pending OAuth Check] No pending sessions found');
@@ -770,6 +774,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .set({ consumedAt: new Date() })
         .where(eq(pendingOAuthSessions.id, pending.id));
       
+      console.log('[Pending OAuth Check] Marked session as consumed');
+      
       // Return session info so app can restore it
       res.json({
         hasPending: true,
@@ -779,7 +785,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
     } catch (error) {
-      console.error('[Pending OAuth Check] Error:', error);
+      console.error('[Pending OAuth Check] Error details:', error);
+      console.error('[Pending OAuth Check] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       res.status(500).json({ error: 'Failed to check pending sessions' });
     }
   });

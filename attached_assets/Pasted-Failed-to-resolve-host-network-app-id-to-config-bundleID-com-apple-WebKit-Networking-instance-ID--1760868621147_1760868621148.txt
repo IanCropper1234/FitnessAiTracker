@@ -1,0 +1,54 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 37978836-CE0F-4500-9E13-B6B8602C1DD5])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+GPU process (0x11506d8b0) took 1.227103 seconds to launch
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 78AB7E26-DCEA-412E-BBFD-B82EADC9C28B
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session...
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 46473693
+⚡️  To Native ->  App addListener 46473694
+⚡️  To Native ->  App getInfo 46473695
+⚡️  TO JS {"name":"MyTrainPro","build":"12","version":"1.0","id":"com.fitnessaitracker.app"}
+⚡️  To Native ->  App getLaunchUrl 46473696
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - [Capacitor Auth] Server check failed: 500
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Redirecting for mobile/app OAuth: /api/auth/google?app=1
+0x10703a018 - [pageProxyID=10, webPageID=11, PID=80748] WebPageProxy::didFailProvisionalLoadForFrame: frameID=14, isMainFrame=1, domain=WebKitErrorDomain, code=102, isMainFrame=1, willInternallyHandleFailure=0
+⚡️  WebView failed provisional navigation
+⚡️  Error: Frame load interrupted
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 106D7D84-214D-4DF6-A563-2F3C4B7D2457
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = E5387F2B-9FC3-4716-8613-5DB0D812095A
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 833E27A0-E6C2-47FB-BC3A-FF6A877B3353
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = FA40A969-07C4-402A-BAE5-14C1726371BE
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = FA40A969-07C4-402A-BAE5-14C1726371BE
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = FA40A969-07C4-402A-BAE5-14C1726371BE
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = FA40A969-07C4-402A-BAE5-14C1726371BE
+⚡️  [log] - [Capacitor Auth] Page became visible, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session...
+⚡️  [log] - Visibility changed: {"isVisible":true,"wasVisible":false}
+⚡️  [log] - App returned from background after: 9089 ms
+⚡️  [log] - [App] Visibility changed: visible
+⚡️  [log] - [Capacitor Auth] Server check failed: 500
