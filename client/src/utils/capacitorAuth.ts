@@ -192,32 +192,47 @@ function handleDeepLink(urlString: string) {
 }
 
 /**
- * Check for pending OAuth session from external browser
+ * Check for pending OAuth session from server (server-side solution)
+ * This works even when Safari and WebView have separate storage
  */
-function checkPendingOAuthSession() {
+async function checkPendingOAuthSession() {
   try {
-    const pendingOAuth = localStorage.getItem('pending-oauth-session');
-    if (pendingOAuth) {
-      const { sessionId, userId, timestamp } = JSON.parse(pendingOAuth);
+    console.log('[Capacitor Auth] Checking server for pending OAuth session...');
+    
+    // Generate or retrieve device ID
+    let deviceId = localStorage.getItem('device-id');
+    if (!deviceId) {
+      deviceId = Math.random().toString(36).substring(7);
+      localStorage.setItem('device-id', deviceId);
+    }
+    
+    // Check server for pending sessions
+    const response = await fetch('/api/auth/check-pending-oauth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ deviceId })
+    });
+    
+    if (!response.ok) {
+      console.log('[Capacitor Auth] Server check failed:', response.status);
+      return;
+    }
+    
+    const data = await response.json();
+    
+    if (data.hasPending) {
+      console.log(`[Capacitor Auth] ✅ Found pending OAuth session for user ${data.userId}!`);
       
-      // Check if session is less than 5 minutes old
-      const age = Date.now() - timestamp;
-      if (age < 5 * 60 * 1000) {
-        console.log('[Capacitor Auth] Found pending OAuth session, restoring...');
-        
-        // Clear the pending session
-        localStorage.removeItem('pending-oauth-session');
-        
-        // Mark onboarding as completed
-        localStorage.setItem('trainpro-onboarding-completed', 'true');
-        localStorage.setItem('mytrainpro-onboarding-completed', 'true');
-        
-        // Restore the session
-        window.location.href = `/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`;
-      } else {
-        console.log('[Capacitor Auth] Pending OAuth session too old, clearing...');
-        localStorage.removeItem('pending-oauth-session');
-      }
+      // Mark onboarding as completed
+      localStorage.setItem('trainpro-onboarding-completed', 'true');
+      localStorage.setItem('mytrainpro-onboarding-completed', 'true');
+      
+      // Restore the session
+      console.log('[Capacitor Auth] Redirecting to restore session...');
+      window.location.href = `/api/auth/restore-session?sessionId=${data.sessionId}&userId=${data.userId}&redirect=/`;
+    } else {
+      console.log('[Capacitor Auth] No pending OAuth sessions found');
     }
   } catch (error) {
     console.error('[Capacitor Auth] Error checking pending OAuth:', error);

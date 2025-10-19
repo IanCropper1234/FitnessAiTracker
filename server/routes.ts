@@ -28,7 +28,7 @@ import analyticsRoutes from "./routes/analytics-simple.js";
 import aiRoutes from "./routes/ai.js";
 import aiMonitoringRoutes from "./routes/ai-monitoring.js";
 import { validateAndCleanupTemplates } from "./validate-templates";
-import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates, emailVerificationTokens, registrationAttempts } from "@shared/schema";
+import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates, emailVerificationTokens, registrationAttempts, pendingOAuthSessions } from "@shared/schema";
 import { 
   validatePasswordStrength,
   checkRegistrationRateLimit,
@@ -709,9 +709,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const isApp = stateData.isApp || req.get('User-Agent')?.includes('MyTrainPro-iOS');
         
         if (isApp) {
-          // App environment: redirect to web-based OAuth success page with app flag
-          console.log(`📱 App detected, redirecting to OAuth success page for session: ${req.sessionID}`);
-          // Redirect to a web page that will use deep link to return to app
+          // App environment: Create pending OAuth session in database
+          console.log(`📱 App detected, creating pending OAuth session for user: ${user.userId}`);
+          
+          try {
+            // Create pending session that app can poll for
+            const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+            await db.insert(pendingOAuthSessions).values({
+              userId: user.userId,
+              sessionId: req.sessionID,
+              provider: 'google',
+              deviceInfo: req.get('User-Agent'),
+              expiresAt
+            });
+            console.log(`✅ Pending OAuth session created for user ${user.userId}, session: ${req.sessionID}`);
+          } catch (err) {
+            console.error('Failed to create pending OAuth session:', err);
+          }
+          
+          // Redirect to web-based OAuth success page with app flag
           return res.redirect(`/oauth-success?provider=google&session=${req.sessionID}&userId=${user.userId}&app=1`);
         }
         
@@ -723,6 +739,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.redirect('/login?error=session_failed');
       }
     })(req, res, next);
+  });
+
+  // Check for pending OAuth sessions (for mobile app polling)
+  app.post('/api/auth/check-pending-oauth', async (req, res) => {
+    const { deviceId } = req.body;
+    
+    console.log('[Pending OAuth Check] Request received from device:', deviceId?.substring(0, 10) + '...');
+    
+    try {
+      // Find the most recent unconsumed pending session
+      const pending = await db.query.pendingOAuthSessions.findFirst({
+        where: and(
+          isNotNull(pendingOAuthSessions.sessionId),
+          sql`${pendingOAuthSessions.consumed_at} IS NULL`,
+          sql`${pendingOAuthSessions.expires_at} > NOW()`
+        ),
+        orderBy: [desc(pendingOAuthSessions.createdAt)]
+      });
+      
+      if (!pending) {
+        console.log('[Pending OAuth Check] No pending sessions found');
+        return res.json({ hasPending: false });
+      }
+      
+      console.log(`[Pending OAuth Check] Found pending session for user ${pending.userId}, provider: ${pending.provider}`);
+      
+      // Mark as consumed
+      await db.update(pendingOAuthSessions)
+        .set({ consumedAt: new Date() })
+        .where(eq(pendingOAuthSessions.id, pending.id));
+      
+      // Return session info so app can restore it
+      res.json({
+        hasPending: true,
+        sessionId: pending.sessionId,
+        userId: pending.userId,
+        provider: pending.provider
+      });
+      
+    } catch (error) {
+      console.error('[Pending OAuth Check] Error:', error);
+      res.status(500).json({ error: 'Failed to check pending sessions' });
+    }
   });
 
   // Session restoration endpoint for OAuth deep link returns
@@ -906,10 +965,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const isApp = stateData.isApp || req.get('User-Agent')?.includes('MyTrainPro-iOS');
         
         if (isApp) {
-          // App environment: redirect to web-based OAuth success page with app flag
-          console.log(`📱 App detected, redirecting to OAuth success page for session: ${req.sessionID}`);
+          // App environment: Create pending OAuth session in database
+          console.log(`📱 App detected, creating pending OAuth session for user: ${user.userId}`);
+          
+          try {
+            // Create pending session that app can poll for
+            const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+            await db.insert(pendingOAuthSessions).values({
+              userId: user.userId,
+              sessionId: req.sessionID,
+              provider: 'apple',
+              deviceInfo: req.get('User-Agent'),
+              expiresAt
+            });
+            console.log(`✅ Pending OAuth session created for user ${user.userId}, session: ${req.sessionID}`);
+          } catch (err) {
+            console.error('Failed to create pending OAuth session:', err);
+          }
+          
           // For Apple POST callback, we need to send HTML that redirects
-          // Use https URL for Universal Links as fallback
           const redirectUrl = `/oauth-success?provider=apple&session=${req.sessionID}&userId=${user.userId}&app=1`;
           return res.send(`
             <!DOCTYPE html>

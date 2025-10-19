@@ -69,6 +69,18 @@ export const emailVerificationTokens = pgTable("email_verification_tokens", {
   userAgent: text("user_agent"),
 });
 
+// Pending OAuth sessions for mobile app (solves Safari/WebView isolation)
+export const pendingOAuthSessions = pgTable("pending_oauth_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  sessionId: text("session_id").notNull().unique(),
+  provider: text("provider").notNull(), // google, apple
+  deviceInfo: text("device_info"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(), // Expires after 5 minutes
+  consumedAt: timestamp("consumed_at"), // When the session was used
+});
+
 // Registration attempt tracking for security
 export const registrationAttempts = pgTable("registration_attempts", {
   id: serial("id").primaryKey(),
