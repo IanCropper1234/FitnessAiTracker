@@ -1,6 +1,56 @@
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 
+// Current app version - increment when major UI changes are made
+const APP_VERSION = '2.0.0'; // Updated with new MyTrainPro landing page
+
+/**
+ * Clear WebView cache if app version has changed
+ */
+function checkAndClearCacheIfNeeded() {
+  if (!Capacitor.isNativePlatform()) {
+    return;
+  }
+
+  try {
+    const storedVersion = localStorage.getItem('app-version');
+    
+    if (storedVersion !== APP_VERSION) {
+      console.log(`[Cache] Version changed from ${storedVersion} to ${APP_VERSION}, clearing cache...`);
+      
+      // Force page reload to clear cache
+      localStorage.setItem('app-version', APP_VERSION);
+      
+      // Clear storage except for critical items
+      const criticalKeys = ['app-version', 'trainpro-onboarding-completed', 'mytrainpro-onboarding-completed'];
+      const keysToPreserve: Record<string, string> = {};
+      
+      criticalKeys.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) keysToPreserve[key] = value;
+      });
+      
+      // Clear all storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Restore critical items
+      Object.entries(keysToPreserve).forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+      });
+      
+      console.log('[Cache] Cache cleared, reloading app...');
+      
+      // Force hard reload
+      window.location.reload();
+    } else {
+      console.log(`[Cache] App version ${APP_VERSION} matches, no cache clear needed`);
+    }
+  } catch (error) {
+    console.error('[Cache] Error checking version:', error);
+  }
+}
+
 /**
  * Setup OAuth deep link listener for Capacitor app
  * Handles mytrainpro://auth/callback deep links from OAuth flow
@@ -11,6 +61,9 @@ export function setupCapacitorOAuthListener() {
     console.log('[Capacitor Auth] Not a native platform, skipping OAuth listener setup');
     return;
   }
+
+  // Check version and clear cache if needed
+  checkAndClearCacheIfNeeded();
 
   console.log('[Capacitor Auth] Setting up OAuth deep link listener');
 
