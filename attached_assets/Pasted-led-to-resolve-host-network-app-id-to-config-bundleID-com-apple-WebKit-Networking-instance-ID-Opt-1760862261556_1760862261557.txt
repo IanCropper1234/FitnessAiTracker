@@ -1,0 +1,72 @@
+led to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: F70BF002-2972-437C-8FBD-871FC16FFE10])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+Failed to request storage access user agent string quirks from WebPrivacy.
+Failed to request storage access quirks from WebPrivacy.
+Failed to request query parameters from WebPrivacy.
+Failed to request restricted opener domains from WebPrivacy
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 2F116384-ECCF-42CF-AFDF-07547DD79D71
+Failed to request allowed query parameters from WebPrivacy.
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] Version changed from null to 2.0.0, clearing cache...
+⚡️  [log] - [Cache] Cache cleared, reloading app...
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 131701922
+⚡️  To Native ->  App addListener 131701923
+⚡️  To Native ->  App getInfo 131701924
+⚡️  TO JS {"version":"1.0","id":"com.fitnessaitracker.app","build":"12","name":"MyTrainPro"}
+Failed to request query parameters from WebPrivacy.
+⚡️  To Native ->  App getLaunchUrl 131701925
+⚡️  TO JS undefined
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 2F116384-ECCF-42CF-AFDF-07547DD79D71
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 124975719
+⚡️  To Native ->  App addListener 124975720
+⚡️  To Native ->  App getInfo 124975721
+⚡️  TO JS {"version":"1.0","id":"com.fitnessaitracker.app","build":"12","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 124975722
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Redirecting for mobile/app OAuth: /api/auth/google?app=1
+0x10182c818 - [pageProxyID=10, webPageID=11, PID=77107] WebPageProxy::didFailProvisionalLoadForFrame: frameID=14, isMainFrame=1, domain=WebKitErrorDomain, code=102, isMainFrame=1, willInternallyHandleFailure=0
+⚡️  WebView failed provisional navigation
+⚡️  Error: Frame load interrupted
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 6C012C3C-599B-48C2-A99D-422705060E92
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = F14B4FD4-53C1-4496-9F14-A2B024A8DF89
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 05A8270C-31C6-4D51-AE06-29E63AF462B9
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8EB8AC64-0068-469D-BDA0-3241D2B10EE0
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8EB8AC64-0068-469D-BDA0-3241D2B10EE0
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8EB8AC64-0068-469D-BDA0-3241D2B10EE0
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 8EB8AC64-0068-469D-BDA0-3241D2B10EE0
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 8EB8AC64-0068-469D-BDA0-3241D2B10EE0
+⚡️  [log] - Visibility changed: {"isVisible":true,"wasVisible":false}
+⚡️  [log] - App returned from background after: 350563 ms
+⚡️  [log] - [App] Visibility changed: visible
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8EB8AC64-0068-469D-BDA0-3241D2B10EE0

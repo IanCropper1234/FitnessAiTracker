@@ -71,9 +71,26 @@ export function setupCapacitorOAuthListener() {
   App.addListener('appStateChange', (state: { isActive: boolean }) => {
     if (state.isActive) {
       console.log('[Capacitor Auth] App became active, checking for pending OAuth...');
+      // Check immediately
       checkPendingOAuthSession();
+      
+      // Also check after a short delay (iOS sometimes needs this)
+      setTimeout(() => {
+        console.log('[Capacitor Auth] Delayed check for pending OAuth...');
+        checkPendingOAuthSession();
+      }, 1000);
     }
   });
+  
+  // Also check when page becomes visible (covers more scenarios)
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        console.log('[Capacitor Auth] Page became visible, checking for pending OAuth...');
+        checkPendingOAuthSession();
+      }
+    });
+  }
 
   // Listen for app URL open events (deep links)
   App.addListener('appUrlOpen', (data: { url: string }) => {

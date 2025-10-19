@@ -63,43 +63,85 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
             provider,
             timestamp: Date.now()
           }));
+          console.log('[OAuth Success] Stored pending session in localStorage');
+          
+          // Function to trigger deep link with multiple methods
+          const triggerDeepLink = () => {
+            console.log('[OAuth Success] Triggering deep link with multiple methods...');
+            
+            // Method 1: window.location (most reliable for iOS)
+            try {
+              window.location.href = deepLink;
+              console.log('[OAuth Success] Method 1: window.location.href triggered');
+            } catch (err) {
+              console.error('[OAuth Success] Method 1 failed:', err);
+            }
+            
+            // Method 2: Create invisible iframe (fallback)
+            setTimeout(() => {
+              try {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = deepLink;
+                document.body.appendChild(iframe);
+                console.log('[OAuth Success] Method 2: iframe triggered');
+                
+                // Remove iframe after 1 second
+                setTimeout(() => {
+                  document.body.removeChild(iframe);
+                }, 1000);
+              } catch (err) {
+                console.error('[OAuth Success] Method 2 failed:', err);
+              }
+            }, 100);
+            
+            // Method 3: Show success message after brief delay
+            setTimeout(() => {
+              console.log('[OAuth Success] If app didn\'t open, showing manual instructions...');
+              setMessage(
+                <div className="space-y-4">
+                  <p className="text-center font-medium text-green-600 dark:text-green-400">
+                    ✅ Authentication Successful!
+                  </p>
+                  
+                  <div className="border rounded-lg p-4 bg-muted/50 space-y-2">
+                    <p className="text-sm font-medium">If the app didn't open automatically:</p>
+                    <ol className="text-sm text-muted-foreground space-y-1.5 ml-4">
+                      <li>1. Close this Safari tab/window</li>
+                      <li>2. Open the MyTrainPro app</li>
+                      <li>3. You'll be signed in automatically (within 2-5 seconds)</li>
+                    </ol>
+                  </div>
+                  
+                  <button
+                    onClick={triggerDeepLink}
+                    className="block w-full px-6 py-3 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 active:scale-95 transition-transform"
+                    data-testid="button-retry-deeplink"
+                  >
+                    Try Opening App Again
+                  </button>
+                  
+                  <p className="text-xs text-center text-muted-foreground">
+                    Your session is securely saved and will be restored when you return to the app.
+                  </p>
+                </div>
+              );
+            }, 2000);
+          };
+          
+          // Auto-trigger deep link after showing success
+          setTimeout(triggerDeepLink, 500);
           
           setMessage(
-            <div className="space-y-4">
-              <p className="text-center text-sm text-muted-foreground">
-                Sign in successful! Choose how to return to the app:
-              </p>
-              
-              {/* Option 1: Deep Link (may not work if URL scheme not registered) */}
-              <a 
-                href={deepLink}
-                className="block w-full px-6 py-3 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 active:scale-95 transition-transform"
-                data-testid="button-return-app"
-              >
-                Open MyTrainPro App
-              </a>
-              
-              {/* Option 2: Universal Link */}
-              <a 
-                href={`https://mytrainpro.com/app-redirect?session=${sessionId}&userId=${userId}`}
-                className="block w-full px-6 py-3 bg-secondary text-secondary-foreground text-center rounded-lg font-medium hover:bg-secondary/90"
-                data-testid="button-universal-link"
-              >
-                Alternative: Open via Universal Link
-              </a>
-              
-              {/* Option 3: Manual instructions */}
-              <div className="border rounded-lg p-3 bg-muted/50">
-                <p className="text-xs font-medium mb-1">Manual Return:</p>
-                <ol className="text-xs text-muted-foreground space-y-1">
-                  <li>1. Close this browser tab</li>
-                  <li>2. Open MyTrainPro app</li>
-                  <li>3. You'll be automatically signed in</li>
-                </ol>
+            <div className="space-y-3 text-center">
+              <div className="flex justify-center">
+                <Loader2 className="h-8 w-8 text-primary animate-spin" />
               </div>
-              
-              <p className="text-xs text-center text-muted-foreground">
-                Session saved. The app will detect your login when you return.
+              <p className="text-sm text-muted-foreground">
+                Opening MyTrainPro app...
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Please allow the app to open when prompted
               </p>
             </div>
           );
