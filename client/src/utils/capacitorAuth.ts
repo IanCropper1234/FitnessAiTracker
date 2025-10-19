@@ -174,7 +174,17 @@ function handleDeepLink(urlString: string) {
       const userId = url.searchParams.get('userId');
       
       if (sessionId && userId) {
+        // Check if we've already processed this session
+        const lastProcessedSession = localStorage.getItem('last-processed-oauth-session');
+        if (lastProcessedSession === sessionId) {
+          console.log('[Capacitor Auth] Session already processed, skipping to prevent loop');
+          return;
+        }
+        
         console.log('[Capacitor Auth] Deep link contains valid OAuth data');
+        
+        // Mark this session as processed BEFORE redirecting
+        localStorage.setItem('last-processed-oauth-session', sessionId);
         
         // Store session info
         localStorage.setItem('trainpro-onboarding-completed', 'true');
@@ -229,6 +239,16 @@ async function checkPendingOAuthSession(retryCount = 0, maxRetries = 6) {
     
     if (data.hasPending) {
       console.log(`[Capacitor Auth] ✅ Found pending OAuth session for user ${data.userId}!`);
+      
+      // Check if we've already processed this session
+      const lastProcessedSession = localStorage.getItem('last-processed-oauth-session');
+      if (lastProcessedSession === data.sessionId) {
+        console.log('[Capacitor Auth] Session already processed via polling, skipping to prevent loop');
+        return;
+      }
+      
+      // Mark this session as processed BEFORE redirecting
+      localStorage.setItem('last-processed-oauth-session', data.sessionId);
       
       // Mark onboarding as completed
       localStorage.setItem('trainpro-onboarding-completed', 'true');

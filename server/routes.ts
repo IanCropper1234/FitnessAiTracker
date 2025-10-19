@@ -836,6 +836,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       });
       
+      // Mark the pending OAuth session as consumed to prevent reuse
+      try {
+        await db.update(pendingOAuthSessions)
+          .set({ consumedAt: new Date() })
+          .where(eq(pendingOAuthSessions.sessionId, sessionId as string));
+        console.log(`[Session Restore] Marked pending session as consumed: ${sessionId}`);
+      } catch (err) {
+        console.error('[Session Restore] Failed to mark session as consumed:', err);
+        // Don't fail the entire request if this fails
+      }
+      
       // Redirect to the requested path or dashboard
       const redirectPath = (redirect as string) || '/';
       console.log(`[Session Restore] Redirecting to: ${redirectPath}`);
