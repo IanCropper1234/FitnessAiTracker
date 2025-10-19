@@ -25,6 +25,8 @@ export function setupCapacitorOAuthListener() {
   // Listen for app URL open events (deep links)
   App.addListener('appUrlOpen', (data: { url: string }) => {
     console.log('[Capacitor Auth] App URL opened:', data.url);
+    // Add visual feedback
+    alert(`Deep link received: ${data.url.substring(0, 50)}...`);
     
     try {
       const url = new URL(data.url);
@@ -38,6 +40,7 @@ export function setupCapacitorOAuthListener() {
         
         if (sessionId && userId) {
           console.log('[Capacitor Auth] OAuth successful! Session:', sessionId, 'User:', userId);
+          alert(`OAuth Success! Restoring session for user ${userId}...`);
           
           // Mark onboarding as completed for OAuth users
           // OAuth users shouldn't see the first-time user animation
@@ -58,18 +61,64 @@ export function setupCapacitorOAuthListener() {
           window.location.href = `/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`;
         } else {
           console.error('[Capacitor Auth] Missing session or userId in callback');
-          window.location.href = '/login?error=oauth_callback_failed';
+          alert('OAuth Error: Missing session or userId');
+          window.location.href = '/auth?error=oauth_callback_failed';
         }
+      } else {
+        // Handle other deep link formats
+        console.log('[Capacitor Auth] Non-OAuth deep link, ignoring');
+        alert(`Unknown deep link: ${url.host}${url.pathname}`);
       }
     } catch (error) {
       console.error('[Capacitor Auth] Error parsing deep link URL:', error);
+      alert(`Error handling deep link: ${error}`);
     }
+  });
+
+  // Also handle the URL when app launches
+  App.getInfo().then(() => {
+    App.getLaunchUrl().then((urlData) => {
+      if (urlData && urlData.url) {
+        console.log('[Capacitor Auth] App launched with URL:', urlData.url);
+        // Process the launch URL
+        handleDeepLink(urlData.url);
+      }
+    });
   });
 
   // Check for pending OAuth on startup
   checkPendingOAuthSession();
   
   console.log('[Capacitor Auth] OAuth listener setup complete');
+}
+
+// Helper function to handle deep links
+function handleDeepLink(urlString: string) {
+  console.log('[Capacitor Auth] Processing deep link:', urlString);
+  
+  try {
+    const url = new URL(urlString);
+    
+    if (url.host === 'auth' && url.pathname === '/callback') {
+      const sessionId = url.searchParams.get('session');
+      const userId = url.searchParams.get('userId');
+      
+      if (sessionId && userId) {
+        console.log('[Capacitor Auth] Deep link contains valid OAuth data');
+        
+        // Store session info
+        localStorage.setItem('trainpro-onboarding-completed', 'true');
+        localStorage.setItem('mytrainpro-onboarding-completed', 'true');
+        localStorage.setItem('oauth-session-id', sessionId);
+        localStorage.setItem('oauth-user-id', userId);
+        
+        // Redirect to restore session
+        window.location.href = `/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`;
+      }
+    }
+  } catch (error) {
+    console.error('[Capacitor Auth] Error processing deep link:', error);
+  }
 }
 
 /**
