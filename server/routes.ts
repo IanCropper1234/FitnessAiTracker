@@ -714,7 +714,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           try {
             // Create pending session that app can poll for
-            const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+            const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes - plenty of time
             await db.insert(pendingOAuthSessions).values({
               userId: user.userId,
               sessionId: req.sessionID,
@@ -722,7 +722,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               deviceInfo: req.get('User-Agent'),
               expiresAt
             });
-            console.log(`✅ Pending OAuth session created for user ${user.userId}, session: ${req.sessionID}`);
+            console.log(`✅ Pending OAuth session created for user ${user.userId}, session: ${req.sessionID}, expires in 30 min`);
           } catch (err) {
             console.error('Failed to create pending OAuth session:', err);
           }
@@ -977,7 +977,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           try {
             // Create pending session that app can poll for
-            const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+            const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes - plenty of time
             await db.insert(pendingOAuthSessions).values({
               userId: user.userId,
               sessionId: req.sessionID,
@@ -985,7 +985,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               deviceInfo: req.get('User-Agent'),
               expiresAt
             });
-            console.log(`✅ Pending OAuth session created for user ${user.userId}, session: ${req.sessionID}`);
+            console.log(`✅ Pending OAuth session created for user ${user.userId}, session: ${req.sessionID}, expires in 30 min`);
           } catch (err) {
             console.error('Failed to create pending OAuth session:', err);
           }

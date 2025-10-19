@@ -194,10 +194,11 @@ function handleDeepLink(urlString: string) {
 /**
  * Check for pending OAuth session from server (server-side solution)
  * This works even when Safari and WebView have separate storage
+ * Uses retry mechanism to catch pending sessions that may be created after app opens
  */
-async function checkPendingOAuthSession() {
+async function checkPendingOAuthSession(retryCount = 0, maxRetries = 6) {
   try {
-    console.log('[Capacitor Auth] Checking server for pending OAuth session...');
+    console.log(`[Capacitor Auth] Checking server for pending OAuth session... (attempt ${retryCount + 1}/${maxRetries})`);
     
     // Generate or retrieve device ID
     let deviceId = localStorage.getItem('device-id');
@@ -216,6 +217,11 @@ async function checkPendingOAuthSession() {
     
     if (!response.ok) {
       console.log('[Capacitor Auth] Server check failed:', response.status);
+      // Retry on server error
+      if (retryCount < maxRetries) {
+        console.log(`[Capacitor Auth] Retrying in 2 seconds... (${retryCount + 1}/${maxRetries})`);
+        setTimeout(() => checkPendingOAuthSession(retryCount + 1, maxRetries), 2000);
+      }
       return;
     }
     
@@ -233,9 +239,24 @@ async function checkPendingOAuthSession() {
       window.location.href = `/api/auth/restore-session?sessionId=${data.sessionId}&userId=${data.userId}&redirect=/`;
     } else {
       console.log('[Capacitor Auth] No pending OAuth sessions found');
+      
+      // Retry if haven't reached max retries yet
+      // This catches cases where OAuth callback completes after app opens
+      if (retryCount < maxRetries) {
+        console.log(`[Capacitor Auth] Will retry in 2 seconds... (${retryCount + 1}/${maxRetries})`);
+        setTimeout(() => checkPendingOAuthSession(retryCount + 1, maxRetries), 2000);
+      } else {
+        console.log('[Capacitor Auth] Max retries reached, stopping checks');
+      }
     }
   } catch (error) {
     console.error('[Capacitor Auth] Error checking pending OAuth:', error);
+    
+    // Retry on error
+    if (retryCount < maxRetries) {
+      console.log(`[Capacitor Auth] Retrying after error in 2 seconds... (${retryCount + 1}/${maxRetries})`);
+      setTimeout(() => checkPendingOAuthSession(retryCount + 1, maxRetries), 2000);
+    }
   }
 }
 
