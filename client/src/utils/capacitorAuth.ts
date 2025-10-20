@@ -138,8 +138,8 @@ function handleDeepLink(urlString: string) {
         console.log('[Capacitor Auth] OAuth callback detected');
         console.log('[Capacitor Auth] Deep link contains valid OAuth data - Session:', sessionId, 'User:', userId);
         
-        // Visual feedback
-        alert(`OAuth Success! Restoring session for user ${userId}...`);
+        // Visual feedback with friendly message
+        alert('Welcome back! Logging you in...');
         
         // Mark this session as processed BEFORE redirecting
         localStorage.setItem('last-processed-oauth-session', sessionId);
