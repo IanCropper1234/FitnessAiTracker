@@ -65,72 +65,38 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
           }));
           console.log('[OAuth Success] Stored pending session in localStorage');
           
-          // Function to trigger deep link with multiple methods
-          const triggerDeepLink = () => {
-            console.log('[OAuth Success] Triggering deep link with multiple methods...');
-            
-            // Method 1: window.location (most reliable for iOS)
-            try {
-              window.location.href = deepLink;
-              console.log('[OAuth Success] Method 1: window.location.href triggered');
-            } catch (err) {
-              console.error('[OAuth Success] Method 1 failed:', err);
-            }
-            
-            // Method 2: Create invisible iframe (fallback)
-            setTimeout(() => {
-              try {
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = deepLink;
-                document.body.appendChild(iframe);
-                console.log('[OAuth Success] Method 2: iframe triggered');
+          // Show success message with HTML link (iOS Safari blocks JS-triggered deep links)
+          setTimeout(() => {
+            console.log('[OAuth Success] Showing deep link button...');
+            setMessage(
+              <div className="space-y-4">
+                <p className="text-center font-medium text-green-600 dark:text-green-400">
+                  ✅ Authentication Successful!
+                </p>
                 
-                // Remove iframe after 1 second
-                setTimeout(() => {
-                  document.body.removeChild(iframe);
-                }, 1000);
-              } catch (err) {
-                console.error('[OAuth Success] Method 2 failed:', err);
-              }
-            }, 100);
-            
-            // Method 3: Show success message after brief delay
-            setTimeout(() => {
-              console.log('[OAuth Success] If app didn\'t open, showing manual instructions...');
-              setMessage(
-                <div className="space-y-4">
-                  <p className="text-center font-medium text-green-600 dark:text-green-400">
-                    ✅ Authentication Successful!
-                  </p>
-                  
-                  <div className="border rounded-lg p-4 bg-muted/50 space-y-2">
-                    <p className="text-sm font-medium">If the app didn't open automatically:</p>
-                    <ol className="text-sm text-muted-foreground space-y-1.5 ml-4">
-                      <li>1. Close this Safari tab/window</li>
-                      <li>2. Open the MyTrainPro app</li>
-                      <li>3. You'll be signed in automatically (within 2-5 seconds)</li>
-                    </ol>
-                  </div>
-                  
-                  <button
-                    onClick={triggerDeepLink}
-                    className="block w-full px-6 py-3 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 active:scale-95 transition-transform"
-                    data-testid="button-retry-deeplink"
-                  >
-                    Try Opening App Again
-                  </button>
-                  
-                  <p className="text-xs text-center text-muted-foreground">
-                    Your session is securely saved and will be restored when you return to the app.
-                  </p>
+                <div className="border rounded-lg p-4 bg-muted/50 space-y-2">
+                  <p className="text-sm font-medium">If the app didn't open automatically:</p>
+                  <ol className="text-sm text-muted-foreground space-y-1.5 ml-4">
+                    <li>1. Close this Safari tab/window</li>
+                    <li>2. Open the MyTrainPro app</li>
+                    <li>3. You'll be signed in automatically (within 2-5 seconds)</li>
+                  </ol>
                 </div>
-              );
-            }, 2000);
-          };
-          
-          // Auto-trigger deep link after showing success
-          setTimeout(triggerDeepLink, 500);
+                
+                <a
+                  href={deepLink}
+                  className="block w-full px-6 py-3 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 active:scale-95 transition-transform no-underline"
+                  data-testid="button-retry-deeplink"
+                >
+                  Try Opening App Again
+                </a>
+                
+                <p className="text-xs text-center text-muted-foreground">
+                  Your session is securely saved and will be restored when you return to the app.
+                </p>
+              </div>
+            );
+          }, 500);
           
           setMessage(
             <div className="space-y-3 text-center">

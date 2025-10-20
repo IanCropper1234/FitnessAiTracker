@@ -1,0 +1,741 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 09220DA3-013C-4FCB-B348-45F4BAD8F536])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: true (duration: 370.7708511352539s)
+Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 1668E88A-5CC5-4C2E-86DE-DE9796EE630E
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 124794636
+⚡️  To Native ->  App addListener 124794637
+⚡️  To Native ->  App getInfo 124794638
+⚡️  TO JS {"build":"13","version":"1.0","name":"MyTrainPro","id":"com.fitai.app"}
+⚡️  To Native ->  App getLaunchUrl 124794639
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148  MyTrainPro-iOS/1.0.0","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Opening OAuth in system Safari using Browser plugin: https://mytrainpro.com/api/auth/google?app=1
+⚡️  To Native ->  Browser open 124794640
+⚡️  TO JS undefined
+⚡️  [log] - [Auth] Successfully opened OAuth flow in external browser
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+[AppDelegate] App will resign active - preparing for background
+⚡️  TO JS {"isActive":false}
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 17.466341018676758s)
+⚡️  TO JS {"isActive":true}
+⚡️  [log] - [Capacitor Auth] App became active, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Delayed check for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+[AppDelegate] App will resign active - preparing for background
+⚡️  TO JS {"isActive":false}
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 8.253735065460205s)
+⚡️  TO JS {"isActive":true}
+⚡️  [log] - [Capacitor Auth] App became active, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Delayed check for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+📱 [Deep Link] App opened with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  TO JS {"iosSourceApplication":"com.apple.SafariViewService","iosOpenInPlace":"","url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  [log] - [Capacitor Auth] App URL opened: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Page hide event
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 105764066
+⚡️  To Native ->  App addListener 105764067
+⚡️  To Native ->  App getInfo 105764068
+⚡️  TO JS {"build":"13","id":"com.fitai.app","name":"MyTrainPro","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 105764069
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 4868041
+⚡️  To Native ->  App addListener 4868042
+⚡️  To Native ->  App getInfo 4868043
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitai.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 4868044
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 114749793
+⚡️  To Native ->  App addListener 114749794
+⚡️  To Native ->  App getInfo 114749795
+⚡️  TO JS {"id":"com.fitai.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 114749796
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 5134705
+⚡️  To Native ->  App addListener 5134706
+⚡️  To Native ->  App getInfo 5134707
+⚡️  TO JS {"id":"com.fitai.app","name":"MyTrainPro","version":"1.0","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 5134708
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 125050898
+⚡️  To Native ->  App addListener 125050899
+⚡️  To Native ->  App getInfo 125050900
+⚡️  TO JS {"id":"com.fitai.app","version":"1.0","build":"13","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 125050901
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+📱 [Deep Link] App opened with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 63760576
+⚡️  To Native ->  App addListener 63760577
+⚡️  To Native ->  App getInfo 63760578
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1","iosSourceApplication":"com.apple.SafariViewService","iosOpenInPlace":""}
+⚡️  TO JS {"name":"MyTrainPro","version":"1.0","build":"13","id":"com.fitai.app"}
+⚡️  [log] - [Capacitor Auth] App URL opened: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  To Native ->  ⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+App getLaunchUrl 63760579
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 102757501
+⚡️  To Native ->  App addListener 102757502
+⚡️  To Native ->  App getInfo 102757503
+⚡️  TO JS {"build":"13","name":"MyTrainPro","version":"1.0","id":"com.fitai.app"}
+⚡️  To Native ->  App getLaunchUrl 102757504
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 123135756
+⚡️  To Native ->  App addListener 123135757
+⚡️  To Native ->  App getInfo 123135758
+⚡️  TO JS {"id":"com.fitai.app","version":"1.0","name":"MyTrainPro","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 123135759
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 109334690
+⚡️  To Native ->  App addListener 109334691
+⚡️  To Native ->  App getInfo 109334692
+⚡️  TO JS {"id":"com.fitai.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 109334693
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 124906824
+⚡️  To Native ->  App addListener 124906825
+⚡️  To Native ->  App getInfo 124906826
+⚡️  TO JS {"name":"MyTrainPro","id":"com.fitai.app","version":"1.0","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 124906827
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 104007847
+⚡️  To Native ->  App addListener 104007848
+⚡️  To Native ->  App getInfo 104007849
+⚡️  TO JS {"name":"MyTrainPro","id":"com.fitai.app","version":"1.0","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 104007850
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 79289826
+⚡️  To Native ->  App addListener 79289827
+⚡️  To Native ->  App getInfo 79289828
+⚡️  TO JS {"version":"1.0","build":"13","id":"com.fitai.app","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 79289829
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 51470150
+⚡️  To Native ->  App addListener 51470151
+⚡️  To Native ->  App getInfo 51470152
+⚡️  TO JS {"id":"com.fitai.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 51470153
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 61657784
+⚡️  To Native ->  App addListener 61657785
+⚡️  To Native ->  App getInfo 61657786
+⚡️  TO JS {"id":"com.fitai.app","build":"13","name":"MyTrainPro","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 61657787
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 50889918
+⚡️  To Native ->  App addListener 50889919
+⚡️  To Native ->  App getInfo 50889920
+⚡️  TO JS {"id":"com.fitai.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 50889921
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 48250928
+⚡️  To Native ->  App addListener 48250929
+⚡️  To Native ->  App getInfo 48250930
+⚡️  TO JS {"build":"13","name":"MyTrainPro","version":"1.0","id":"com.fitai.app"}
+⚡️  To Native ->  App getLaunchUrl 48250931
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 118135565
+⚡️  To Native ->  App addListener 118135566
+⚡️  To Native ->  App getInfo 118135567
+⚡️  TO JS {"build":"13","name":"MyTrainPro","version":"1.0","id":"com.fitai.app"}
+⚡️  To Native ->  App getLaunchUrl 118135568
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 101043258
+⚡️  To Native ->  App addListener 101043259
+⚡️  To Native ->  App getInfo 101043260
+⚡️  TO JS {"name":"MyTrainPro","id":"com.fitai.app","version":"1.0","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 101043261
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 99789985
+⚡️  To Native ->  App addListener 99789986
+⚡️  To Native ->  App getInfo 99789987
+⚡️  TO JS {"build":"13","name":"MyTrainPro","version":"1.0","id":"com.fitai.app"}
+⚡️  To Native ->  App getLaunchUrl 99789988
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 118430723
+⚡️  To Native ->  App addListener 118430724
+⚡️  To Native ->  App getInfo 118430725
+⚡️  TO JS {"version":"1.0","id":"com.fitai.app","name":"MyTrainPro","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 118430726
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 36798000
+⚡️  To Native ->  App addListener 36798001
+⚡️  To Native ->  App getInfo 36798002
+⚡️  TO JS {"id":"com.fitai.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 36798003
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 103982205
+⚡️  To Native ->  App addListener 103982206
+⚡️  To Native ->  App getInfo 103982207
+⚡️  TO JS {"name":"MyTrainPro","id":"com.fitai.app","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 103982208
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: AgRztu2AeIJBsloadpe0Kqwxp5LJDNTp User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+0x117000800 - NetworkProcessProxy::didClose (Network Process 65812 crash)
