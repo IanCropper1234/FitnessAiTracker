@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
 
 // Current app version - increment when major UI changes are made
 const APP_VERSION = '2.0.0'; // Updated with new MyTrainPro landing page
@@ -140,6 +141,17 @@ async function restoreSessionAndNavigate(sessionId: string, userId: string) {
       localStorage.setItem('last-successful-oauth-session', sessionId);
       localStorage.setItem('trainpro-onboarding-completed', 'true');
       localStorage.setItem('mytrainpro-onboarding-completed', 'true');
+      
+      // Close the in-app browser automatically (only works if opened with Browser.open)
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await Browser.close();
+          console.log('[Capacitor Auth] ✅ Closed OAuth browser automatically');
+        } catch (err) {
+          console.log('[Capacitor Auth] Could not close browser (might be already closed):', err);
+          // Not critical - browser might already be closed or user might have manually closed it
+        }
+      }
       
       // Navigate to home page WITHOUT reloading the entire WebView
       console.log('[Capacitor Auth] Navigating to home page...');

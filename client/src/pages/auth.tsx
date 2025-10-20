@@ -183,13 +183,15 @@ export default function Auth({ onSuccess }: AuthProps) {
         console.log('[Auth] Opening OAuth in system Safari using Browser plugin:', fullUrl);
         
         try {
-          // Use Capacitor Browser plugin - this is trusted by iOS
+          // Use Capacitor Browser plugin - opens in-app browser (SFSafariViewController)
+          // This allows us to programmatically close it after successful OAuth
           await Browser.open({ 
             url: fullUrl,
-            windowName: '_self',  // This is required for proper deep link handling
-            presentationStyle: 'fullscreen'  // iOS presentation style
+            windowName: '_self'
+            // Note: Don't use presentationStyle: 'fullscreen' as that opens system Safari
+            // which cannot be closed programmatically. Default opens in-app browser.
           });
-          console.log('[Auth] Successfully opened OAuth flow in external browser');
+          console.log('[Auth] Successfully opened OAuth flow in in-app browser');
         } catch (browserError) {
           console.error('[Auth] Browser.open() failed:', browserError);
           // Fallback to window.open as last resort
