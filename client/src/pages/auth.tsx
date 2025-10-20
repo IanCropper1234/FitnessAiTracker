@@ -19,7 +19,6 @@ import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistratio
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Capacitor } from '@capacitor/core';
-import { Browser } from '@capacitor/browser';
 
 interface User {
   id: number;
@@ -178,16 +177,20 @@ export default function Auth({ onSuccess }: AuthProps) {
           }
         }, 500);
       } else if (isMyTrainProApp) {
-        // Capacitor app - use Browser API to open in Safari
+        // Capacitor app - open in system Safari using window.open with _system target
         const fullUrl = `${window.location.origin}${authUrl}`;
-        console.log('[Auth] Opening OAuth in Safari using Browser API:', fullUrl);
+        console.log('[Auth] Opening OAuth in system Safari:', fullUrl);
         
-        await Browser.open({ 
-          url: fullUrl,
-          windowName: '_self'
-        });
+        // Use _system target to open in external Safari browser
+        const opened = window.open(fullUrl, '_system');
         
-        console.log('[Auth] Browser.open() completed, OAuth should continue in Safari');
+        if (!opened) {
+          console.error('[Auth] Failed to open system browser, trying _blank fallback');
+          window.open(fullUrl, '_blank');
+        } else {
+          console.log('[Auth] Successfully opened in system Safari');
+        }
+        
         // Note: The polling mechanism in capacitorAuth.ts will handle the return
       } else {
         // Mobile web - use redirect
