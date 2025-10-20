@@ -1,0 +1,865 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 4F14EB2B-3DE6-43BC-83A9-81C3EEB3B0EA])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 0.0s)
+Networking process (0x137000800) took 2.598043 seconds to launch
+WebContent process (0x137001720) took 2.502487 seconds to launch
+GPU process (0x1370031e0) took 3.287982 seconds to launch
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 04B31114-4AD1-4DAA-A338-D1B0CF0244CD
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 57831749
+⚡️  To Native ->  App addListener 57831750
+⚡️  To Native ->  App getInfo 57831751
+⚡️  TO JS {"build":"13","name":"MyTrainPro","id":"com.fitnessaitracker.app","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 57831752
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148  MyTrainPro-iOS/1.0.0","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Opening OAuth in system Safari using Browser plugin: https://mytrainpro.com/api/auth/google?app=1
+⚡️  [error] - [Auth] Browser.open() failed: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - [Auth] Trying window.open fallback...
+⚡️  [error] - google sign-in error: {}
+[AppDelegate] App will resign active - preparing for background
+⚡️  TO JS {"isActive":false}
+[AppDelegate] App did enter background
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = FFDBEBC2-EABA-48A7-9B45-F324E17E6D68
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 6683B46B-D291-4A06-99D5-DCCD5F949BAA
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = B6C1DAA1-B6F8-4766-AB88-3838C8991B75
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+[AppDelegate] App will enter foreground
+[AppDelegate] Background duration: 8.155689001083374 seconds
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+📱 [Deep Link] App opened with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1","iosSourceApplication":"","iosOpenInPlace":""}
+⚡️  [log] - [Capacitor Auth] Page became visible, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - Visibility changed: {"isVisible":true,"wasVisible":false}
+⚡️  [log] - App returned from background after: 7776 ms
+⚡️  [log] - [App] Visibility changed: visible
+⚡️  [log] - [Capacitor Auth] App URL opened: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 0.0s)
+⚡️  [log] - Page hide event
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  To Native ->  App addListener 101790301
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 101790302
+⚡️  To Native ->  App getInfo 101790303
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitnessaitracker.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 101790304
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  To Native ->  App addListener 42825299
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 42825300
+⚡️  To Native ->  App getInfo 42825301
+⚡️  TO JS {"id":"com.fitnessaitracker.app","build":"13","version":"1.0","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 42825302
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 125590443
+⚡️  To Native ->  App addListener 125590444
+⚡️  To Native ->  App getInfo 125590445
+⚡️  TO JS {"id":"com.fitnessaitracker.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 125590446
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 59924687
+⚡️  To Native ->  App addListener 59924688
+⚡️  To Native ->  App getInfo 59924689
+⚡️  TO JS {"id":"com.fitnessaitracker.app","build":"13","version":"1.0","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 59924690
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  To Native ->  App addListener 114781534
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  To Native ->  App addListener 114781535
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  To Native ->  App getInfo 114781536
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  TO JS {"name":"MyTrainPro","version":"1.0","id":"com.fitnessaitracker.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 114781537
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 124602697
+⚡️  To Native ->  App addListener 124602698
+⚡️  To Native ->  App getInfo 124602699
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitnessaitracker.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 124602700
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  To Native ->  App addListener 72972847
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  To Native ->  App addListener 72972848
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App getInfo 72972849
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitnessaitracker.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 72972850
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 79129524
+⚡️  To Native ->  App addListener 79129525
+⚡️  To Native ->  App getInfo 79129526
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitnessaitracker.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 79129527
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  To Native ->  App addListener 27945439
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 27945440
+⚡️  To Native ->  App getInfo 27945441
+⚡️  TO JS {"name":"MyTrainPro","build":"13","id":"com.fitnessaitracker.app","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 27945442
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 29910830
+⚡️  To Native ->  App addListener 29910831
+⚡️  To Native ->  App getInfo 29910832
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitnessaitracker.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 29910833
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 65595932
+⚡️  To Native ->  App addListener 65595933
+⚡️  To Native ->  App getInfo 65595934
+⚡️  TO JS {"build":"13","version":"1.0","name":"MyTrainPro","id":"com.fitnessaitracker.app"}
+⚡️  To Native ->  App getLaunchUrl 65595935
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 76539087
+⚡️  To Native ->  App addListener 76539088
+⚡️  To Native ->  App getInfo 76539089
+⚡️  TO JS {"version":"1.0","id":"com.fitnessaitracker.app","name":"MyTrainPro","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 76539090
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 81306881
+⚡️  To Native ->  App addListener 81306882
+⚡️  To Native ->  App getInfo 81306883
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitnessaitracker.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 81306884
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3D81E7D9-447D-442C-93B1-1E876AB85302
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 122880925
+⚡️  To Native ->  App addListener 122880926
+⚡️  To Native ->  App getInfo 122880927
+⚡️  TO JS {"name":"MyTrainPro","build":"13","version":"1.0","id":"com.fitnessaitracker.app"}
+⚡️  To Native ->  App getLaunchUrl 122880928
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+[AppDelegate] App will resign active - preparing for background
+[AppDelegate] App did enter background
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 988AB84B-8AB0-477E-936E-51FEDBB93DF1
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 9980AC34-35CC-4742-A5C2-7F009EE9C45A
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+[AppDelegate] App will enter foreground
+[AppDelegate] Background duration: 2.156980037689209 seconds
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 39089235
+⚡️  To Native ->  App addListener 39089236
+⚡️  To Native ->  App getInfo 39089237
+⚡️  TO JS {"build":"13","name":"MyTrainPro","id":"com.fitnessaitracker.app","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 39089238
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 0.0s)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 94352250
+⚡️  To Native ->  App addListener 94352251
+⚡️  To Native ->  App getInfo 94352252
+⚡️  TO JS {"version":"1.0","build":"13","name":"MyTrainPro","id":"com.fitnessaitracker.app"}
+⚡️  To Native ->  App getLaunchUrl 94352253
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 123080596
+⚡️  To Native ->  App addListener 123080597
+⚡️  To Native ->  App getInfo 123080598
+⚡️  TO JS {"version":"1.0","id":"com.fitnessaitracker.app","build":"13","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 123080599
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 18204904
+⚡️  To Native ->  App addListener 18204905
+⚡️  To Native ->  App getInfo 18204906
+⚡️  TO JS {"id":"com.fitnessaitracker.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 18204907
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 67723393
+⚡️  To Native ->  App addListener 67723394
+⚡️  To Native ->  App getInfo 67723395
+⚡️  TO JS {"name":"MyTrainPro","id":"com.fitnessaitracker.app","version":"1.0","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 67723396
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 80809773
+⚡️  To Native ->  App addListener 80809774
+⚡️  To Native ->  App getInfo 80809775
+⚡️  TO JS {"version":"1.0","id":"com.fitnessaitracker.app","build":"13","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 80809776
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  To Native ->  App addListener 66988955
+⚡️  To Native ->  App addListener 66988956
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App getInfo 66988957
+⚡️  TO JS {"id":"com.fitnessaitracker.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 66988958
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 37880461
+⚡️  To Native ->  App addListener 37880462
+⚡️  To Native ->  App getInfo 37880463
+⚡️  TO JS {"id":"com.fitnessaitracker.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 37880464
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 14155600
+⚡️  To Native ->  App addListener 14155601
+⚡️  To Native ->  App getInfo 14155602
+⚡️  TO JS {"version":"1.0","id":"com.fitnessaitracker.app","name":"MyTrainPro","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 14155603
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 90031070
+⚡️  To Native ->  App addListener 90031071
+⚡️  To Native ->  App getInfo 90031072
+⚡️  TO JS {"id":"com.fitnessaitracker.app","build":"13","name":"MyTrainPro","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 90031073
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 37621804
+⚡️  To Native ->  App addListener 37621805
+⚡️  To Native ->  App getInfo 37621806
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","build":"13","id":"com.fitnessaitracker.app"}
+⚡️  To Native ->  App getLaunchUrl 37621807
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 57654083
+⚡️  To Native ->  App addListener 57654084
+⚡️  To Native ->  App getInfo 57654085
+⚡️  TO JS {"id":"com.fitnessaitracker.app","version":"1.0","name":"MyTrainPro","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 57654086
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 97205671
+⚡️  To Native ->  App addListener 97205672
+⚡️  To Native ->  App getInfo 97205673
+⚡️  TO JS {"id":"com.fitnessaitracker.app","build":"13","version":"1.0","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 97205674
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7DCF602F-1F6A-4A93-A7E5-45C0690F0C99
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 40490239
+⚡️  To Native ->  App addListener 40490240
+⚡️  To Native ->  App getInfo 40490241
+⚡️  TO JS {"build":"13","name":"MyTrainPro","version":"1.0","id":"com.fitnessaitracker.app"}
+⚡️  To Native ->  App getLaunchUrl 40490242
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+CoreSimulator 1010.15 - Device: iPhone 16 (CAB6F840-F5F8-4B81-90C9-D30F348E9BB9) - Runtime: iOS 18.6 (22G86) - DeviceType: iPhone 16

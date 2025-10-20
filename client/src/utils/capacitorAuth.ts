@@ -116,6 +116,48 @@ export function setupCapacitorOAuthListener() {
   console.log('[Capacitor Auth] OAuth listener setup complete');
 }
 
+/**
+ * Restore OAuth session using fetch API to avoid infinite redirect loop
+ */
+async function restoreSessionAndNavigate(sessionId: string, userId: string) {
+  try {
+    console.log('[Capacitor Auth] Calling session restore API...');
+    
+    // Call the session restore endpoint
+    const response = await fetch(`/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`, {
+      method: 'GET',
+      credentials: 'include', // Important: include cookies
+      redirect: 'manual' // Don't follow redirects automatically
+    });
+    
+    console.log('[Capacitor Auth] Session restore response:', response.status);
+    
+    if (response.status === 0 || response.status === 302 || response.ok) {
+      // Session restored successfully
+      console.log('[Capacitor Auth] ✅ Session restored successfully!');
+      
+      // Mark session as successfully restored
+      localStorage.setItem('last-successful-oauth-session', sessionId);
+      localStorage.setItem('trainpro-onboarding-completed', 'true');
+      localStorage.setItem('mytrainpro-onboarding-completed', 'true');
+      
+      // Navigate to home page WITHOUT reloading the entire WebView
+      console.log('[Capacitor Auth] Navigating to home page...');
+      
+      // Force a hard reload to ensure cookies are picked up
+      window.location.replace('/');
+    } else {
+      console.error('[Capacitor Auth] Session restore failed:', response.status);
+      alert('Login failed. Please try again.');
+      window.location.replace('/auth');
+    }
+  } catch (error) {
+    console.error('[Capacitor Auth] Error restoring session:', error);
+    alert('Login failed. Please try again.');
+    window.location.replace('/auth');
+  }
+}
+
 // Helper function to handle deep links
 function handleDeepLink(urlString: string) {
   console.log('[Capacitor Auth] Processing deep link:', urlString);
@@ -141,14 +183,8 @@ function handleDeepLink(urlString: string) {
         // Visual feedback with friendly message
         console.log('[Capacitor Auth] Processing new OAuth session...');
         
-        // Store session info temporarily (will be confirmed after successful restoration)
-        localStorage.setItem('oauth-session-id-pending', sessionId);
-        localStorage.setItem('oauth-user-id-pending', userId);
-        
-        console.log('[Capacitor Auth] Redirecting to session restoration endpoint...');
-        
-        // Redirect to restore session
-        window.location.href = `/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`;
+        // Restore session using fetch API instead of redirect to avoid infinite loop
+        restoreSessionAndNavigate(sessionId, userId);
       } else {
         console.error('[Capacitor Auth] Missing session or userId in callback');
         alert('OAuth Error: Missing session or userId');
@@ -209,13 +245,9 @@ async function checkPendingOAuthSession(retryCount = 0, maxRetries = 6) {
         return;
       }
       
-      // Store session info temporarily
-      localStorage.setItem('oauth-session-id-pending', data.sessionId);
-      localStorage.setItem('oauth-user-id-pending', data.userId);
-      
-      // Restore the session
-      console.log('[Capacitor Auth] Redirecting to restore session...');
-      window.location.href = `/api/auth/restore-session?sessionId=${data.sessionId}&userId=${data.userId}&redirect=/`;
+      // Restore session using fetch API instead of redirect to avoid infinite loop
+      console.log('[Capacitor Auth] Restoring session via API...');
+      restoreSessionAndNavigate(data.sessionId, data.userId);
     } else {
       console.log('[Capacitor Auth] No pending OAuth sessions found');
       
