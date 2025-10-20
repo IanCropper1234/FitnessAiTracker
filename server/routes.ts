@@ -618,7 +618,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // OAuth state management for CSRF protection
-  const oauthStates = new Map<string, { timestamp: number; redirectUrl?: string }>();
+  const oauthStates = new Map<string, { timestamp: number; redirectUrl?: string; isApp?: boolean }>();
   
   // Clean up expired states every hour
   setInterval(() => {
@@ -673,6 +673,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     const stateData = oauthStates.get(state)!;
+    console.log('🔍 [Google Callback] State data:', { 
+      hasRedirectUrl: !!stateData.redirectUrl, 
+      isApp: stateData.isApp,
+      timestamp: stateData.timestamp 
+    });
     oauthStates.delete(state);
 
     passport.authenticate('google', { session: false }, async (err: any, user: any) => {
