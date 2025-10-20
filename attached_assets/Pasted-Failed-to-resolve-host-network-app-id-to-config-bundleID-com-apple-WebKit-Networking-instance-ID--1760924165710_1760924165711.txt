@@ -1,0 +1,311 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 9B9CEF52-D1A5-40F1-AAA0-4503383BEE4A])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+Networking process (0x115000800) took 4.583925 seconds to launch
+Failed to request storage access user agent string quirks from WebPrivacy.
+Failed to request storage access quirks from WebPrivacy.
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 3E943741-E8F3-46B5-83F1-C4DDE1E1151F
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3E943741-E8F3-46B5-83F1-C4DDE1E1151F
+Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+WebContent process (0x115001800) took 5.244491 seconds to launch
+GPU process (0x1150031e0) took 5.011409 seconds to launch
+Result accumulator timeout: 0.250000, exceeded.
+Failed to request query parameters from WebPrivacy.
+Failed to request restricted opener domains from WebPrivacy
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3E943741-E8F3-46B5-83F1-C4DDE1E1151F
+AddInstanceForFactory: No factory registered for id <CFUUID 0x60000027d440> F8BB1C28-BAE8-11D6-9C31-00039315CD46
+Failed to request allowed query parameters from WebPrivacy.
+       LoudnessManager.mm:721   unable to open stream for LoudnessManager plist
+124419          HALC_ProxyIOContext.cpp:1622  HALC_ProxyIOContext::IOWorkLoop: skipping cycle due to overload
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] Version changed from null to 2.0.0, clearing cache...
+⚡️  [log] - [Cache] Cache cleared, reloading app...
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  To Native ->  App addListener 109641157
+⚡️  To Native ->  App addListener 109641158
+⚡️  To Native ->  App getInfo 109641159
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  TO JS {"id":"com.fitnessaitracker.app","name":"MyTrainPro","version":"1.0","build":"11"}
+⚡️  To Native ->  App getLaunchUrl 109641160
+⚡️  TO JS undefined
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 3E943741-E8F3-46B5-83F1-C4DDE1E1151F
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 88414823
+⚡️  To Native ->  App addListener 88414824
+⚡️  To Native ->  App getInfo 88414825
+⚡️  TO JS {"name":"MyTrainPro","version":"1.0","build":"11","id":"com.fitnessaitracker.app"}
+⚡️  To Native ->  App getLaunchUrl 88414826
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Redirecting for mobile/app OAuth: /api/auth/google?app=1
+0x10482ec18 - [pageProxyID=10, webPageID=11, PID=47855] WebPageProxy::didFailProvisionalLoadForFrame: frameID=14, isMainFrame=1, domain=WebKitErrorDomain, code=102, isMainFrame=1, willInternallyHandleFailure=0
+⚡️  WebView failed provisional navigation
+⚡️  Error: Frame load interrupted
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 68F66F36-C932-41C6-B09B-948BC4B32A64
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 7C24BF24-4D06-4FBB-B38D-3D1DD9C73E2A
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = CF68C229-4EB8-445A-BF2F-FEA5135B70BD
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+iOSSimulatorAudioDevice-47767-0: Abandoning I/O cycle because reconfig pending
+            HALPlugIn.cpp:540    HALPlugIn::StopIOProc: got an error from the plug-in routine, Error: 560227702 (!dev)
+            HALSystem.cpp:2170   AudioObjectPropertiesChanged: no such object
+Received external candidate resultset. Total number of candidates: 16
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - [Capacitor Auth] Page became visible, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - Visibility changed: {"isVisible":true,"wasVisible":false}
+⚡️  [log] - App returned from background after: 301856 ms
+⚡️  [log] - [App] Visibility changed: visible
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - [Capacitor Auth] ✅ Found pending OAuth session for user 1!
+⚡️  [log] - [Capacitor Auth] Redirecting to restore session...
+⚡️  [log] - Page hide event
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 25744756
+⚡️  To Native ->  App addListener 25744757
+⚡️  To Native ->  App getInfo 25744758
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=EUk5LsbwjVDY476_ATZI-VE94wK1vG_b&userId=1","iosSourceApplication":"","iosOpenInPlace":""}
+⚡️  TO JS {"name":"MyTrainPro","version":"1.0","build":"11","id":"com.fitnessaitracker.app"}
+⚡️  [log] - [Capacitor Auth] App URL opened: mytrainpro://auth/callback?session=EUk5LsbwjVDY476_ATZI-VE94wK1vG_b&userId=1
+124187          HALC_ProxyIOContext.cpp:1622  HALC_ProxyIOContext::IOWorkLoop: skipping cycle due to overload
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+Received external candidate resultset. Total number of candidates: 16
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] OAuth successful! Session: EUk5LsbwjVDY476_ATZI-VE94wK1vG_b User: 1
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+Received external candidate resultset. Total number of candidates: 16
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+Received external candidate resultset. Total number of candidates: 16
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - [Capacitor Auth] Marked onboarding as completed for OAuth user
+⚡️  [log] - [Capacitor Auth] Stored OAuth session info for restoration
+⚡️  [log] - [Capacitor Auth] Redirecting to session restoration endpoint...
+⚡️  To Native ->  App getLaunchUrl 25744759
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=EUk5LsbwjVDY476_ATZI-VE94wK1vG_b&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=EUk5LsbwjVDY476_ATZI-VE94wK1vG_b&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=EUk5LsbwjVDY476_ATZI-VE94wK1vG_b&userId=1
+⚡️  [log] - [Capacitor Auth] Session already processed, skipping to prevent loop
+⚡️  [log] - Auth check response status: 200
+⚡️  [log] - Authentication successful, user data: {"user":{"id":1,"email":"c0109009@gmail.com","password":"$2b$10$BFqOm.i2VAhpwK9WMl/F1uOnMnjY3p0MI3vSUJE29d4vFgjwYC9HK","name":"Ian","appleId":null,"preferredLanguage":"en","theme":"dark","showDeveloperFeatures":false,"autoAdjustmentSettings":{"updatedAt":"2025-08-20T03:44:37.801Z","workoutSettings":{"updatedAt":"2025-08-19T09:47:36.279Z","restTimerFAB":true,"workoutSummary":false,"spinnerSetInput":true,"circularProgress":true,"gestureNavigation":true,"workoutExecutionV2":true,"autoRegulationFeedback":true},"lastAutoAdjustment":"2025-08-20T03:44:37.801Z","autoAdjustmentEnabled":true,"autoAdjustmentFrequency":"biweekly"},"createdAt":"2025-07-17T12:35:45.291Z","updatedAt":"2025-10-16T02:28:17.653Z","firstName":null,"lastName":null,"profileImageUrl":"/objects/uploads/f26ba6eb-c736-40fb-9db7-52b9553e04f4","emailVerified":true,"isActive":false,"registrationIp":null,"registrationUserAgent":null}}
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 8C84A988-5030-41DE-89A1-253E7BE39E09
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 118794909
+⚡️  To Native ->  App addListener 118794910
+⚡️  To Native ->  App getInfo 118794911
+⚡️  TO JS {"name":"MyTrainPro","id":"com.fitnessaitracker.app","build":"11","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 118794912
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=EUk5LsbwjVDY476_ATZI-VE94wK1vG_b&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=EUk5LsbwjVDY476_ATZI-VE94wK1vG_b&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=EUk5LsbwjVDY476_ATZI-VE94wK1vG_b&userId=1
+⚡️  [log] - [Capacitor Auth] Session already processed, skipping to prevent loop
+⚡️  [log] - Auth check response status: 200
+⚡️  [log] - Authentication successful, user data: {"user":{"id":1,"email":"c0109009@gmail.com","password":"$2b$10$BFqOm.i2VAhpwK9WMl/F1uOnMnjY3p0MI3vSUJE29d4vFgjwYC9HK","name":"Ian","appleId":null,"preferredLanguage":"en","theme":"dark","showDeveloperFeatures":false,"autoAdjustmentSettings":{"updatedAt":"2025-08-20T03:44:37.801Z","workoutSettings":{"updatedAt":"2025-08-19T09:47:36.279Z","restTimerFAB":true,"workoutSummary":false,"spinnerSetInput":true,"circularProgress":true,"gestureNavigation":true,"workoutExecutionV2":true,"autoRegulationFeedback":true},"lastAutoAdjustment":"2025-08-20T03:44:37.801Z","autoAdjustmentEnabled":true,"autoAdjustmentFrequency":"biweekly"},"createdAt":"2025-07-17T12:35:45.291Z","updatedAt":"2025-10-16T02:28:17.653Z","firstName":null,"lastName":null,"profileImageUrl":"/objects/uploads/f26ba6eb-c736-40fb-9db7-52b9553e04f4","emailVerified":true,"isActive":false,"registrationIp":null,"registrationUserAgent":null}}
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Settings saved to localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - Initial settings loaded from server: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - Date change triggered: null
+⚡️  [log] - Fetching stats for date: all dates
+⚡️  [log] - Fetching sessions for date: all dates
+⚡️  [log] - AnimatedPage: Page changed from / to /training
+⚡️  [log] - Received 12 sessions for all dates: [{"id":543,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-24T22:58:47.511Z","name":"Legs Sat Sep 2025 - Week 2 Day 6","isCompleted":false,"totalVolume":0,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":542,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-23T22:58:47.511Z","name":"Pull Thur Sep 2025 - Week 2 Day 5","isCompleted":false,"totalVolume":0,"duration":33,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":541,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-22T22:58:47.511Z","name":"Push Fri Sep 2025 - 9/14/2025 Template - Week 2 Day 4","isCompleted":false,"totalVolume":0,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":540,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-21T22:58:47.511Z","name":"Legs Wed Sep 2025 - Week 2 Day 3","isCompleted":false,"totalVolume":0,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":539,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-20T22:58:47.511Z","name":"Pull Mon Sep 2025 Template - Week 2 Day 2","isCompleted":false,"totalVolume":0,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":538,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-19T22:58:47.511Z","name":"Push Tue Sep 2025 - Week 2 Day 1","isCompleted":true,"totalVolume":8679,"duration":72,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":537,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-17T22:58:47.511Z","name":"Legs Sat Sep 2025 - Week 1 Day 6","isCompleted":true,"totalVolume":10885,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":536,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-16T22:58:47.511Z","name":"Pull Thur Sep 2025 - Week 1 Day 5","isCompleted":true,"totalVolume":8934,"duration":33,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":535,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-15T22:58:47.511Z","name":"Push Fri Sep 2025 - 9/14/2025 Template - Week 1 Day 4","isCompleted":true,"totalVolume":5211,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":534,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-14T22:58:47.511Z","name":"Legs Wed Sep 2025 - Week 1 Day 3","isCompleted":true,"totalVolume":11291,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":533,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-13T22:58:47.511Z","name":"Pull Mon Sep 2025 Template - Week 1 Day 2","isCompleted":true,"totalVolume":13529,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":532,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-12T22:58:47.511Z","name":"Push Tue Sep 2025 - Week 1 Day 1","isCompleted":true,"total
+⚡️  [log] - Stats for all dates: {"totalSessions":7,"totalVolume":64527,"averageSessionLength":15,"favoriteExercises":[],"weeklyProgress":[{"week":"2025-10-12","sessions":6,"volume":55848},{"week":"2025-10-19","sessions":1,"volume":8679}]}
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - AnimatedPage: Page changed from /training to /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - AnimatedPage: Page changed from / to /profile
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - AnimatedPage: Page changed from /profile to /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - AnimatedPage: Page changed from / to /profile
+⚡️  [log] - Starting client-side session cleanup...
+⚡️  [log] - Cleared localStorage keys: ["trainpro-onboarding-completed","trainpro-theme","oauth-user-id","last-processed-oauth-session","oauth-session-id","trainpro-workout-settings","mytrainpro-onboarding-completed"]
+⚡️  [log] - Client-side session cleanup completed
+⚡️  [log] - AnimatedPage: Page changed from /profile to /auth
+⚡️  [log] - User authenticated and verified, redirecting to dashboard
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - AnimatedPage: Page changed from /auth to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Redirecting for mobile/app OAuth: /api/auth/google?app=1
+0x10482ec18 - [pageProxyID=10, webPageID=11, PID=47855] WebPageProxy::didFailProvisionalLoadForFrame: frameID=14, isMainFrame=1, domain=WebKitErrorDomain, code=102, isMainFrame=1, willInternallyHandleFailure=0
+⚡️  WebView failed provisional navigation
+⚡️  Error: Frame load interrupted
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = FD266907-944B-4C55-A0CF-E1462249C8FD
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 02E2CC37-F1B7-4ABA-B317-0D257B5AA63D
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 82B4AC0E-CF00-43B2-AD02-AC4B646EA392
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = EA60EA50-89D8-4229-9EA9-D9F9B26554A8
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = EA60EA50-89D8-4229-9EA9-D9F9B26554A8
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = EA60EA50-89D8-4229-9EA9-D9F9B26554A8
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = EA60EA50-89D8-4229-9EA9-D9F9B26554A8
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - [Capacitor Auth] Page became visible, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - Visibility changed: {"isVisible":true,"wasVisible":false}
+⚡️  [log] - App returned from background after: 5418 ms
+⚡️  [log] - [App] Visibility changed: visible
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = EA60EA50-89D8-4229-9EA9-D9F9B26554A8
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = F14A0B35-549E-4F85-B07C-DA078E116455
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = A51B9EF6-37F3-48A1-A513-426D540843C6
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+[C:3] Error received: Connection interrupted.
+[C:3-4] Error received: Connection interrupted.
+-[RTIInputSystemClient _configureConnection:withMachName:]_block_invoke  Client connection to service was interrupted: <NSXPCConnection: 0x60000330fa20> connection to service with pid -1 named (null)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = A51B9EF6-37F3-48A1-A513-426D540843C6
+Received external candidate resultset. Total number of candidates: 16

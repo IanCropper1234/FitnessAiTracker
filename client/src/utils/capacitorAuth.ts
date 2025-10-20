@@ -95,54 +95,8 @@ export function setupCapacitorOAuthListener() {
   // Listen for app URL open events (deep links)
   App.addListener('appUrlOpen', (data: { url: string }) => {
     console.log('[Capacitor Auth] App URL opened:', data.url);
-    // Add visual feedback
-    alert(`Deep link received: ${data.url.substring(0, 50)}...`);
-    
-    try {
-      const url = new URL(data.url);
-      
-      // Check if it's an OAuth callback
-      if (url.host === 'auth' && url.pathname === '/callback') {
-        console.log('[Capacitor Auth] OAuth callback detected');
-        
-        const sessionId = url.searchParams.get('session');
-        const userId = url.searchParams.get('userId');
-        
-        if (sessionId && userId) {
-          console.log('[Capacitor Auth] OAuth successful! Session:', sessionId, 'User:', userId);
-          alert(`OAuth Success! Restoring session for user ${userId}...`);
-          
-          // Mark onboarding as completed for OAuth users
-          // OAuth users shouldn't see the first-time user animation
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('trainpro-onboarding-completed', 'true');
-            localStorage.setItem('mytrainpro-onboarding-completed', 'true');
-            console.log('[Capacitor Auth] Marked onboarding as completed for OAuth user');
-            
-            // Store session info temporarily to help with session restoration
-            localStorage.setItem('oauth-session-id', sessionId);
-            localStorage.setItem('oauth-user-id', userId);
-            console.log('[Capacitor Auth] Stored OAuth session info for restoration');
-          }
-          
-          // Redirect to a special URL that will trigger session restoration
-          console.log('[Capacitor Auth] Redirecting to session restoration endpoint...');
-          // Use the session restoration endpoint to ensure cookies are set
-          window.location.href = `/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`;
-        } else {
-          console.error('[Capacitor Auth] Missing session or userId in callback');
-          alert('OAuth Error: Missing session or userId');
-          window.location.href = '/auth?error=oauth_callback_failed';
-        }
-      } else {
-        // Handle other deep link formats
-        console.log('[Capacitor Auth] Non-OAuth deep link, ignoring');
-        alert(`Unknown deep link: ${url.host}${url.pathname}`);
-      }
-    } catch (error) {
-      console.error('[Capacitor Auth] Error parsing deep link URL:', error);
-      alert(`Error handling deep link: ${error}`);
-    }
+    // Use the unified handleDeepLink function
+    handleDeepLink(data.url);
   });
 
   // Also handle the URL when app launches
@@ -181,7 +135,11 @@ function handleDeepLink(urlString: string) {
           return;
         }
         
-        console.log('[Capacitor Auth] Deep link contains valid OAuth data');
+        console.log('[Capacitor Auth] OAuth callback detected');
+        console.log('[Capacitor Auth] Deep link contains valid OAuth data - Session:', sessionId, 'User:', userId);
+        
+        // Visual feedback
+        alert(`OAuth Success! Restoring session for user ${userId}...`);
         
         // Mark this session as processed BEFORE redirecting
         localStorage.setItem('last-processed-oauth-session', sessionId);
@@ -192,12 +150,21 @@ function handleDeepLink(urlString: string) {
         localStorage.setItem('oauth-session-id', sessionId);
         localStorage.setItem('oauth-user-id', userId);
         
+        console.log('[Capacitor Auth] Redirecting to session restoration endpoint...');
+        
         // Redirect to restore session
         window.location.href = `/api/auth/restore-session?sessionId=${sessionId}&userId=${userId}&redirect=/`;
+      } else {
+        console.error('[Capacitor Auth] Missing session or userId in callback');
+        alert('OAuth Error: Missing session or userId');
+        window.location.href = '/auth?error=oauth_callback_failed';
       }
+    } else {
+      console.log('[Capacitor Auth] Non-OAuth deep link, ignoring');
     }
   } catch (error) {
     console.error('[Capacitor Auth] Error processing deep link:', error);
+    alert(`Error handling deep link: ${error}`);
   }
 }
 
