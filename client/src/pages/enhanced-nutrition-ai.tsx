@@ -184,7 +184,7 @@ export default function EnhancedNutritionAI() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-2 sm:p-4 space-y-4 sm:space-y-6 max-w-full overflow-hidden">
+    <div className="min-h-screen bg-background ios-pwa-container p-2 sm:p-4 space-y-4 sm:space-y-6 max-w-full overflow-hidden">
       {/* Header */}
       <div className="flex items-start gap-2 sm:gap-3 max-w-full">
         <Button

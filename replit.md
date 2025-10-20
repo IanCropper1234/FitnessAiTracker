@@ -11,6 +11,9 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provid
   - Adjusted CSS `.ios-pwa-container` to use `env(safe-area-inset-top, 0)` without extra 20px fallback
   - iOS app now displays correct header spacing matching web view
   - Safe area handling now fully controlled by CSS for consistency
+  - **Fixed Missing Safe Area Protection on 6 Pages**:
+    - Added `.ios-pwa-container` to: nutrition-facts, privacy-policy, terms-of-service, exercise-selection, ai-exercise-recommendations, enhanced-nutrition-ai
+    - All pages now properly handle iPhone notch/Dynamic Island
 
 ### Native iOS Swipe-Back Gesture Implementation (October 20, 2025)
 - **Experimental Native Swipe-Back Feature**:

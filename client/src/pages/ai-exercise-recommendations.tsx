@@ -422,7 +422,7 @@ export default function CreateAIWorkoutSession() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 space-y-6 ml-[-10px] mr-[-10px]">
+    <div className="min-h-screen bg-background ios-pwa-container p-4 space-y-6 ml-[-10px] mr-[-10px]">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button
