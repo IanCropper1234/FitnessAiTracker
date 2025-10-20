@@ -15,6 +15,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ObjectUploader } from "@/components/ObjectUploader";
+import { useSwipeBack } from "@/hooks/useSwipeBack";
 
 interface User {
   id: number;
@@ -210,6 +211,9 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isLegalOpen, setIsLegalOpen] = useState(false);
+  
+  // Enable native iOS swipe-back gesture on this page
+  useSwipeBack(true);
   
   // Auto-reset language to English if ZH-TW is selected (since it's not complete)
   useEffect(() => {

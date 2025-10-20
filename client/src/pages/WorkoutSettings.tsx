@@ -8,10 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Settings, Activity } from 'lucide-react';
 import { useWorkoutSetting } from '@/hooks/useSettings';
 import { useToast } from '@/hooks/use-toast';
+import { useSwipeBack } from '@/hooks/useSwipeBack';
 
 export default function WorkoutSettings() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+
+  // Enable native iOS swipe-back gesture on this page
+  useSwipeBack(true);
 
   // Get current settings
   const [autoRegulationFeedback, setAutoRegulationFeedback] = useWorkoutSetting('autoRegulationFeedback');

@@ -4,6 +4,16 @@
 MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provide intelligent, adaptive training, and comprehensive nutrition and workout management. It leverages evidence-based periodization methodology combined with AI recommendations to offer personalized coaching at scale. The platform aims to capture a significant share of the digital fitness market by providing a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
 ## Recent Changes
+### Native iOS Swipe-Back Gesture Implementation (October 20, 2025)
+- **Experimental Native Swipe-Back Feature**:
+  - Installed `capacitor-plugin-ios-swipe-back` (v1.0.3) for native iOS gesture support
+  - Created `useSwipeBack` hook for granular control over swipe-back behavior
+  - **Enabled on select pages**: `/profile` and `/workout-settings` for initial testing
+  - **Known Limitations**: WKWebView swipes entire page including navigation bars (not just content area like native apps), may cause white screens with SPA routing, requires extensive testing
+  - **Disabled on complex pages**: Dashboard, Nutrition, Training (due to floating menus and state management concerns)
+  - Plugin uses `registerPlugin` API compatible with Capacitor 7.x
+  - Automatic cleanup on component unmount to prevent gesture conflicts
+
 ### Apple OAuth Complete End-to-End Fix (October 20, 2025)
 - **Full Apple Sign In Working for iOS App**:
   - Resolved session restoration issues that previously caused 500 errors
