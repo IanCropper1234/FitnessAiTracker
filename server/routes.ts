@@ -830,12 +830,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
+      console.log('[Session Restore] Step 1: Getting user from database...');
+      
       // Validate that the user exists
       const user = await storage.getUser(parseInt(userId as string));
+      
+      console.log('[Session Restore] Step 2: User retrieved:', user ? `userId=${user.id}` : 'null');
+      
       if (!user) {
         console.error('[Session Restore] User not found:', userId);
         return res.redirect('/auth?error=user_not_found');
       }
+      
+      console.log('[Session Restore] Step 3: Setting up session...');
       
       // Set up the session
       const session = req.session as any;
@@ -845,11 +852,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       session.userAgent = req.get('User-Agent') || 'unknown';
       session.clientIP = req.ip || req.connection.remoteAddress || 'unknown';
       
+      console.log('[Session Restore] Step 4: Saving session...');
+      
       // Save session before redirecting
       await new Promise<void>((resolve, reject) => {
         session.save((err: any) => {
           if (err) {
             console.error('[Session Restore] Failed to save session:', err);
+            console.error('[Session Restore] Session save error details:', {
+              errorType: err.constructor.name,
+              errorMessage: err.message,
+              errorStack: err.stack
+            });
             reject(err);
           } else {
             console.log(`[Session Restore] ✅ Session restored for user ${user.id}`);
@@ -857,6 +871,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
       });
+      
+      console.log('[Session Restore] Step 5: Marking pending session as consumed...');
       
       // Mark the pending OAuth session as consumed to prevent reuse
       try {
@@ -869,6 +885,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Don't fail the entire request if this fails
       }
       
+      console.log('[Session Restore] Step 6: Redirecting to dashboard...');
+      
       // Redirect to the requested path with success flag
       // This allows the frontend to mark the session as successfully restored
       const redirectPath = (redirect as string) || '/';
@@ -877,7 +895,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.redirect(redirectUrl);
       
     } catch (error) {
-      console.error('[Session Restore] Error:', error);
+      console.error('[Session Restore] CRITICAL ERROR:', error);
+      console.error('[Session Restore] Error type:', error instanceof Error ? error.constructor.name : typeof error);
+      console.error('[Session Restore] Error message:', error instanceof Error ? error.message : String(error));
+      console.error('[Session Restore] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       res.redirect('/auth?error=session_restore_failed');
     }
   });
