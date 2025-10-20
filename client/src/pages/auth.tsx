@@ -19,6 +19,7 @@ import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistratio
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 
 interface User {
   id: number;
@@ -149,7 +150,7 @@ export default function Auth({ onSuccess }: AuthProps) {
         console.log('[Auth] Added app=1 parameter for Capacitor environment');
       }
       
-      // Determine if we should use popup (desktop) or redirect (mobile/app)
+      // Determine if we should use popup (desktop) or Browser API (Capacitor app)
       const isDesktop = !isMyTrainProApp && window.innerWidth >= 768;
       
       if (isDesktop) {
@@ -176,9 +177,21 @@ export default function Auth({ onSuccess }: AuthProps) {
             setIsLoading(false);
           }
         }, 500);
+      } else if (isMyTrainProApp) {
+        // Capacitor app - use Browser API to open in Safari
+        const fullUrl = `${window.location.origin}${authUrl}`;
+        console.log('[Auth] Opening OAuth in Safari using Browser API:', fullUrl);
+        
+        await Browser.open({ 
+          url: fullUrl,
+          windowName: '_self'
+        });
+        
+        console.log('[Auth] Browser.open() completed, OAuth should continue in Safari');
+        // Note: The polling mechanism in capacitorAuth.ts will handle the return
       } else {
-        // Mobile or Capacitor app - use redirect
-        console.log('[Auth] Redirecting for mobile/app OAuth:', authUrl);
+        // Mobile web - use redirect
+        console.log('[Auth] Redirecting for mobile web OAuth:', authUrl);
         window.location.href = authUrl;
       }
     } catch (error) {
