@@ -222,7 +222,7 @@ export function Nutrition({
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
+    <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container ios-no-safe-top">
       <div className="w-full max-w-none space-y-2">
         {/* Ultra-Compact iOS Header */}
         <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-4 px-4">

@@ -4,16 +4,20 @@
 MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provide intelligent, adaptive training, and comprehensive nutrition and workout management. It leverages evidence-based periodization methodology combined with AI recommendations to offer personalized coaching at scale. The platform aims to capture a significant share of the digital fitness market by providing a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
 ## Recent Changes
-### iOS Safe Area Double Padding Fix (October 20, 2025)
-- **Fixed Excessive Header Spacing on iOS Capacitor App**:
-  - Resolved double padding issue caused by conflicting `contentInset: 'automatic'` and CSS `env(safe-area-inset-top)`
-  - Changed Capacitor config `contentInset` from `'automatic'` to `'never'` to prevent native padding
-  - Adjusted CSS `.ios-pwa-container` to use `env(safe-area-inset-top, 0)` without extra 20px fallback
-  - iOS app now displays correct header spacing matching web view
-  - Safe area handling now fully controlled by CSS for consistency
-  - **Fixed Missing Safe Area Protection on 6 Pages**:
-    - Added `.ios-pwa-container` to: nutrition-facts, privacy-policy, terms-of-service, exercise-selection, ai-exercise-recommendations, enhanced-nutrition-ai
-    - All pages now properly handle iPhone notch/Dynamic Island
+### iOS Safe Area Double Padding Fix - Sticky Header Architecture (October 20, 2025)
+- **Root Cause**: Container-level safe area padding created empty space above sticky headers
+- **Complete Solution**:
+  - Created `.ios-no-safe-top` override class to remove container padding on pages with sticky headers
+  - Modified `.ios-sticky-header` to consume safe area: `padding-top: calc(env(safe-area-inset-top, 0) + 8px)`
+  - Updated 4 core pages (nutrition, training, reports, auth) with `ios-no-safe-top` class
+  - Header backgrounds now properly fill notch area instead of leaving blank space
+- **Technical Details**:
+  - Capacitor config: `contentInset: 'never'` (prevents native padding)
+  - Sticky headers consume safe area directly via CSS calc
+  - Container padding removed on sticky-header pages to prevent double padding
+- **Safe Area Protection on Detail Pages**:
+  - Added `.ios-pwa-container` to 6 pages: nutrition-facts, privacy-policy, terms-of-service, exercise-selection, ai-exercise-recommendations, enhanced-nutrition-ai
+  - These pages use container-level safe area (no sticky header)
 
 ### Native iOS Swipe-Back Gesture Implementation (October 20, 2025)
 - **Experimental Native Swipe-Back Feature**:

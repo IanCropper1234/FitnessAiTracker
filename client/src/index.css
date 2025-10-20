@@ -1992,6 +1992,11 @@ button, .ios-button {
   align-items: stretch;
 }
 
+/* Override for pages with sticky headers - header consumes safe area instead */
+.ios-no-safe-top {
+  padding-top: 0 !important;
+}
+
 /* Toast 不需要額外的 padding-top，只需要 top 定位 */
 .top-safe-area-inset-top {
   top: env(safe-area-inset-top, 0px); /* ✅ 保留這個 */
@@ -2008,11 +2013,11 @@ button, .ios-button {
     }
   }
   
-  /* Sticky header with proper iOS support - 簡化 padding */
+  /* Sticky header with proper iOS support - header consumes safe area */
   .ios-sticky-header {
     position: sticky;
     top: 0;
-    padding-top: 8px;
+    padding-top: calc(env(safe-area-inset-top, 0) + 8px); /* Safe area + visual spacing */
     z-index: 50;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
