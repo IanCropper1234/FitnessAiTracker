@@ -1,0 +1,103 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: EE51B496-B027-4E8F-9BD7-68E9E6FD32D1])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+Received external candidate resultset. Total number of candidates: 0
+Received external candidate resultset. Total number of candidates: 16
+Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+Result accumulator timeout: 0.250000, exceeded.
+resultToPush is nil, will not push anything to candidate receiver..
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 77AF9473-4863-4739-B544-28938ACC5A6B
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 68205279
+⚡️  To Native ->  App addListener 68205280
+⚡️  To Native ->  App getInfo 68205281
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitnessaitracker.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 68205282
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Redirecting for mobile/app OAuth: /api/auth/google?app=1
+0x105831618 - [pageProxyID=10, webPageID=11, PID=50471] WebPageProxy::didFailProvisionalLoadForFrame: frameID=14, isMainFrame=1, domain=WebKitErrorDomain, code=102, isMainFrame=1, willInternallyHandleFailure=0
+⚡️  WebView failed provisional navigation
+⚡️  Error: Frame load interrupted
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = AD05651D-B335-46E6-9988-233BC20BD57B
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 92C34DBB-D40F-4E7B-8FD2-94837BE93B55
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 0E64142D-A7DD-4243-B892-65E466DCD402
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 38D4951D-7B7F-4384-821E-34DB67471CFC
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 38D4951D-7B7F-4384-821E-34DB67471CFC
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 38D4951D-7B7F-4384-821E-34DB67471CFC
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 38D4951D-7B7F-4384-821E-34DB67471CFC
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - [Capacitor Auth] Page became visible, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - Visibility changed: {"isVisible":true,"wasVisible":false}
+⚡️  [log] - App returned from background after: 6756 ms
+⚡️  [log] - [App] Visibility changed: visible
+Received external candidate resultset. Total number of candidates: 16
+Received external candidate resultset. Total number of candidates: 16
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
