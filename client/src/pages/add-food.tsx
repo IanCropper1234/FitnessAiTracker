@@ -15,6 +15,8 @@ import { TimezoneUtils } from "@shared/utils/timezone";
 import NutrientDetailsModal from "@/components/NutrientDetailsModal";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 import { LoadingSpinner } from "@/components/ui/loading";
+import { Capacitor } from '@capacitor/core';
+import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { 
   ArrowLeft, 
   Home, 
@@ -574,17 +576,81 @@ export function AddFood({ user }: AddFoodProps) {
   // Dynamic calculations managed for AI-only mode
 
   // Image capture functions
-  const handleTakePhoto = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.setAttribute('capture', 'environment');
-      fileInputRef.current.click();
+  const handleTakePhoto = async () => {
+    // Check if running in Capacitor app
+    const isCapacitorApp = Capacitor.isNativePlatform();
+    
+    if (isCapacitorApp) {
+      try {
+        console.log('[Camera] Using Capacitor Camera API');
+        const image = await CapacitorCamera.getPhoto({
+          quality: 90,
+          allowEditing: false,
+          resultType: CameraResultType.DataUrl,
+          source: CameraSource.Camera
+        });
+        
+        if (image.dataUrl) {
+          console.log('[Camera] Photo captured successfully');
+          setCapturedImages(prev => [...prev, image.dataUrl!]);
+          setShowImageCapture(false);
+        }
+      } catch (error: any) {
+        console.error('[Camera] Error capturing photo:', error);
+        if (error.message !== 'User cancelled photos app') {
+          toast({
+            title: "Camera Error",
+            description: "Failed to capture photo. Please check camera permissions.",
+            variant: "destructive"
+          });
+        }
+      }
+    } else {
+      // Fallback to HTML5 file input for web
+      console.log('[Camera] Using HTML5 file input');
+      if (fileInputRef.current) {
+        fileInputRef.current.setAttribute('capture', 'environment');
+        fileInputRef.current.click();
+      }
     }
   };
 
-  const handleUploadImage = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.removeAttribute('capture');
-      fileInputRef.current.click();
+  const handleUploadImage = async () => {
+    // Check if running in Capacitor app
+    const isCapacitorApp = Capacitor.isNativePlatform();
+    
+    if (isCapacitorApp) {
+      try {
+        console.log('[Camera] Using Capacitor Photo Library API');
+        const image = await CapacitorCamera.getPhoto({
+          quality: 90,
+          allowEditing: false,
+          resultType: CameraResultType.DataUrl,
+          source: CameraSource.Photos
+        });
+        
+        if (image.dataUrl) {
+          console.log('[Camera] Photo selected successfully');
+          setCapturedImages(prev => [...prev, image.dataUrl!]);
+          setShowImageCapture(false);
+        }
+      } catch (error: any) {
+        console.error('[Camera] Error selecting photo:', error);
+        if (error.message !== 'User cancelled photos app') {
+          toast({
+            title: "Photo Library Error",
+            description: "Failed to select photo. Please check photo library permissions.",
+            variant: "destructive"
+          });
+        }
+      }
+    } else {
+      // Fallback to HTML5 file input for web
+      console.log('[Camera] Using HTML5 file input for upload');
+      if (fileInputRef.current) {
+        fileInputRef.current.removeAttribute('capture');
+        fileInputRef.current.click();
+      }
     }
   };
 
