@@ -632,10 +632,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Google OAuth routes
   app.get('/api/auth/google', (req, res, next) => {
+    console.log('🚀 [Google OAuth] Initial request received:', {
+      query: req.query,
+      headers: {
+        'user-agent': req.get('user-agent'),
+        'referer': req.get('referer'),
+        'origin': req.get('origin')
+      },
+      isApp: req.query.app === '1'
+    });
+    
     // Generate CSRF state token
     const state = randomBytes(32).toString('hex');
     const redirectUrl = req.query.redirect as string || '/';
     const isApp = req.query.app === '1'; // Check if from Capacitor app
+    
+    console.log('📝 [Google OAuth] Storing state:', {
+      state: state.substring(0, 10) + '...',
+      redirectUrl,
+      isApp
+    });
     
     oauthStates.set(state, { 
       timestamp: Date.now(),
@@ -643,6 +659,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       isApp // Store app flag
     });
 
+    console.log('🔐 [Google OAuth] Calling passport.authenticate...');
     passport.authenticate('google', {
       scope: ['profile', 'email'],
       state,
