@@ -19,6 +19,7 @@ import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistratio
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 
 interface User {
   id: number;
@@ -177,18 +178,26 @@ export default function Auth({ onSuccess }: AuthProps) {
           }
         }, 500);
       } else if (isMyTrainProApp) {
-        // Capacitor app - open in system Safari using window.open with _system target
+        // Capacitor app - use Browser plugin to open in external Safari
         const fullUrl = `${window.location.origin}${authUrl}`;
-        console.log('[Auth] Opening OAuth in system Safari:', fullUrl);
+        console.log('[Auth] Opening OAuth in system Safari using Browser plugin:', fullUrl);
         
-        // Use _system target to open in external Safari browser
-        const opened = window.open(fullUrl, '_system');
-        
-        if (!opened) {
-          console.error('[Auth] Failed to open system browser, trying _blank fallback');
-          window.open(fullUrl, '_blank');
-        } else {
-          console.log('[Auth] Successfully opened in system Safari');
+        try {
+          // Use Capacitor Browser plugin - this is trusted by iOS
+          await Browser.open({ 
+            url: fullUrl,
+            windowName: '_self',  // This is required for proper deep link handling
+            presentationStyle: 'fullscreen'  // iOS presentation style
+          });
+          console.log('[Auth] Successfully opened OAuth flow in external browser');
+        } catch (browserError) {
+          console.error('[Auth] Browser.open() failed:', browserError);
+          // Fallback to window.open as last resort
+          console.log('[Auth] Trying window.open fallback...');
+          const opened = window.open(fullUrl, '_blank');
+          if (!opened) {
+            throw new Error('Failed to open browser for OAuth');
+          }
         }
         
         // Note: The polling mechanism in capacitorAuth.ts will handle the return

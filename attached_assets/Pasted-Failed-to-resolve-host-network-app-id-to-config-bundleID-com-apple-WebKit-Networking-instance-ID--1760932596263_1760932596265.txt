@@ -1,0 +1,251 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 9D4DC7FB-9E3D-4BB0-8807-9077211926D2])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 0.0s)
+Networking process (0x115000800) took 2.141899 seconds to launch
+WebContent process (0x115001720) took 2.069982 seconds to launch
+GPU process (0x1150031e0) took 1.960527 seconds to launch
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 0D899A5A-C854-4E28-AA3F-F0CC4883FC90
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 0D899A5A-C854-4E28-AA3F-F0CC4883FC90
+Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 0D899A5A-C854-4E28-AA3F-F0CC4883FC90
+Result accumulator timeout: 0.250000, exceeded.
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 0D899A5A-C854-4E28-AA3F-F0CC4883FC90
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 114355824
+⚡️  To Native ->  App addListener 114355825
+⚡️  To Native ->  App getInfo 114355826
+⚡️  TO JS {"id":"com.fitnessaitracker.app","build":"13","version":"1.0","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 114355827
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148  MyTrainPro-iOS/1.0.0","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Opening OAuth in system Safari: https://mytrainpro.com/api/auth/google?app=1
+⚡️  [error] - [Auth] Failed to open system browser, trying _blank fallback
+[AppDelegate] App will resign active - preparing for background
+⚡️  TO JS {"isActive":false}
+[AppDelegate] App did enter background
+Failed to open URL https://mytrainpro.com/api/auth/google?app=1: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 "(null)" UserInfo={NSUnderlyingError=0x600000c6d830 {Error Domain=FBSOpenApplicationErrorDomain Code=3 "Request is not trusted." UserInfo={BSErrorCodeDescription=Security, NSLocalizedFailureReason=Request is not trusted.}}, NSLocalizedFailure=The request to open "com.apple.mobilesafari" failed., FBSErrorContext=147937300, BSErrorCodeDescription=InvalidRequest}
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = CCB9E85D-610A-41FD-BE56-B494909EAE3E
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = DFBBF79D-E243-402B-9F35-4C49D17822E9
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 2A55FDE8-533A-4C06-8EC6-238BEE3A33F2
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 5D736108-823B-4E38-9900-CF49E6EB48FD
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 5D736108-823B-4E38-9900-CF49E6EB48FD
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 5D736108-823B-4E38-9900-CF49E6EB48FD
+[AppDelegate] App will enter foreground
+[AppDelegate] Background duration: 8.08984899520874 seconds
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 5D736108-823B-4E38-9900-CF49E6EB48FD
+📱 [Deep Link] App opened with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  TO JS {"iosOpenInPlace":"","iosSourceApplication":"","url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  [log] - [Capacitor Auth] Page became visible, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - Visibility changed: {"isVisible":true,"wasVisible":false}
+⚡️  [log] - App returned from background after: 7689 ms
+⚡️  [log] - [App] Visibility changed: visible
+⚡️  [log] - [Capacitor Auth] App URL opened: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Session already processed, skipping to prevent loop
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 0.0s)
+⚡️  TO JS {"isActive":true}
+⚡️  [log] - [Capacitor Auth] App became active, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Delayed check for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 5D736108-823B-4E38-9900-CF49E6EB48FD
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 5D736108-823B-4E38-9900-CF49E6EB48FD
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+[AppDelegate] App will resign active - preparing for background
+⚡️  TO JS {"isActive":false}
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+[AppDelegate] App did enter background
+Snapshotting a view (0x101f17c00, UIKeyboardImpl) that is not in a visible window requires afterScreenUpdates:YES.
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 0FF5720D-7068-42D2-B0E4-9E4C21EB4BFC
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 96CD3A16-8708-4C6C-BC77-41B78FE52BC6
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = EC4A91B1-1D75-4FB5-916E-F0E4EEBA1638
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = AEB1FF87-48F4-4B62-B5D5-7EE07B151321
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = AEB1FF87-48F4-4B62-B5D5-7EE07B151321
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = AEB1FF87-48F4-4B62-B5D5-7EE07B151321
+[AppDelegate] App will enter foreground
+[AppDelegate] Background duration: 1.4792671203613281 seconds
+📱 [Deep Link] App opened with URL: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  TO JS {"iosOpenInPlace":"","iosSourceApplication":"","url":"mytrainpro:\/\/auth\/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1"}
+⚡️  [log] - [Capacitor Auth] Page became visible, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - Visibility changed: {"isVisible":true,"wasVisible":false}
+⚡️  [log] - App returned from background after: 1106 ms
+⚡️  [log] - [App] Visibility changed: visible
+⚡️  [log] - [Capacitor Auth] App URL opened: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=ZVW2YjK9gblHLG-UNTakjKgYYL9QV2uP&userId=1
+⚡️  [log] - [Capacitor Auth] Session already processed, skipping to prevent loop
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 0.0s)
+⚡️  TO JS {"isActive":true}
+⚡️  [log] - [Capacitor Auth] App became active, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Delayed check for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks

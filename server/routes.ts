@@ -869,10 +869,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Don't fail the entire request if this fails
       }
       
-      // Redirect to the requested path or dashboard
+      // Redirect to the requested path with success flag
+      // This allows the frontend to mark the session as successfully restored
       const redirectPath = (redirect as string) || '/';
-      console.log(`[Session Restore] Redirecting to: ${redirectPath}`);
-      res.redirect(redirectPath);
+      const redirectUrl = `${redirectPath}?oauth_success=1&session=${encodeURIComponent(sessionId as string)}`;
+      console.log(`[Session Restore] Redirecting to: ${redirectUrl}`);
+      res.redirect(redirectUrl);
       
     } catch (error) {
       console.error('[Session Restore] Error:', error);

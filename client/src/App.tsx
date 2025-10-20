@@ -82,6 +82,27 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
     }
   }, [user]);
   
+  // Check for OAuth success flag and mark session as successfully restored
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const oauthSuccess = urlParams.get('oauth_success');
+    const sessionId = urlParams.get('session');
+    
+    if (oauthSuccess === '1' && sessionId) {
+      console.log('[App] OAuth success detected, marking session as successfully restored');
+      // Mark this session as successfully restored to prevent duplicate processing
+      localStorage.setItem('last-successful-oauth-session', sessionId);
+      localStorage.setItem('trainpro-onboarding-completed', 'true');
+      localStorage.setItem('mytrainpro-onboarding-completed', 'true');
+      
+      // Clean the URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+      
+      console.log('[App] Session marked as successful, URL cleaned');
+    }
+  }, [location]);
+  
   // Initialize iOS WebView visibility detection and auto-reload
   useVisibilityDetection({
     onVisibilityChange: (isVisible) => {

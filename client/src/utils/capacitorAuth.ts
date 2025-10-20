@@ -128,27 +128,22 @@ function handleDeepLink(urlString: string) {
       const userId = url.searchParams.get('userId');
       
       if (sessionId && userId) {
-        // Check if we've already processed this session
-        const lastProcessedSession = localStorage.getItem('last-processed-oauth-session');
-        if (lastProcessedSession === sessionId) {
-          console.log('[Capacitor Auth] Session already processed, skipping to prevent loop');
-          return;
-        }
-        
         console.log('[Capacitor Auth] OAuth callback detected');
         console.log('[Capacitor Auth] Deep link contains valid OAuth data - Session:', sessionId, 'User:', userId);
         
+        // Check if this session is different from last successful login
+        const lastSuccessfulSession = localStorage.getItem('last-successful-oauth-session');
+        if (lastSuccessfulSession === sessionId) {
+          console.log('[Capacitor Auth] Session already successfully restored, skipping to prevent duplicate login');
+          return;
+        }
+        
         // Visual feedback with friendly message
-        alert('Welcome back! Logging you in...');
+        console.log('[Capacitor Auth] Processing new OAuth session...');
         
-        // Mark this session as processed BEFORE redirecting
-        localStorage.setItem('last-processed-oauth-session', sessionId);
-        
-        // Store session info
-        localStorage.setItem('trainpro-onboarding-completed', 'true');
-        localStorage.setItem('mytrainpro-onboarding-completed', 'true');
-        localStorage.setItem('oauth-session-id', sessionId);
-        localStorage.setItem('oauth-user-id', userId);
+        // Store session info temporarily (will be confirmed after successful restoration)
+        localStorage.setItem('oauth-session-id-pending', sessionId);
+        localStorage.setItem('oauth-user-id-pending', userId);
         
         console.log('[Capacitor Auth] Redirecting to session restoration endpoint...');
         
@@ -207,19 +202,16 @@ async function checkPendingOAuthSession(retryCount = 0, maxRetries = 6) {
     if (data.hasPending) {
       console.log(`[Capacitor Auth] ✅ Found pending OAuth session for user ${data.userId}!`);
       
-      // Check if we've already processed this session
-      const lastProcessedSession = localStorage.getItem('last-processed-oauth-session');
-      if (lastProcessedSession === data.sessionId) {
-        console.log('[Capacitor Auth] Session already processed via polling, skipping to prevent loop');
+      // Check if this session is different from last successful login
+      const lastSuccessfulSession = localStorage.getItem('last-successful-oauth-session');
+      if (lastSuccessfulSession === data.sessionId) {
+        console.log('[Capacitor Auth] Session already successfully restored, skipping to prevent duplicate login');
         return;
       }
       
-      // Mark this session as processed BEFORE redirecting
-      localStorage.setItem('last-processed-oauth-session', data.sessionId);
-      
-      // Mark onboarding as completed
-      localStorage.setItem('trainpro-onboarding-completed', 'true');
-      localStorage.setItem('mytrainpro-onboarding-completed', 'true');
+      // Store session info temporarily
+      localStorage.setItem('oauth-session-id-pending', data.sessionId);
+      localStorage.setItem('oauth-user-id-pending', data.userId);
       
       // Restore the session
       console.log('[Capacitor Auth] Redirecting to restore session...');
