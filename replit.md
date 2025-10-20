@@ -4,6 +4,14 @@
 MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provide intelligent, adaptive training, and comprehensive nutrition and workout management. It leverages evidence-based periodization methodology combined with AI recommendations to offer personalized coaching at scale. The platform aims to capture a significant share of the digital fitness market by providing a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
 ## Recent Changes
+### iOS Safe Area Double Padding Fix (October 20, 2025)
+- **Fixed Excessive Header Spacing on iOS Capacitor App**:
+  - Resolved double padding issue caused by conflicting `contentInset: 'automatic'` and CSS `env(safe-area-inset-top)`
+  - Changed Capacitor config `contentInset` from `'automatic'` to `'never'` to prevent native padding
+  - Adjusted CSS `.ios-pwa-container` to use `env(safe-area-inset-top, 0)` without extra 20px fallback
+  - iOS app now displays correct header spacing matching web view
+  - Safe area handling now fully controlled by CSS for consistency
+
 ### Native iOS Swipe-Back Gesture Implementation (October 20, 2025)
 - **Experimental Native Swipe-Back Feature**:
   - Installed `capacitor-plugin-ios-swipe-back` (v1.0.3) for native iOS gesture support

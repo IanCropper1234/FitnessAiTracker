@@ -1980,7 +1980,7 @@ button, .ios-button {
   
   /* Full safe area insets for PWA containers - 僅底部使用 safe area */
 .ios-pwa-container {
-  padding-top: env(safe-area-inset-top, 20px); /* ✅ 有 Dynamic Island 時自動適配，沒有則用 20px */
+  padding-top: env(safe-area-inset-top, 0); /* ✅ iOS Capacitor: 只用 safe area，不加額外 padding */
   padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom, 0)));
   padding-left: 16px;
   padding-right: 16px;
