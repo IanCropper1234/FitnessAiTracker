@@ -97,6 +97,33 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* iOS Native Gesture Support - Critical for Capacitor apps */
+/* Enable smooth native scrolling and gestures */
+html, body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: none; /* Prevent horizontal overscroll but allow vertical */
+  overscroll-behavior-y: auto;
+}
+
+/* Allow iOS edge swipe gestures - DO NOT block touch events near edges */
+@supports (-webkit-touch-callout: none) {
+  /* iOS-specific: Reserve left edge for swipe-back gesture */
+  body {
+    /* Ensure touch events don't interfere with native gestures */
+    touch-action: pan-y; /* Allow vertical scrolling, preserve horizontal edge swipes */
+  }
+  
+  /* Override touch-action for specific interactive elements */
+  button, a, [role="button"], [role="link"] {
+    touch-action: manipulation; /* Allow clicks without zoom */
+  }
+  
+  /* Allow drag-drop areas to handle their own touch events */
+  [data-draggable="true"], [data-drop-target="true"] {
+    touch-action: none; /* Full control for drag-drop */
+  }
+}
+
 /* iOS WebView Input Auto-Zoom Prevention */
 /* Critical: All input elements must have font-size >= 16px to prevent iOS auto-zoom */
 .mobile-app input,

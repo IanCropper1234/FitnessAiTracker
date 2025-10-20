@@ -108,6 +108,13 @@ export function useMobileDragDrop<T>({
     if (isDisabled) return;
 
     const touch = e.touches[0];
+    
+    // Don't interfere with iOS edge swipe gestures
+    // Allow native swipe-back from left edge (< 20px from left)
+    if (touch.clientX < 20) {
+      return;
+    }
+    
     const element = e.currentTarget as HTMLElement;
     draggedElementRef.current = element;
     touchStartTimeRef.current = Date.now();
@@ -143,8 +150,11 @@ export function useMobileDragDrop<T>({
         navigator.vibrate(50);
       }
 
-      // Prevent default touch behaviors during drag
-      e.preventDefault();
+      // Only prevent default for drag, not for initial touch
+      // This allows iOS edge gestures to work
+      if (touch.clientX >= 20) {
+        e.preventDefault();
+      }
     }, 300); // 300ms long press for clear feedback before drag activation
   }, [isDisabled]);
 

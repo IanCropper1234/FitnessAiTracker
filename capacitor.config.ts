@@ -26,6 +26,8 @@ const config: CapacitorConfig = {
     allowsLinkPreview: true,
     limitsNavigationsToAppBoundDomains: false,
     preferredContentMode: 'mobile',
+    // Enable native scrolling performance
+    scrollEnabled: true,
     // Inject custom user agent
     appendUserAgent: 'MyTrainPro-iOS/1.0.0'
   },

@@ -136,7 +136,10 @@ const IOSNotificationBar = React.forwardRef<
     if (deltaX > 0) {
       setIsDragging(true)
       setDragOffset(deltaX)
-      e.preventDefault() // Prevent scrolling
+      // Only prevent default if we're actually dragging (not at edge)
+      if (touchStart.x > 20) {
+        e.preventDefault() // Prevent scrolling
+      }
     }
   }
 
