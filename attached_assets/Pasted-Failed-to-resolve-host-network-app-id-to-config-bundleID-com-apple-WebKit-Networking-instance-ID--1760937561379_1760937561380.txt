@@ -1,0 +1,252 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 29B42497-F33E-4B87-BAD0-0CF1B90EEFFC])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 0.0s)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 7C5C9A11-3446-467B-936E-A1680D9B1D48
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7C5C9A11-3446-467B-936E-A1680D9B1D48
+Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+Result accumulator timeout: 0.250000, exceeded.
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7C5C9A11-3446-467B-936E-A1680D9B1D48
+AddInstanceForFactory: No factory registered for id <CFUUID 0x6000002ab1c0> F8BB1C28-BAE8-11D6-9C31-00039315CD46
+       LoudnessManager.mm:721   unable to open stream for LoudnessManager plist
+Networking process (0x114000800) took 4.863779 seconds to launch
+Failed to request storage access quirks from WebPrivacy.
+Failed to request storage access user agent string quirks from WebPrivacy.
+WebContent process (0x114001820) took 5.768905 seconds to launch
+GPU process (0x114003200) took 5.925515 seconds to launch
+ 95491          HALC_ProxyIOContext.cpp:1622  HALC_ProxyIOContext::IOWorkLoop: skipping cycle due to overload
+ 95491          HALC_ProxyIOContext.cpp:1622  HALC_ProxyIOContext::IOWorkLoop: skipping cycle due to overload
+ 95491          HALC_ProxyIOContext.cpp:1622  HALC_ProxyIOContext::IOWorkLoop: skipping cycle due to overload
+Failed to request query parameters from WebPrivacy.
+ 95491          HALC_ProxyIOContext.cpp:1622  HALC_ProxyIOContext::IOWorkLoop: skipping cycle due to overload
+Failed to request restricted opener domains from WebPrivacy
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7C5C9A11-3446-467B-936E-A1680D9B1D48
+Failed to request allowed query parameters from WebPrivacy.
+               AQMEIO.cpp:201   timed out after 0.011s (519 520); suspension count=0 (IOSuspensions: )
+               AQMEIO.cpp:201   timed out after 0.011s (520 520); suspension count=0 (IOSuspensions: )
+ 95491          HALC_ProxyIOContext.cpp:1622  HALC_ProxyIOContext::IOWorkLoop: skipping cycle due to overload
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] Version changed from null to 2.0.0, clearing cache...
+⚡️  [log] - [Cache] Cache cleared, reloading app...
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  To Native ->  App addListener 31734757
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  To Native ->  App addListener 31734758
+⚡️  [log] - User signed out, clearing all cache
+⚡️  To Native ->  App getInfo 31734759
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  TO JS {"name":"MyTrainPro","id":"com.fitai.app","version":"1.0","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 31734760
+⚡️  TO JS undefined
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7C5C9A11-3446-467B-936E-A1680D9B1D48
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  To Native ->  App addListener 70111945
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  To Native ->  App addListener 70111946
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  To Native ->  App getInfo 70111947
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitai.app","build":"13"}
+⚡️  To Native ->  App getLaunchUrl 70111948
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148  MyTrainPro-iOS/1.0.0","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Opening OAuth in system Safari using Browser plugin: https://mytrainpro.com/api/auth/google?app=1
+⚡️  To Native ->  Browser open 70111949
+ 95491          HALC_ProxyIOContext.cpp:1622  HALC_ProxyIOContext::IOWorkLoop: skipping cycle due to overload
+⚡️  TO JS undefined
+⚡️  [log] - [Auth] Successfully opened OAuth flow in in-app browser
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+[AppDelegate] App will resign active - preparing for background
+⚡️  TO JS {"isActive":false}
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 5.470801830291748s)
+⚡️  TO JS {"isActive":true}
+⚡️  [log] - [Capacitor Auth] App became active, checking for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] Delayed check for pending OAuth...
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+📱 [Deep Link] App opened with URL: mytrainpro://auth/callback?session=7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP&userId=1
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP&userId=1","iosSourceApplication":"com.apple.SafariViewService","iosOpenInPlace":""}
+⚡️  [log] - [Capacitor Auth] App URL opened: mytrainpro://auth/callback?session=7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: 7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP User: 1
+⚡️  [log] - [Capacitor Auth] Processing new OAuth session...
+⚡️  [log] - [Capacitor Auth] Calling session restore API...
+⚡️  [log] - [Capacitor Auth] Session restore response: 0
+⚡️  [log] - [Capacitor Auth] ✅ Session restored successfully!
+⚡️  To Native ->  Browser close 70111950
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  TO JS undefined
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7C5C9A11-3446-467B-936E-A1680D9B1D48
+⚡️  [log] - [Capacitor Auth] ✅ Closed OAuth browser automatically
+⚡️  [log] - [Capacitor Auth] Navigating to home page...
+⚡️  [log] - Page hide event
+⚡️  [log] - Visibility changed: {"isVisible":false,"wasVisible":true}
+⚡️  [log] - App went to background
+⚡️  [log] - [App] Visibility changed: hidden
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7C5C9A11-3446-467B-936E-A1680D9B1D48
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 75031627
+⚡️  To Native ->  App addListener 75031628
+⚡️  To Native ->  App getInfo 75031629
+⚡️  TO JS {"id":"com.fitai.app","name":"MyTrainPro","build":"13","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 75031630
+⚡️  TO JS {"url":"mytrainpro:\/\/auth\/callback?session=7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP&userId=1"}
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] App launched with URL: mytrainpro://auth/callback?session=7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP&userId=1
+⚡️  [log] - [Capacitor Auth] Processing deep link: mytrainpro://auth/callback?session=7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP&userId=1
+⚡️  [log] - [Capacitor Auth] OAuth callback detected
+⚡️  [log] - [Capacitor Auth] Deep link contains valid OAuth data - Session: 7_5i5hMjS3dj5lx1Ya0qEUZEuqE51HWP User: 1
+⚡️  [log] - [Capacitor Auth] Session already successfully restored, skipping to prevent duplicate login
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - Auth check response status: 200
+⚡️  [log] - Authentication successful, user data: {"user":{"id":1,"email":"c0109009@gmail.com","password":"$2b$10$BFqOm.i2VAhpwK9WMl/F1uOnMnjY3p0MI3vSUJE29d4vFgjwYC9HK","name":"Ian","appleId":null,"preferredLanguage":"en","theme":"dark","showDeveloperFeatures":false,"autoAdjustmentSettings":{"updatedAt":"2025-08-20T03:44:37.801Z","workoutSettings":{"updatedAt":"2025-08-19T09:47:36.279Z","restTimerFAB":true,"workoutSummary":false,"spinnerSetInput":true,"circularProgress":true,"gestureNavigation":true,"workoutExecutionV2":true,"autoRegulationFeedback":true},"lastAutoAdjustment":"2025-08-20T03:44:37.801Z","autoAdjustmentEnabled":true,"autoAdjustmentFrequency":"biweekly"},"createdAt":"2025-07-17T12:35:45.291Z","updatedAt":"2025-10-16T02:28:17.653Z","firstName":null,"lastName":null,"profileImageUrl":"/objects/uploads/f26ba6eb-c736-40fb-9db7-52b9553e04f4","emailVerified":true,"isActive":false,"registrationIp":null,"registrationUserAgent":null}}
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Settings saved to localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - Initial settings loaded from server: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - AnimatedPage: Page changed from / to /profile
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - Starting client-side session cleanup...
+⚡️  [log] - Cleared localStorage keys: ["trainpro-onboarding-completed","trainpro-theme","trainpro-workout-settings","last-successful-oauth-session","mytrainpro-onboarding-completed"]
+⚡️  [log] - Client-side session cleanup completed
+⚡️  [log] - AnimatedPage: Page changed from /profile to /auth
+⚡️  [log] - User authenticated and verified, redirecting to dashboard
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - AnimatedPage: Page changed from /auth to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Auth] OAuth Sign In - Environment Detection: {"isCapacitorApp":true,"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148  MyTrainPro-iOS/1.0.0","isMyTrainProApp":true,"provider":"google"}
+⚡️  [log] - [Auth] Added app=1 parameter for Capacitor environment
+⚡️  [log] - [Auth] Opening OAuth in system Safari using Browser plugin: https://mytrainpro.com/api/auth/google?app=1
+⚡️  To Native ->  Browser open 75031631
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Auth] Successfully opened OAuth flow in in-app browser
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 7C5C9A11-3446-467B-936E-A1680D9B1D48

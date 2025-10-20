@@ -50,13 +50,13 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
         });
 
         if (isFromAppOAuth && !isInAppWebView) {
-          // We're in an external browser after OAuth from app
-          console.log('[OAuth Success] In external browser, showing return options...');
+          // We're in an external browser (in-app browser) after OAuth from app
+          console.log('[OAuth Success] In in-app browser, triggering deep link...');
           
           const deepLink = `mytrainpro://auth/callback?session=${sessionId}&userId=${userId}`;
           console.log('[OAuth Success] Deep link URL:', deepLink);
           
-          // Store session info for manual app return
+          // Store session info for fallback
           localStorage.setItem('pending-oauth-session', JSON.stringify({
             sessionId,
             userId,
@@ -65,37 +65,62 @@ export default function OAuthSuccess({ onSuccess }: OAuthSuccessProps) {
           }));
           console.log('[OAuth Success] Stored pending session in localStorage');
           
-          // Show success message with HTML link (iOS Safari blocks JS-triggered deep links)
+          // Auto-trigger deep link by creating and clicking a hidden link
+          // This works because it's a real user-initiated navigation from browser's perspective
           setTimeout(() => {
-            console.log('[OAuth Success] Showing deep link button...');
-            setMessage(
-              <div className="space-y-4">
-                <p className="text-center font-medium text-green-600 dark:text-green-400">
-                  ✅ Authentication Successful!
-                </p>
-                
-                <div className="border rounded-lg p-4 bg-muted/50 space-y-2">
-                  <p className="text-sm font-medium">If the app didn't open automatically:</p>
-                  <ol className="text-sm text-muted-foreground space-y-1.5 ml-4">
-                    <li>1. Close this Safari tab/window</li>
-                    <li>2. Open the MyTrainPro app</li>
-                    <li>3. You'll be signed in automatically (within 2-5 seconds)</li>
-                  </ol>
+            console.log('[OAuth Success] Auto-triggering deep link...');
+            
+            // Create a temporary hidden link
+            const link = document.createElement('a');
+            link.href = deepLink;
+            link.style.display = 'none';
+            link.id = 'auto-deep-link';
+            document.body.appendChild(link);
+            
+            // Programmatically click it
+            try {
+              link.click();
+              console.log('[OAuth Success] Deep link auto-clicked');
+            } catch (err) {
+              console.error('[OAuth Success] Auto-click failed:', err);
+            }
+            
+            // Clean up and show manual button after a delay
+            setTimeout(() => {
+              if (document.getElementById('auto-deep-link')) {
+                document.body.removeChild(link);
+              }
+              
+              console.log('[OAuth Success] Showing manual button as fallback...');
+              setMessage(
+                <div className="space-y-4">
+                  <p className="text-center font-medium text-green-600 dark:text-green-400">
+                    ✅ Authentication Successful!
+                  </p>
+                  
+                  <div className="border rounded-lg p-4 bg-muted/50 space-y-2">
+                    <p className="text-sm font-medium">If the app didn't open automatically:</p>
+                    <ol className="text-sm text-muted-foreground space-y-1.5 ml-4">
+                      <li>1. Tap the button below to open the app</li>
+                      <li>2. Allow the prompt to switch to MyTrainPro</li>
+                      <li>3. You'll be signed in automatically</li>
+                    </ol>
+                  </div>
+                  
+                  <a
+                    href={deepLink}
+                    className="block w-full px-6 py-3 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 active:scale-95 transition-transform no-underline"
+                    data-testid="button-retry-deeplink"
+                  >
+                    Open MyTrainPro App
+                  </a>
+                  
+                  <p className="text-xs text-center text-muted-foreground">
+                    Your session is securely saved and will be restored when you return to the app.
+                  </p>
                 </div>
-                
-                <a
-                  href={deepLink}
-                  className="block w-full px-6 py-3 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 active:scale-95 transition-transform no-underline"
-                  data-testid="button-retry-deeplink"
-                >
-                  Try Opening App Again
-                </a>
-                
-                <p className="text-xs text-center text-muted-foreground">
-                  Your session is securely saved and will be restored when you return to the app.
-                </p>
-              </div>
-            );
+              );
+            }, 2000);
           }, 500);
           
           setMessage(
