@@ -18,6 +18,11 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provid
 - **Safe Area Protection on Detail Pages**:
   - Added `.ios-pwa-container` to 6 pages: nutrition-facts, privacy-policy, terms-of-service, exercise-selection, ai-exercise-recommendations, enhanced-nutrition-ai
   - These pages use container-level safe area (no sticky header)
+- **TestFlight Cache Invalidation Fix**:
+  - Added WKWebView cache clearing on app launch in `AppDelegate.swift`
+  - Incremented build version from 1 to 2 (CURRENT_PROJECT_VERSION)
+  - Prevents TestFlight builds from showing stale cached CSS/HTML
+  - Simulator works fine but real devices cache aggressively, requiring explicit cache clearing
 
 ### Native iOS Swipe-Back Gesture Implementation (October 20, 2025)
 - **Experimental Native Swipe-Back Feature**:
