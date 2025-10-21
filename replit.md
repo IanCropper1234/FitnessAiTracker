@@ -12,6 +12,11 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers inte
   - Updated favicon.ico
   - Bumped Service Worker to v25 for icon cache refresh
 - Removed PWA installation functionality (install prompts, quick install button) per user preference
+- Fixed iOS native swipe-back gestures by implementing directly in WebViewConfig.swift
+  - Removed dependency on third-party capacitor-plugin-ios-swipe-back package
+  - Eliminated CocoaPods installation requirement
+  - Self-contained Swift implementation using WKWebView.allowsBackForwardNavigationGestures
+  - Enabled on /profile and /workout-settings pages
 
 ## User Preferences
 **Communication Language**:
