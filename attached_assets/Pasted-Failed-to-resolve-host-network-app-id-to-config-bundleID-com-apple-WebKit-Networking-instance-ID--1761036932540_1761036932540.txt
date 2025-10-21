@@ -1,0 +1,114 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 5ECC9AAF-9D32-46AF-B88A-92758EA31335])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: false (duration: 0.0s)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = F2F89A07-84D5-474B-AB72-E473388BF7D9
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F2F89A07-84D5-474B-AB72-E473388BF7D9
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F2F89A07-84D5-474B-AB72-E473388BF7D9
+⚡️  WebView loaded
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] Version changed from null to 2.0.0, clearing cache...
+⚡️  [log] - [Cache] Cache cleared, reloading app...
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 81242500
+⚡️  To Native ->  App addListener 81242501
+⚡️  To Native ->  App getInfo 81242502
+⚡️  TO JS {"version":"1.0","name":"MyTrainPro","id":"com.fitaiv1.app","build":"18"}
+⚡️  To Native ->  App getLaunchUrl 81242503
+⚡️  TO JS undefined
+⚡️  [error] - [Capacitor Auth] Error checking pending OAuth: {}
+⚡️  [log] - [Capacitor Auth] Retrying after error in 2 seconds... (1/6)
+⚡️  [log] - Authentication check failed: {}
+⚡️  [log] - Retrying authentication check due to network error...
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F2F89A07-84D5-474B-AB72-E473388BF7D9
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 73187875
+⚡️  To Native ->  App addListener 73187876
+⚡️  To Native ->  App getInfo 73187877
+⚡️  TO JS {"name":"MyTrainPro","id":"com.fitaiv1.app","build":"18","version":"1.0"}
+⚡️  To Native ->  App getLaunchUrl 73187878
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - Retrying authentication check in iOS PWA environment...
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - Checking authentication status... (attempt 2)
+⚡️  [log] - Auth check response status: 401
+⚡️  [log] - Not authenticated - no valid session
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Redirecting to auth - no user found
+⚡️  [log] - AnimatedPage: Page changed from / to /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /auth
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F2F89A07-84D5-474B-AB72-E473388BF7D9
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F2F89A07-84D5-474B-AB72-E473388BF7D9
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+Received external candidate resultset. Total number of candidates: 1
+Received external candidate resultset. Total number of candidates: 1
+Received external candidate resultset. Total number of candidates: 485
+Received external candidate resultset. Total number of candidates: 390
+Received external candidate resultset. Total number of candidates: 402
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+Received external candidate resultset. Total number of candidates: 394
+Received external candidate resultset. Total number of candidates: 395
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+Received external candidate resultset. Total number of candidates: 397
+Received external candidate resultset. Total number of candidates: 396
+Received external candidate resultset. Total number of candidates: 397
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+Received external candidate resultset. Total number of candidates: 395
+Received external candidate resultset. Total number of candidates: 2
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = F2F89A07-84D5-474B-AB72-E473388BF7D9
+Received external candidate resultset. Total number of candidates: 1
+Received external candidate resultset. Total number of candidates: 1
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = EE41A6CF-9CD4-4E03-8A95-3B4BECD33A51
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = EE41A6CF-9CD4-4E03-8A95-3B4BECD33A51
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = EE41A6CF-9CD4-4E03-8A95-3B4BECD33A51
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = EE41A6CF-9CD4-4E03-8A95-3B4BECD33A51
+Result accumulator timeout: 0.250000, exceeded.
+resultToPush is nil, will not push anything to candidate receiver..
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = EE41A6CF-9CD4-4E03-8A95-3B4BECD33A51
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = EE41A6CF-9CD4-4E03-8A95-3B4BECD33A51
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = EE41A6CF-9CD4-4E03-8A95-3B4BECD33A51
+Received external candidate resultset. Total number of candidates: 0
+Received external candidate resultset. Total number of candidates: 1
+Received external candidate resultset. Total number of candidates: 1
+⚡️  [log] - Auth onSuccess called with user: {"id":1,"email":"c0109009@gmail.com","name":"Ian","emailVerified":true}
+⚡️  [log] - Navigating to dashboard after auth success
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Settings saved to localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - Initial settings loaded from server: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = EE41A6CF-9CD4-4E03-8A95-3B4BECD33A51
+Received external candidate resultset. Total number of candidates: 1
+Received external candidate resultset. Total number of candidates: 1
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - AnimatedPage: Page changed from / to /profile
+⚡️  [error] - [useSwipeBack] Failed to enable: {"code":"UNIMPLEMENTED"}
