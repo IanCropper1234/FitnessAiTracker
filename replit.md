@@ -16,6 +16,9 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers inte
   - Removed dependency on third-party capacitor-plugin-ios-swipe-back package
   - Eliminated CocoaPods installation requirement
   - Self-contained Swift implementation using WKWebView.allowsBackForwardNavigationGestures
+  - Added load() diagnostic method to verify plugin registration
+  - Added packageClassList to capacitor.config.ts for Capacitor 6+ iOS plugin registration
+  - Requires `npx cap sync ios` to synchronize configuration before Xcode build
   - Enabled on /profile and /workout-settings pages
 
 ## User Preferences

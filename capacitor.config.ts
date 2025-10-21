@@ -29,7 +29,17 @@ const config: CapacitorConfig = {
     // Enable native scrolling performance
     scrollEnabled: true,
     // Inject custom user agent
-    appendUserAgent: 'MyTrainPro-iOS/1.0.0'
+    appendUserAgent: 'MyTrainPro-iOS/1.0.0',
+    // Register custom iOS plugins
+    packageClassList: [
+      'AppPlugin',
+      'CAPBrowserPlugin',
+      'CAPCameraPlugin',
+      'HapticsPlugin',
+      'KeyboardPlugin',
+      'StatusBarPlugin',
+      'IosSwipeBack'
+    ]
   },
   plugins: {
     App: {
