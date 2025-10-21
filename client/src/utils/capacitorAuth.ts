@@ -3,7 +3,7 @@ import { App } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 
 // Current app version - increment when major UI changes are made
-const APP_VERSION = '2.0.0'; // Updated with new MyTrainPro landing page
+const APP_VERSION = '2.0.1'; // Updated with iOS swipe-back gesture debugging
 
 /**
  * Clear WebView cache if app version has changed
