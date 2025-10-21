@@ -3,6 +3,14 @@
 ## Overview
 MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers intelligent, adaptive training and comprehensive nutrition/workout management. It utilizes evidence-based periodization and AI recommendations to provide personalized coaching at scale. The platform aims to lead the digital fitness market by offering a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
+## Recent Changes
+**October 21, 2025**:
+- Updated all app icons to new fitness-themed design (barbell + utensils)
+- Generated 18 PWA icon sizes (16x16 to 1024x1024)
+- Updated iOS native app icon (AppIcon-512@2x.png)
+- Updated favicon.ico with multi-resolution support
+- Bumped Service Worker to v24 for icon cache refresh
+
 ## User Preferences
 **Communication Language**:
 - Agent responses: Traditional Chinese (ZH-TW) for technical explanations and general communication
