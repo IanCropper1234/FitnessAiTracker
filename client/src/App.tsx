@@ -41,7 +41,6 @@ import TermsOfService from "./pages/terms-of-service";
 import Landing from "./pages/Landing";
 import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
-import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 
 import TrainingAnalytics from "./pages/training-analytics";
 import AIExerciseRecommendations from "./pages/ai-exercise-recommendations";
@@ -691,7 +690,6 @@ function AppContent() {
               maxNotifications={3}
               defaultAutoHideDelay={5000}
             />
-            <PWAInstallPrompt />
           </div>
         )}
       </AnimatePresence>
