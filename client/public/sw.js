@@ -1,11 +1,12 @@
 // Service Worker for MyTrainPro PWA - iOS Compatible
-const CACHE_NAME = 'mytrainpro-v22';
+const CACHE_NAME = 'mytrainpro-v23';
 const urlsToCache = [
   '/',
   '/manifest.json',
   '/icons/icon-180x180.png',
   '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/icons/icon-512x512.png',
+  '/favicon.ico'
 ];
 
 // Install event - cache essential resources
