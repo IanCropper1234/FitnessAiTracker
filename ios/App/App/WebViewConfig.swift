@@ -7,6 +7,11 @@ import Capacitor
 @objc(IosSwipeBack)
 public class IosSwipeBack: CAPPlugin {
     
+    // Called when plugin is loaded - verify registration
+    override public func load() {
+        print("🔌 [IosSwipeBack] Plugin loaded and registered successfully!")
+    }
+    
     @objc func enable(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             guard let webView = self.bridge?.webView else {

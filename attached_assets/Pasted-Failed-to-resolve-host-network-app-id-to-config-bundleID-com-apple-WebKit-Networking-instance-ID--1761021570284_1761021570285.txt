@@ -1,0 +1,81 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 50245472-6DB5-46BE-AB18-4BADF6A75D03])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: true (duration: 76939.74776697159s)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = F4DD74DB-293C-4FAE-83F5-4F6D6E638753
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F4DD74DB-293C-4FAE-83F5-4F6D6E638753
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F4DD74DB-293C-4FAE-83F5-4F6D6E638753
+Networking process (0x118000800) took 1.801860 seconds to launch
+WebContent process (0x118001920) took 1.813452 seconds to launch
+Result accumulator timeout: 0.250000, exceeded.
+Result accumulator timeout: 0.250000, exceeded.
+GPU process (0x1180032e0) took 3.407356 seconds to launch
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F4DD74DB-293C-4FAE-83F5-4F6D6E638753
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App addListener 34453248
+⚡️  To Native ->  App addListener 34453249
+⚡️  To Native ->  App getInfo 34453250
+⚡️  TO JS {"id":"com.fitaiv1.app","build":"18","version":"1.0","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 34453251
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 200
+⚡️  [log] - Authentication successful, user data: {"user":{"id":1,"email":"c0109009@gmail.com","password":"$2b$10$BFqOm.i2VAhpwK9WMl/F1uOnMnjY3p0MI3vSUJE29d4vFgjwYC9HK","name":"Ian","appleId":null,"preferredLanguage":"en","theme":"dark","showDeveloperFeatures":false,"autoAdjustmentSettings":{"updatedAt":"2025-08-20T03:44:37.801Z","workoutSettings":{"updatedAt":"2025-08-19T09:47:36.279Z","restTimerFAB":true,"workoutSummary":false,"spinnerSetInput":true,"circularProgress":true,"gestureNavigation":true,"workoutExecutionV2":true,"autoRegulationFeedback":true},"lastAutoAdjustment":"2025-08-20T03:44:37.801Z","autoAdjustmentEnabled":true,"autoAdjustmentFrequency":"biweekly"},"createdAt":"2025-07-17T12:35:45.291Z","updatedAt":"2025-10-16T02:28:17.653Z","firstName":null,"lastName":null,"profileImageUrl":"/objects/uploads/f26ba6eb-c736-40fb-9db7-52b9553e04f4","emailVerified":true,"isActive":false,"registrationIp":null,"registrationUserAgent":null}}
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Local settings exist, skipping server sync
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - AnimatedPage: Page changed from / to /profile
+⚡️  [error] - [useSwipeBack] Failed to enable: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F4DD74DB-293C-4FAE-83F5-4F6D6E638753
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = F4DD74DB-293C-4FAE-83F5-4F6D6E638753
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - AnimatedPage: Page changed from /profile to /
+⚡️  [error] - [useSwipeBack] Cleanup failed: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - AnimatedPage: Page changed from / to /profile
+⚡️  [error] - [useSwipeBack] Failed to enable: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - AnimatedPage: Page changed from /profile to /
+⚡️  [error] - [useSwipeBack] Cleanup failed: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - Date change triggered: null
+⚡️  [log] - Fetching stats for date: all dates
+⚡️  [log] - Fetching sessions for date: all dates
+⚡️  [log] - AnimatedPage: Page changed from / to /training
+⚡️  [log] - Received 12 sessions for all dates: [{"id":543,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-24T22:58:47.511Z","name":"Legs Sat Sep 2025 - Week 2 Day 6","isCompleted":false,"totalVolume":0,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":542,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-23T22:58:47.511Z","name":"Pull Thur Sep 2025 - Week 2 Day 5","isCompleted":false,"totalVolume":0,"duration":33,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":541,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-22T22:58:47.511Z","name":"Push Fri Sep 2025 - 9/14/2025 Template - Week 2 Day 4","isCompleted":false,"totalVolume":0,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":540,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-21T22:58:47.511Z","name":"Legs Wed Sep 2025 - Week 2 Day 3","isCompleted":false,"totalVolume":0,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":539,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-20T22:58:47.511Z","name":"Pull Mon Sep 2025 Template - Week 2 Day 2","isCompleted":true,"totalVolume":17593,"duration":75,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":538,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-19T22:58:47.511Z","name":"Push Tue Sep 2025 - Week 2 Day 1","isCompleted":true,"totalVolume":8679,"duration":72,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-19T13:25:41.326Z"},{"id":537,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-17T22:58:47.511Z","name":"Legs Sat Sep 2025 - Week 1 Day 6","isCompleted":true,"totalVolume":10885,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":536,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-16T22:58:47.511Z","name":"Pull Thur Sep 2025 - Week 1 Day 5","isCompleted":true,"totalVolume":8934,"duration":33,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":535,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-15T22:58:47.511Z","name":"Push Fri Sep 2025 - 9/14/2025 Template - Week 1 Day 4","isCompleted":true,"totalVolume":5211,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":534,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-14T22:58:47.511Z","name":"Legs Wed Sep 2025 - Week 1 Day 3","isCompleted":true,"totalVolume":11291,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":533,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-13T22:58:47.511Z","name":"Pull Mon Sep 2025 Template - Week 1 Day 2","isCompleted":true,"totalVolume":13529,"duration":0,"version":"2.0","features":{"spinnerSetInput":true,"gestureNavigation":true},"algorithm":"RP_BASED","actualFinishedAt":null,"createdAt":"2025-10-12T22:58:49.936Z"},{"id":532,"userId":1,"programId":null,"mesocycleId":90,"date":"2025-10-12T22:58:47.511Z","name":"Push Tue Sep 2025 - Week 1 Day 1","isCompleted":true,"t
+⚡️  [log] - Stats for all dates: {"totalSessions":8,"totalVolume":82120,"averageSessionLength":23,"favoriteExercises":[],"weeklyProgress":[{"week":"2025-10-12","sessions":6,"volume":55848},{"week":"2025-10-19","sessions":2,"volume":26272}]}
+⚡️  [log] - AnimatedPage: Page changed from /training to /workout-settings
+⚡️  [error] - [useSwipeBack] Failed to enable: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /workout-settings
