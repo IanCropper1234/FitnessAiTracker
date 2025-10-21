@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { 
   ExternalLink, Mail, Lock, Dumbbell, Activity, Brain, Shield, 
   TrendingUp, Users, Award, Star, CheckCircle2, Zap, Target, 
-  BarChart3, ArrowRight, Menu, X, ChevronRight, Sparkles
+  BarChart3, ArrowRight, Menu, X, ChevronRight, Sparkles, Download
 } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistrationForm";
@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 interface User {
   id: number;
@@ -38,6 +39,7 @@ export default function Auth({ onSuccess }: AuthProps) {
   const [activeTab, setActiveTab] = useState("signin");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showAuthForm, setShowAuthForm] = useState(false);
+  const { showInstallButton, triggerInstall } = usePWAInstall();
 
   const signUpMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; name: string }) => {
@@ -576,6 +578,19 @@ export default function Auth({ onSuccess }: AuthProps) {
                         <SiApple className="mr-2 h-4 w-4" />
                         Continue with Apple
                       </Button>
+
+                      {/* PWA Install Button */}
+                      {showInstallButton && (
+                        <Button
+                          variant="outline"
+                          className="w-full border-purple-500/50 hover:bg-purple-600/20 text-purple-300 hover:text-purple-200 transition-all duration-200"
+                          onClick={triggerInstall}
+                          data-testid="button-install-pwa-auth"
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Install MyTrainPro App
+                        </Button>
+                      )}
                     </div>
 
                     <div className="relative mb-6">

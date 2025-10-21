@@ -24,10 +24,12 @@ interface PWAInstallState {
   
   // UI control
   showPrompt: boolean;
+  showInstallButton: boolean;
   
   // Actions
   install: () => Promise<void>;
   dismissPrompt: () => void;
+  triggerInstall: () => void;
 }
 
 const STORAGE_KEYS = {
@@ -223,12 +225,37 @@ export function usePWAInstall(): PWAInstallState {
     setShowPrompt(false);
   };
 
+  // Manual trigger - bypass engagement delay
+  const triggerInstall = () => {
+    if (isInstalled) {
+      console.log('PWA: Already installed');
+      return;
+    }
+
+    if (isRecentlyDismissed()) {
+      console.log('PWA: Recently dismissed, respecting cooldown');
+      return;
+    }
+
+    console.log('PWA: Manual install trigger activated');
+    setShowPrompt(true);
+  };
+
+  // Show install button when installable but prompt not shown
+  const showInstallButton = 
+    !isInstalled && 
+    !isRecentlyDismissed() && 
+    !showPrompt &&
+    (deferredPrompt !== null || isIOSDevice);
+
   return {
     isInstallable: deferredPrompt !== null || isIOSDevice,
     isInstalled,
     isIOSDevice,
     showPrompt: showPrompt && !isInstalled,
+    showInstallButton,
     install,
-    dismissPrompt
+    dismissPrompt,
+    triggerInstall
   };
 }

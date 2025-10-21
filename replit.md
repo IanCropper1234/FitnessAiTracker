@@ -42,7 +42,13 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers inte
 - **Error Handling**: Global error boundary system
 - **Performance**: Memory-optimized search, debounced queries, pagination
 - **UI/UX Decisions**: Mobile-first, iOS-optimized compact layouts, professional black/white/gray theme, 44px minimum touch targets, hardware-accelerated animations, consistent spacing, streamlined interfaces. Standalone pages preferred over modals for complex interactions.
-- **PWA Integration**: Implemented PWA install prompt with engagement delay, anti-spam, and platform-specific UI.
+- **PWA Integration**: 
+  - Smart install prompt with 30-second engagement delay
+  - Quick install button on auth page for immediate installation
+  - Platform-specific UI (iOS instructions vs Android native prompt)
+  - Anti-spam protection with 7-day dismissal cooldown
+  - Test mode support (`?pwa-test=1` URL parameter)
+  - Closure bug fix using two-effect pattern for timing reliability
 - **iOS Specifics**: Capacitor for WebView-based app, addresses safe area padding, native swipe-back gestures, and WKWebView cache clearing.
 
 ### Backend Architecture
