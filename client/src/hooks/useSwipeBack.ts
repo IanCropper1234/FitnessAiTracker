@@ -21,15 +21,28 @@ export function useSwipeBack(enabled: boolean) {
       return;
     }
 
+    // Debug: Check if plugin methods exist
+    console.log('[useSwipeBack] Plugin object:', IosSwipeBack);
+    console.log('[useSwipeBack] Has enable method:', typeof IosSwipeBack.enable);
+    console.log('[useSwipeBack] Has disable method:', typeof IosSwipeBack.disable);
+
     // Enable or disable based on parameter
     if (enabled) {
+      console.log('[useSwipeBack] Attempting to ENABLE...');
       IosSwipeBack.enable()
         .then(() => console.log('✅ [useSwipeBack] Swipe back ENABLED'))
-        .catch(err => console.error('[useSwipeBack] Failed to enable:', err));
+        .catch(err => {
+          console.error('[useSwipeBack] Failed to enable:', err);
+          console.error('[useSwipeBack] Error details:', JSON.stringify(err));
+        });
     } else {
+      console.log('[useSwipeBack] Attempting to DISABLE...');
       IosSwipeBack.disable()
         .then(() => console.log('🚫 [useSwipeBack] Swipe back DISABLED'))
-        .catch(err => console.error('[useSwipeBack] Failed to disable:', err));
+        .catch(err => {
+          console.error('[useSwipeBack] Failed to disable:', err);
+          console.error('[useSwipeBack] Error details:', JSON.stringify(err));
+        });
     }
 
     // Cleanup: ensure swipe back is disabled when component unmounts
