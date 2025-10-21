@@ -17,7 +17,8 @@ def capacitor_pods
   pod 'CapacitorHaptics', :path => '../../node_modules/@capacitor/haptics'
   pod 'CapacitorKeyboard', :path => '../../node_modules/@capacitor/keyboard'
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
-  pod 'CapacitorPluginIosSwipeBack', :path => '../../node_modules/capacitor-plugin-ios-swipe-back'
+  # IosSwipeBack plugin now implemented directly in WebViewConfig.swift
+  # No longer needs external pod dependency
 end
 
 target 'App' do
