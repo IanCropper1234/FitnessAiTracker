@@ -4,6 +4,31 @@
 MyTrainPro is an enterprise-grade AI-powered fitness platform designed to provide intelligent, adaptive training, and comprehensive nutrition and workout management. It leverages evidence-based periodization methodology combined with AI recommendations to offer personalized coaching at scale. The platform aims to capture a significant share of the digital fitness market by providing a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
 ## Recent Changes
+### PWA Installation Feature Implementation (October 21, 2025)
+- **Complete PWA Install Prompt System**:
+  - Created `usePWAInstall` hook with smart timing (30-second engagement delay)
+  - Implemented anti-spam protection (7-day dismissal cooldown via localStorage)
+  - Built `PWAInstallPrompt` component with platform-specific UI (Android vs iOS)
+  - Android/Chrome: Native install button triggering browser's install dialog
+  - iOS Safari: Step-by-step instructions for "Add to Home Screen"
+  - Detects standalone mode to hide prompt if already installed
+  - Responsive mobile-first design with gradient purple/blue theme
+  - Integrated seamlessly into App.tsx
+- **Service Worker Update**:
+  - Bumped cache version to v23
+  - Added favicon.ico to cached resources
+  - Maintained offline-first strategy with network fallbacks
+- **Technical Features**:
+  - Captures `beforeinstallprompt` event for Android/Chrome
+  - Tracks installation state via localStorage and `appinstalled` event
+  - Prevents prompt spam with timestamp-based cooldown
+  - Includes comprehensive logging for debugging
+  - Accessible via data-testid attributes for E2E testing
+  - Test mode: Add `?pwa-test=1` URL parameter to force prompt display in testing environments
+- **Architecture**:
+  - Two-effect pattern prevents closure staleness: Effect 1 sets `engagementReady` state after 30s, Effect 2 watches `[engagementReady, deferredPrompt, isIOSDevice]` to show prompt
+  - Handles all event timing scenarios (beforeinstallprompt before/after engagement delay)
+  - Zero dependencies on stale values in timer callbacks
 ### iOS Safe Area Double Padding Fix - Sticky Header Architecture (October 20, 2025)
 - **Root Cause**: Container-level safe area padding created empty space above sticky headers
 - **Complete Solution**:

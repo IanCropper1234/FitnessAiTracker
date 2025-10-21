@@ -46,6 +46,7 @@ export function usePWAInstall(): PWAInstallState {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOSDevice, setIsIOSDevice] = useState(false);
+  const [engagementReady, setEngagementReady] = useState(false);
 
   // Detect iOS device
   useEffect(() => {
@@ -120,10 +121,13 @@ export function usePWAInstall(): PWAInstallState {
     };
   }, []);
 
-  // Smart timing: Show prompt after 30 seconds of engagement
+  // Effect 1: Start engagement timer (runs once)
   useEffect(() => {
     // Don't show if already installed
-    if (isInstalled) return;
+    if (isInstalled) {
+      console.log('PWA: Already installed, not showing prompt');
+      return;
+    }
 
     // Don't show if recently dismissed
     if (isRecentlyDismissed()) {
@@ -131,24 +135,56 @@ export function usePWAInstall(): PWAInstallState {
       return;
     }
 
-    // For iOS, show instructions after engagement delay
-    // For Android/Chrome, wait for deferredPrompt
-    const canShowPrompt = isIOSDevice || deferredPrompt !== null;
+    console.log('PWA: Starting engagement timer (30 seconds)...');
     
-    if (!canShowPrompt) return;
-
     // Set engagement start time
     if (!localStorage.getItem(STORAGE_KEYS.ENGAGEMENT_START)) {
       localStorage.setItem(STORAGE_KEYS.ENGAGEMENT_START, Date.now().toString());
     }
 
+    // Start timer - only sets engagementReady flag after 30 seconds
     const timer = setTimeout(() => {
-      console.log('PWA: Showing install prompt after engagement delay');
-      setShowPrompt(true);
+      console.log('PWA: Engagement timer completed, marking as ready');
+      setEngagementReady(true);
     }, TIMING.ENGAGEMENT_DELAY);
 
-    return () => clearTimeout(timer);
-  }, [deferredPrompt, isInstalled, isIOSDevice]);
+    return () => {
+      console.log('PWA: Clearing engagement timer');
+      clearTimeout(timer);
+    };
+  }, [isInstalled]);
+
+  // Effect 2: Show prompt when engagement is ready and conditions are met
+  useEffect(() => {
+    // Wait for engagement timer to complete
+    if (!engagementReady) return;
+
+    // Don't show if already installed
+    if (isInstalled) {
+      console.log('PWA: Already installed, not showing prompt');
+      return;
+    }
+
+    // Don't show if recently dismissed
+    if (isRecentlyDismissed()) {
+      console.log('PWA: Install prompt dismissed recently, not showing');
+      return;
+    }
+
+    // Check for test mode (force show PWA prompt)
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceShow = urlParams.get('pwa-test') === '1';
+
+    // Check if we can show the prompt (reads current deferredPrompt, not stale closure)
+    const canShowPrompt = forceShow || isIOSDevice || deferredPrompt !== null;
+    
+    if (canShowPrompt) {
+      console.log('PWA: Showing install prompt (force=' + forceShow + ', iOS=' + isIOSDevice + ', hasPrompt=' + (deferredPrompt !== null) + ')');
+      setShowPrompt(true);
+    } else {
+      console.log('PWA: Cannot show prompt yet (not iOS and no deferredPrompt)');
+    }
+  }, [engagementReady, deferredPrompt, isIOSDevice, isInstalled]);
 
   // Install action (Android/Chrome)
   const install = async () => {
