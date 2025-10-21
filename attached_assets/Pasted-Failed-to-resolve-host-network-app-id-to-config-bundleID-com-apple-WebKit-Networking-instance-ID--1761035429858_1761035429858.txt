@@ -1,0 +1,57 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: B80F2F3A-2019-4DB8-9B6B-722606C016B6])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 6EFB6A90-1475-455D-926F-3AB0BF2C00C9
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 6EFB6A90-1475-455D-926F-3AB0BF2C00C9
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: true (duration: 90407.69746994972s)
+-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  Can only perform input operation for an active session. sessionID = 6EFB6A90-1475-455D-926F-3AB0BF2C00C9
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 6EFB6A90-1475-455D-926F-3AB0BF2C00C9
+GPU process (0x1160030e0) took 1.884968 seconds to launch
+Result accumulator timeout: 0.250000, exceeded.
+Result accumulator timeout: 0.250000, exceeded.
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = 6EFB6A90-1475-455D-926F-3AB0BF2C00C9
+⚡️  WebView loaded
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  To Native ->  App addListener 1048938
+⚡️  [log] - User signed out, clearing all cache
+⚡️  To Native ->  App addListener 1048939
+⚡️  [log] - Checking authentication status... (attempt 1)
+⚡️  To Native ->  App getInfo 1048940
+⚡️  TO JS {"name":"MyTrainPro","build":"18","version":"1.0","id":"com.fitaiv1.app"}
+⚡️  To Native ->  App getLaunchUrl 1048941
+⚡️  TO JS undefined
+⚡️  [log] - Auth check response status: 200
+⚡️  [log] - Authentication successful, user data: {"user":{"id":1,"email":"c0109009@gmail.com","password":"$2b$10$BFqOm.i2VAhpwK9WMl/F1uOnMnjY3p0MI3vSUJE29d4vFgjwYC9HK","name":"Ian","appleId":null,"preferredLanguage":"en","theme":"dark","showDeveloperFeatures":false,"autoAdjustmentSettings":{"updatedAt":"2025-08-20T03:44:37.801Z","workoutSettings":{"updatedAt":"2025-08-19T09:47:36.279Z","restTimerFAB":true,"workoutSummary":false,"spinnerSetInput":true,"circularProgress":true,"gestureNavigation":true,"workoutExecutionV2":true,"autoRegulationFeedback":true},"lastAutoAdjustment":"2025-08-20T03:44:37.801Z","autoAdjustmentEnabled":true,"autoAdjustmentFrequency":"biweekly"},"createdAt":"2025-07-17T12:35:45.291Z","updatedAt":"2025-10-16T02:28:17.653Z","firstName":null,"lastName":null,"profileImageUrl":"/objects/uploads/f26ba6eb-c736-40fb-9db7-52b9553e04f4","emailVerified":true,"isActive":false,"registrationIp":null,"registrationUserAgent":null}}
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Local settings exist, skipping server sync
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - AnimatedPage: Page changed from / to /profile
+⚡️  [error] - [useSwipeBack] Failed to enable: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
