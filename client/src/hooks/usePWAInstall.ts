@@ -242,11 +242,23 @@ export function usePWAInstall(): PWAInstallState {
   };
 
   // Show install button when installable but prompt not shown
+  // Always show for non-Capacitor platforms unless already installed or recently dismissed
+  const isCapacitorApp = (window as any).Capacitor?.isNativePlatform() || false;
   const showInstallButton = 
+    !isCapacitorApp &&  // Don't show in native app
     !isInstalled && 
     !isRecentlyDismissed() && 
-    !showPrompt &&
-    (deferredPrompt !== null || isIOSDevice);
+    !showPrompt;  // Remove the requirement for deferredPrompt/iOS - show button and let triggerInstall handle it
+
+  console.log('PWA: Install button visibility check:', {
+    isCapacitorApp,
+    isInstalled,
+    isRecentlyDismissed: isRecentlyDismissed(),
+    showPrompt,
+    showInstallButton,
+    deferredPrompt: deferredPrompt !== null,
+    isIOSDevice
+  });
 
   return {
     isInstallable: deferredPrompt !== null || isIOSDevice,

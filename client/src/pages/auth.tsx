@@ -20,7 +20,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
-import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 interface User {
   id: number;
@@ -39,7 +38,17 @@ export default function Auth({ onSuccess }: AuthProps) {
   const [activeTab, setActiveTab] = useState("signin");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showAuthForm, setShowAuthForm] = useState(false);
-  const { showInstallButton, triggerInstall } = usePWAInstall();
+
+  // Check if we should show PWA install button
+  const isCapacitorApp = Capacitor.isNativePlatform();
+  const isPWAInstalled = window.matchMedia('(display-mode: standalone)').matches ||
+                        (window.navigator as any).standalone === true;
+  const showPWAButton = !isCapacitorApp && !isPWAInstalled;
+
+  // Trigger PWA install by dispatching custom event
+  const handlePWAInstall = () => {
+    window.dispatchEvent(new CustomEvent('pwa-install-requested'));
+  };
 
   const signUpMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; name: string }) => {
@@ -580,11 +589,11 @@ export default function Auth({ onSuccess }: AuthProps) {
                       </Button>
 
                       {/* PWA Install Button */}
-                      {showInstallButton && (
+                      {showPWAButton && (
                         <Button
                           variant="outline"
                           className="w-full border-purple-500/50 hover:bg-purple-600/20 text-purple-300 hover:text-purple-200 transition-all duration-200"
-                          onClick={triggerInstall}
+                          onClick={handlePWAInstall}
                           data-testid="button-install-pwa-auth"
                         >
                           <Download className="mr-2 h-4 w-4" />

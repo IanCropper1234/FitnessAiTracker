@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { X, Download, Share, Home } from 'lucide-react';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { Button } from '@/components/ui/button';
@@ -12,10 +13,24 @@ import { Card } from '@/components/ui/card';
  * - Dismissable with 7-day cooldown
  * - Responsive mobile-first design
  * - Smooth animations
+ * - Listens for manual install requests from other components
  */
 
 export function PWAInstallPrompt() {
-  const { showPrompt, isIOSDevice, install, dismissPrompt } = usePWAInstall();
+  const { showPrompt, isIOSDevice, install, dismissPrompt, triggerInstall } = usePWAInstall();
+
+  // Listen for manual PWA install requests (e.g., from auth page button)
+  useEffect(() => {
+    const handleInstallRequest = () => {
+      console.log('[PWAInstallPrompt] Manual install requested');
+      triggerInstall();
+    };
+
+    window.addEventListener('pwa-install-requested', handleInstallRequest);
+    return () => {
+      window.removeEventListener('pwa-install-requested', handleInstallRequest);
+    };
+  }, [triggerInstall]);
 
   if (!showPrompt) return null;
 
