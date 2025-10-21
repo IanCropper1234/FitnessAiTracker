@@ -96,33 +96,64 @@ export function PWAInstallPrompt() {
 
 /**
  * iOS Safari Install Instructions
- * Shows step-by-step guide for Add to Home Screen
+ * Enhanced visual guide with animated pointer to Share button
  */
 function IOSInstallInstructions({ onDismiss }: { onDismiss: () => void }) {
   return (
     <div className="space-y-4">
-      <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-        <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-3">
-          To install on iOS:
-        </p>
-        <ol className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-          <li className="flex items-start gap-3">
-            <span className="font-bold shrink-0">1.</span>
-            <span className="flex items-center gap-2">
-              Tap the <Share className="w-4 h-4 inline" /> Share button below
-            </span>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="font-bold shrink-0">2.</span>
-            <span className="flex items-center gap-2">
-              Select <Home className="w-4 h-4 inline" /> "Add to Home Screen"
-            </span>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="font-bold shrink-0">3.</span>
-            <span>Tap "Add" to confirm</span>
-          </li>
-        </ol>
+      {/* Visual pointer to Safari Share button */}
+      <div className="relative">
+        <div className="bg-gradient-to-b from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/30 rounded-lg p-6 border-2 border-blue-300 dark:border-blue-700">
+          {/* Large Share Icon */}
+          <div className="flex flex-col items-center gap-3 mb-4">
+            <div className="relative">
+              <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg z-10 relative">
+                <Share className="w-8 h-8 text-white" strokeWidth={2.5} />
+              </div>
+              {/* Pulsing ring animation - respects reduced motion preferences */}
+              <div className="absolute inset-0 w-16 h-16 bg-blue-400 rounded-2xl motion-safe:animate-ping opacity-50 pointer-events-none" />
+            </div>
+            <p className="text-sm font-bold text-blue-900 dark:text-blue-100 text-center">
+              Tap the Share button at the bottom of Safari
+            </p>
+          </div>
+
+          {/* Step-by-step instructions */}
+          <div className="space-y-3 bg-white/50 dark:bg-black/20 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                1
+              </div>
+              <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                Tap <Share className="w-4 h-4 inline mx-1" /> in Safari toolbar
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                2
+              </div>
+              <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                Scroll & tap <Home className="w-4 h-4 inline mx-1" /> "Add to Home Screen"
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                3
+              </div>
+              <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                Tap "Add" to install
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Animated arrow pointing down to Safari toolbar */}
+        <div className="flex justify-center mt-3">
+          <div className="flex flex-col items-center gap-1 motion-safe:animate-bounce pointer-events-none" data-testid="ios-install-arrow">
+            <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-blue-500" />
+            <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-blue-500" />
+          </div>
+        </div>
       </div>
 
       <Button
