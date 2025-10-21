@@ -5,11 +5,12 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers inte
 
 ## Recent Changes
 **October 21, 2025**:
-- Updated all app icons to new fitness-themed design (barbell + utensils)
-- Generated 18 PWA icon sizes (16x16 to 1024x1024)
-- Updated iOS native app icon (AppIcon-512@2x.png)
-- Updated favicon.ico with multi-resolution support
-- Bumped Service Worker to v24 for icon cache refresh
+- Updated all app icons to new fitness-themed design (barbell + fork/knife crossed)
+  - Blue gradient background with white fitness symbols
+  - Generated 14 PWA icon sizes (16x16 to 1024x1024)
+  - Updated iOS native app icon (AppIcon-512@2x.png, 1024x1024 RGB)
+  - Updated favicon.ico
+  - Bumped Service Worker to v25 for icon cache refresh
 - Enhanced iOS PWA install instructions with visual animations (pulsing Share icon, bouncing arrow)
 - Added accessibility support (motion-safe prefixes, reduced opacity, pointer-events-none)
 
