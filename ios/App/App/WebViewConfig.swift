@@ -5,11 +5,21 @@ import Capacitor
 // Implements the same functionality as capacitor-plugin-ios-swipe-back
 // without requiring CocoaPods installation
 @objc(IosSwipeBack)
-public class IosSwipeBack: CAPPlugin {
+public class IosSwipeBack: CAPPlugin, CAPBridgedPlugin {
+    
+    // MARK: - CAPBridgedPlugin
+    public let identifier = "IosSwipeBack"
+    public let jsName = "IosSwipeBack"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "enable", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "disable", returnType: CAPPluginReturnPromise)
+    ]
     
     // Called when plugin is loaded - verify registration
     override public func load() {
         print("🔌 [IosSwipeBack] Plugin loaded and registered successfully!")
+        print("🔌 [IosSwipeBack] Identifier: \(identifier)")
+        print("🔌 [IosSwipeBack] JS Name: \(jsName)")
     }
     
     @objc func enable(_ call: CAPPluginCall) {
