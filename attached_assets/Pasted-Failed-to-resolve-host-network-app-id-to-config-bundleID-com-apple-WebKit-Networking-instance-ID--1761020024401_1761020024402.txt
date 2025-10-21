@@ -1,0 +1,61 @@
+Failed to resolve host network app id to config: bundleID: com.apple.WebKit.Networking instance ID: Optional([_EXExtensionInstanceIdentifier: 70DFFD92-13F7-4FB1-9935-A20AE89407AE])
+KeyboardPlugin: resize mode - ionic
+⚡️  Loading app at https://mytrainpro.com...
+[AppDelegate] App did become active
+[AppDelegate] Should check for blank page: true (duration: 75374.87788701057s)
+Networking process (0x114000800) took 1.147932 seconds to launch
+WebContent process (0x114001920) took 1.303534 seconds to launch
+GPU process (0x1140033e0) took 1.529457 seconds to launch
+-[RTIInputSystemClient remoteTextInputSessionWithID:textSuggestionsChanged:]  Can only set suggestions for an active session. sessionID = CA07C9BA-88BA-4038-BCC1-F7141D380A21
+⚡️  [log] - Settings loaded from localStorage: {"workoutExecutionV2":true,"spinnerSetInput":true,"gestureNavigation":true,"circularProgress":true,"restTimerFAB":true,"workoutSummary":false,"autoRegulationFeedback":true,"updatedAt":"2025-08-19T09:47:36.279Z"}
+⚡️  [log] - [Cache] App version 2.0.0 matches, no cache clear needed
+⚡️  [log] - [Capacitor Auth] Setting up OAuth deep link listener
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 1/6)
+⚡️  [log] - [Capacitor Auth] OAuth listener setup complete
+⚡️  [log] - User signed out, clearing all cache
+⚡️  To Native ->  ⚡️  [log] - Checking authentication status... (attempt 1)
+App addListener 97210816
+⚡️  To Native ->  App addListener 97210817
+⚡️  To Native ->  App getInfo 97210818
+⚡️  TO JS {"id":"com.fitaiv1.app","build":"18","version":"1.0","name":"MyTrainPro"}
+⚡️  To Native ->  App getLaunchUrl 97210819
+⚡️  TO JS undefined
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (1/6)
+⚡️  [log] - MyTrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+⚡️  WebView loaded
+⚡️  [log] - Auth check response status: 200
+⚡️  [log] - Authentication successful, user data: {"user":{"id":1,"email":"c0109009@gmail.com","password":"$2b$10$BFqOm.i2VAhpwK9WMl/F1uOnMnjY3p0MI3vSUJE29d4vFgjwYC9HK","name":"Ian","appleId":null,"preferredLanguage":"en","theme":"dark","showDeveloperFeatures":false,"autoAdjustmentSettings":{"updatedAt":"2025-08-20T03:44:37.801Z","workoutSettings":{"updatedAt":"2025-08-19T09:47:36.279Z","restTimerFAB":true,"workoutSummary":false,"spinnerSetInput":true,"circularProgress":true,"gestureNavigation":true,"workoutExecutionV2":true,"autoRegulationFeedback":true},"lastAutoAdjustment":"2025-08-20T03:44:37.801Z","autoAdjustmentEnabled":true,"autoAdjustmentFrequency":"biweekly"},"createdAt":"2025-07-17T12:35:45.291Z","updatedAt":"2025-10-16T02:28:17.653Z","firstName":null,"lastName":null,"profileImageUrl":"/objects/uploads/f26ba6eb-c736-40fb-9db7-52b9553e04f4","emailVerified":true,"isActive":false,"registrationIp":null,"registrationUserAgent":null}}
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 2/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (2/6)
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - Local settings exist, skipping server sync
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 3/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (3/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 4/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (4/6)
+⚡️  [log] - AnimatedPage: Page changed from / to /profile
+⚡️  [error] - [useSwipeBack] Failed to enable: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 5/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (5/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 6/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Will retry in 2 seconds... (6/6)
+⚡️  [log] - [Capacitor Auth] Checking server for pending OAuth session... (attempt 7/6)
+⚡️  [log] - [Capacitor Auth] No pending OAuth sessions found
+⚡️  [log] - [Capacitor Auth] Max retries reached, stopping checks
+⚡️  [log] - AnimatedPage: Page changed from  to /
+⚡️  [log] - AnimatedPage: Page changed from /profile to /
+⚡️  [error] - [useSwipeBack] Cleanup failed: {"code":"UNIMPLEMENTED"}
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+⚡️  [log] - ✅ ANIMATION COMPLETED for page: /
+0x114000800 - NetworkProcessProxy::didClose (Network Process 99780 crash)
+[C:4] Error received: Connection invalidated.
+CoreSimulator 1010.15 - Device: iPhone 16 (CAB6F840-F5F8-4B81-90C9-D30F348E9BB9) - Runtime: iOS 18.6 (22G86) - DeviceType: iPhone 16

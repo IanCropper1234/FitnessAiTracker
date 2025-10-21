@@ -50,6 +50,6 @@ const config: CapacitorConfig = {
       enabled: true
     }
   }
-};
+} as CapacitorConfig;
 
 export default config;
