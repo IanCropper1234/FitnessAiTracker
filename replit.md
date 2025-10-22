@@ -4,6 +4,16 @@
 MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers intelligent, adaptive training and comprehensive nutrition/workout management. It utilizes evidence-based periodization and AI recommendations to provide personalized coaching at scale. The platform aims to lead the digital fitness market by offering a scientifically-backed solution for serious fitness enthusiasts and bodybuilders.
 
 ## Recent Changes
+**October 22, 2025**:
+- **Re-added PWA Installation Functionality** with smooth onboarding flow
+  - Created `usePWAInstall` Hook for managing PWA installation state and logic
+  - Created `PWAInstallGuide` component with iOS/Android-specific installation guides
+  - Added PWA install button below OAuth sign-in options on auth page
+  - Platform detection: Auto-prompt for Android, manual guide for iOS
+  - Smooth installation flow with preparation steps and progress indicators
+  - Conditional display: Only shows when PWA is installable and not already installed
+  - User feedback with toast notifications for installation success/cancellation
+
 **October 21, 2025**:
 - Updated all app icons to new fitness-themed design (barbell + fork/knife crossed)
   - Blue gradient background with white fitness symbols
@@ -11,7 +21,6 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers inte
   - Updated iOS native app icon (AppIcon-512@2x.png, 1024x1024 RGB)
   - Updated favicon.ico
   - Bumped Service Worker to v25 for icon cache refresh
-- Removed PWA installation functionality (install prompts, quick install button) per user preference
 - Fixed iOS native swipe-back gestures by implementing directly in WebViewConfig.swift
   - Removed dependency on third-party capacitor-plugin-ios-swipe-back package
   - Eliminated CocoaPods installation requirement
