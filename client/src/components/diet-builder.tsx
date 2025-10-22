@@ -1330,7 +1330,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </div>
                     </div>
                     {/* Goal Selection */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 mt-[12px] mb-[12px] pl-[20px] pr-[20px]">
                       <h3 className="text-lg font-semibold text-foreground">Diet Goal</h3>
                       <RadioGroup
                         value={dietGoal.goal || 'maintain'}
