@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { 
   ExternalLink, Mail, Lock, Dumbbell, Activity, Brain, Shield, 
   TrendingUp, Users, Award, Star, CheckCircle2, Zap, Target, 
-  BarChart3, ArrowRight, Menu, X, ChevronRight, Sparkles
+  BarChart3, ArrowRight, Menu, X, ChevronRight, Sparkles, Download
 } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistrationForm";
@@ -20,6 +20,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import { usePWAInstall } from "@/hooks/usePWAInstall";
+import { PWAInstallGuide } from "@/components/PWAInstallGuide";
 
 interface User {
   id: number;
@@ -38,6 +40,17 @@ export default function Auth({ onSuccess }: AuthProps) {
   const [activeTab, setActiveTab] = useState("signin");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showAuthForm, setShowAuthForm] = useState(false);
+  
+  // PWA Installation
+  const { 
+    canInstall, 
+    isIOS, 
+    isInStandaloneMode, 
+    promptInstall, 
+    getInstallStrategy,
+    installStatus 
+  } = usePWAInstall();
+  const [showPWAGuide, setShowPWAGuide] = useState(false);
 
   const signUpMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; name: string }) => {
@@ -217,6 +230,62 @@ export default function Auth({ onSuccess }: AuthProps) {
       });
       setIsLoading(false);
     }
+  };
+
+  // Handle PWA Installation
+  const handlePWAInstall = async () => {
+    const strategy = getInstallStrategy();
+    
+    console.log('[PWA Install] Installation triggered, strategy:', strategy);
+    
+    if (strategy === 'already-installed') {
+      toast({
+        title: "Already Installed",
+        description: "MyTrainPro is already installed on your device!",
+      });
+      return;
+    }
+    
+    if (strategy === 'manual-ios') {
+      // Show iOS installation guide
+      setShowPWAGuide(true);
+      return;
+    }
+    
+    if (strategy === 'auto-prompt') {
+      // Android - trigger automatic install
+      try {
+        const result = await promptInstall();
+        
+        if (result.success) {
+          toast({
+            title: "Installation Successful!",
+            description: "MyTrainPro has been added to your home screen.",
+          });
+        } else if (result.outcome === 'dismissed') {
+          toast({
+            title: "Installation Cancelled",
+            description: "You can install MyTrainPro anytime from the menu.",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error('[PWA Install] Error:', error);
+        toast({
+          title: "Installation Failed",
+          description: "Please try again or install manually from your browser menu.",
+          variant: "destructive"
+        });
+      }
+      return;
+    }
+    
+    // Unsupported
+    toast({
+      title: "Not Supported",
+      description: "Your browser doesn't support PWA installation.",
+      variant: "destructive"
+    });
   };
 
   const stats = [
@@ -576,6 +645,32 @@ export default function Auth({ onSuccess }: AuthProps) {
                         <SiApple className="mr-2 h-4 w-4" />
                         Continue with Apple
                       </Button>
+                      
+                      {/* PWA Installation Button - Only show if installable and not in standalone mode */}
+                      {!isInStandaloneMode && (canInstall || isIOS) && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Button
+                            variant="outline"
+                            className="w-full border-purple-600/50 hover:bg-purple-600/10 text-purple-400 hover:text-purple-300 transition-all"
+                            onClick={handlePWAInstall}
+                            data-testid="button-pwa-install"
+                          >
+                            <Download className="mr-2 h-4 w-4" />
+                            Install MyTrainPro App
+                          </Button>
+                          <p className="text-xs text-center text-gray-500 mt-2">
+                            {isIOS 
+                              ? 'Add to home screen for quick access'
+                              : 'Get the app experience without app store'
+                            }
+                          </p>
+                        </motion.div>
+                      )}
                     </div>
 
                     <div className="relative mb-6">
@@ -707,6 +802,15 @@ export default function Auth({ onSuccess }: AuthProps) {
           </div>
         </footer>
       </div>
+      
+      {/* PWA Installation Guide Dialog */}
+      <PWAInstallGuide
+        isOpen={showPWAGuide}
+        onClose={() => setShowPWAGuide(false)}
+        platform={isIOS ? 'ios' : 'android'}
+        installStatus={installStatus}
+        onInstall={promptInstall}
+      />
     </div>
   );
 }
