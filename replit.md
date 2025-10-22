@@ -5,6 +5,12 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers inte
 
 ## Recent Changes
 **October 22, 2025**:
+- **Fixed Recovery & Fatigue Recommendations** - Added missing recommendations for balanced fatigue range
+  - Enhanced recommendation logic to cover all fatigue score ranges (0-10)
+  - Added specific guidance for balanced recovery state (fatigue 3-5)
+  - Users with moderate fatigue (4.3/10) now see relevant recommendations
+  - Improved granularity: High (>7), Moderate (5-7), Balanced (3-5), Excellent (<3)
+  
 - **Fixed Workout History Weight Unit Tracking** - Critical bug fix for exercise weight units
   - Added `weightUnit` persistence in `/api/training/sessions/:sessionId/progress` endpoint
   - Exercises recorded in lbs now correctly display as lbs in session details and set history

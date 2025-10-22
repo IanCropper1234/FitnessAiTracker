@@ -182,15 +182,22 @@ export class MesocyclePeriodization {
     // Generate recovery recommendations
     const recommendations: string[] = [];
     
-    if (fatigueAnalysis.fatigueScore > 5) {
-      recommendations.push("Consider additional rest days");
-      recommendations.push("Focus on sleep quality and stress management");
-      recommendations.push("Reduce training intensity by 10-15%");
-    }
-    
-    if (fatigueAnalysis.fatigueScore < 3) {
+    if (fatigueAnalysis.fatigueScore > 7) {
+      recommendations.push("High fatigue detected - consider a deload week");
+      recommendations.push("Prioritize sleep (8+ hours) and stress management");
+      recommendations.push("Reduce training volume by 30-40%");
+    } else if (fatigueAnalysis.fatigueScore > 5) {
+      recommendations.push("Moderate fatigue accumulation - monitor closely");
+      recommendations.push("Ensure adequate sleep (7-8 hours) and recovery nutrition");
+      recommendations.push("Reduce training intensity by 10-15% if fatigue persists");
+    } else if (fatigueAnalysis.fatigueScore >= 3) {
+      recommendations.push("Recovery is balanced - maintain current training approach");
+      recommendations.push("Continue monitoring fatigue and recovery signals");
+      recommendations.push("Ensure consistent sleep schedule and nutrition timing");
+    } else {
       recommendations.push("Recovery is excellent - can maintain or increase volume");
-      recommendations.push("Consider adding specialization work");
+      recommendations.push("Consider adding specialization work for lagging muscle groups");
+      recommendations.push("Good time to push intensity or add volume progression");
     }
 
     return {
