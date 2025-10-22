@@ -1281,7 +1281,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </div>
                     )}
                     {/* Auto-regulation Toggle - Read-only display */}
-                    <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                    <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 ml-[20px] mr-[20px]">
                       <div className="space-y-1">
                         <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Auto-regulation</Label>
                         <p className="text-gray-600 dark:text-gray-400 text-[12px]">
