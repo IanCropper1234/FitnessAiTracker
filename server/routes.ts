@@ -5337,13 +5337,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log('📅 Using week start date:', currentWeek);
       
-      // Calculate adjustment using AdvancedMacroManagementService
-      const adjustmentResult = await AdvancedMacroManagementService.calculateWeeklyAdjustment(userId, currentWeek);
+      // Use calculateWeeklyNutritionFromLogs for weight-based adjustment (same as display logic)
+      const adjustmentData = await AdvancedMacroManagementService.calculateWeeklyNutritionFromLogs(userId, currentWeek);
       
-      // Extract adjustment percentage
-      const adjustmentPercentage = adjustmentResult.adjustment?.adjustmentPercentage || 0;
+      if (!adjustmentData) {
+        return res.status(400).json({
+          message: "Insufficient data to calculate adjustment. Please ensure you have weight data and nutrition logs."
+        });
+      }
       
-      console.log('📊 Calculated adjustment:', adjustmentPercentage, '%');
+      // Extract adjustment percentage from the weight-based calculation
+      const adjustmentPercentage = parseFloat(adjustmentData.adjustmentPercentage || '0');
+      
+      console.log('📊 Calculated adjustment based on weight and nutrition data:', adjustmentPercentage, '%');
+      console.log('📊 Adjustment recommendation:', adjustmentData.adjustmentRecommendation);
       
       if (adjustmentPercentage === 0) {
         return res.status(200).json({
@@ -5357,6 +5364,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await AdvancedMacroManagementService.applyWeeklyAdjustment(userId, currentWeek, adjustmentPercentage);
       
       console.log('✅ Adjustment applied:', result);
+      
+      // Create weekly goal entry to track this adjustment
+      await AdvancedMacroManagementService.createWeeklyGoal({
+        userId,
+        weekStartDate: currentWeek,
+        dailyCalories: result.newCalories,
+        protein: result.newProtein,
+        carbs: result.newCarbs,
+        fat: result.newFat,
+        adjustmentReason: adjustmentData.adjustmentReason,
+        adjustmentRecommendation: adjustmentData.adjustmentRecommendation,
+        adherencePercentage: parseFloat(adjustmentData.adherencePercentage || '0'),
+        wellnessFactors: {
+          energyLevel: adjustmentData.avgEnergyLevel || 7,
+          hungerLevel: adjustmentData.avgHungerLevel || 5
+        },
+        energyLevels: adjustmentData.avgEnergyLevel || 7,
+        hungerLevels: adjustmentData.avgHungerLevel || 5,
+        adjustmentPercentage: adjustmentPercentage,
+        previousWeight: adjustmentData.previousWeight,
+        currentWeight: adjustmentData.currentWeight
+      });
       
       // Reset lastAutoAdjustment date to today
       const user = await storage.getUser(userId);
@@ -5380,6 +5409,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         newProtein: result.newProtein,
         newCarbs: result.newCarbs,
         newFat: result.newFat,
+        adjustmentRecommendation: adjustmentData.adjustmentRecommendation,
+        adjustmentReason: adjustmentData.adjustmentReason,
         message: `Auto-adjustment applied successfully. New calories: ${result.newCalories} kcal`
       });
       
