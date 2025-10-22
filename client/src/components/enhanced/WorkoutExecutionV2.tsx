@@ -130,7 +130,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [isRestTimerActive, setIsRestTimerActive] = useState(false);
   const [restTimeRemaining, setRestTimeRemaining] = useState(0);
   const [customRestTime, setCustomRestTime] = useState<number | null>(null);
-  const [sessionStartTime] = useState(Date.now());
+  const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now());
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [exerciseWeightUnits, setExerciseWeightUnits] = useState<Record<number, 'kg' | 'lbs'>>({});
   const [headerExpanded, setHeaderExpanded] = useState(false);
@@ -197,6 +197,17 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     queryKey: ["/api/training/exercise-recommendations", sessionId],
     enabled: !!sessionId,
   });
+
+  // Initialize session start time accounting for any previously saved duration
+  useEffect(() => {
+    if (session) {
+      // If session has existing duration, adjust start time to continue from where it left off
+      const existingDuration = session.duration || 0; // in minutes
+      const adjustedStartTime = Date.now() - (existingDuration * 60 * 1000); // subtract existing duration in milliseconds
+      setSessionStartTime(adjustedStartTime);
+      console.log(`📊 Session timer initialized: existing duration ${existingDuration}min, adjusted start time set`);
+    }
+  }, [session?.id]); // Only run when session ID changes (new session loaded)
 
   // Initialize edit mode when session changes
   useEffect(() => {
