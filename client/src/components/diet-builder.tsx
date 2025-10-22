@@ -1304,7 +1304,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </div>
                     </div>
                     {/* TDEE Calculation Results */}
-                    <div className="bg-slate-50 dark:bg-slate-900 p-4 border">
+                    <div className="bg-slate-50 dark:bg-slate-900 p-4 border ml-[20px] mr-[20px]">
                       <h3 className="text-lg font-semibold mb-3 text-foreground">TDEE Calculation</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* BMR */}
