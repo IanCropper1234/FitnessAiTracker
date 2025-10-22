@@ -925,7 +925,7 @@ export function AddFood({ user }: AddFoodProps) {
 
         {/* Main Content Card with Tabs */}
         <Card className="ios-smooth-transform">
-          <CardContent className="p-4 pt-[16px] pb-[16px] pl-[2px] pr-[2px] ml-[0px] mr-[0px]">
+          <CardContent className="p-4 pt-[16px] pb-[16px] ml-[0px] mr-[0px] pl-[10px] pr-[10px]">
             <Tabs defaultValue="ai-analysis" className="w-full">
               <TabsList className="grid w-full grid-cols-3 tab-trigger-smooth">
                 <TabsTrigger value="ai-analysis" className="tab-trigger-smooth">AI Analysis</TabsTrigger>
