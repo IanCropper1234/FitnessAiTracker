@@ -1004,7 +1004,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Recommendation:</span>
-                        <span className="font-semibold pl-[7px] pr-[7px]">
+                        <span className="font-semibold pl-[4px] pr-[4px]">
                           {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <span className="text-green-600 dark:text-green-400">↑ +Cal</span>}
                           {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <span className="text-red-600 dark:text-red-400">↓ -Cal</span>}
                           {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && <span className="text-yellow-600 dark:text-yellow-400">⚠ Adhere</span>}
