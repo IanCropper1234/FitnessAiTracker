@@ -5,6 +5,13 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers inte
 
 ## Recent Changes
 **October 22, 2025**:
+- **Fixed Workout History Weight Unit Tracking** - Critical bug fix for exercise weight units
+  - Added `weightUnit` persistence in `/api/training/sessions/:sessionId/progress` endpoint
+  - Exercises recorded in lbs now correctly display as lbs in session details and set history
+  - Fixed incorrect kg display for exercises that were actually performed in lbs
+  - Frontend already sent weightUnit; backend now saves it to database
+  - Existing records default gracefully to kg when weightUnit was never set
+  
 - **Fixed Auto-Adjustment Scheduler** - Critical bug fix for macro auto-adjustments
   - Added scheduler initialization in `server/index.ts` to start on server boot
   - Fixed static method calls in `AutoAdjustmentScheduler.processUserAutoAdjustment()`

@@ -3653,7 +3653,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const currentSetCount = exerciseData.sets.length;
           const updateData: any = {
             sets: currentSetCount, // Update dynamic set count
-            setsData: exerciseData.sets // Store individual set completion states
+            setsData: exerciseData.sets, // Store individual set completion states
+            weightUnit: exerciseData.weightUnit || 'kg' // CRITICAL FIX: Save weight unit for correct display in history
           };
 
           // Update exercise order if provided
