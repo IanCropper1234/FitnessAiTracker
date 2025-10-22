@@ -268,7 +268,7 @@ export function Nutrition({
                 }}
                 className="ios-touch-feedback ios-smooth-transform p-2 text-foreground/60 hover:text-foreground transition-all duration-200  min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-accent/30 active:scale-95"
               >
-                <ChevronLeft className="h-4 w-4 transition-transform duration-150" />
+                <ChevronLeft className="h-5 w-5 transition-transform duration-150" />
               </button>
               
               <button
@@ -294,7 +294,7 @@ export function Nutrition({
                 }}
                 className="ios-touch-feedback ios-smooth-transform p-2 text-foreground/60 hover:text-foreground transition-all duration-200  min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-accent/30 active:scale-95"
               >
-                <ChevronRight className="h-4 w-4 transition-transform duration-150" />
+                <ChevronRight className="h-5 w-5 transition-transform duration-150" />
               </button>
             </div>
           </div>
