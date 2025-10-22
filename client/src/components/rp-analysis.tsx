@@ -334,16 +334,12 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
         <CardContent className="space-y-3">
           {/* Current Recommendation */}
           <div className="flex items-center gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-            {latestRecommendation === 'increase_calories' && <TrendingUp className="w-5 h-5 text-green-600" />}
-            {latestRecommendation === 'decrease_calories' && <TrendingDown className="w-5 h-5 text-red-600" />}
-            {latestRecommendation === 'improve_adherence' && <AlertTriangle className="w-5 h-5 text-yellow-600" />}
-            {latestRecommendation === 'maintain' && <CheckCircle className="w-5 h-5 text-blue-600" />}
             <div>
-              <p className="font-medium text-sm">
-                {latestRecommendation === 'increase_calories' && 'Increase Calories'}
-                {latestRecommendation === 'decrease_calories' && 'Decrease Calories'}
-                {latestRecommendation === 'improve_adherence' && 'Improve Adherence'}
-                {latestRecommendation === 'maintain' && 'Maintain Current Plan'}
+              <p className="font-semibold text-lg">
+                {latestRecommendation === 'increase_calories' && <span className="text-green-600 dark:text-green-400">↑ +Cal</span>}
+                {latestRecommendation === 'decrease_calories' && <span className="text-red-600 dark:text-red-400">↓ -Cal</span>}
+                {latestRecommendation === 'improve_adherence' && <span className="text-yellow-600 dark:text-yellow-400">⚠ Adhere</span>}
+                {latestRecommendation === 'maintain' && <span className="text-blue-600 dark:text-blue-400">✓ Hold</span>}
               </p>
               <p className="text-xs text-muted-foreground">Latest RP recommendation</p>
             </div>

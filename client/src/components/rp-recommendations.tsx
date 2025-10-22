@@ -218,18 +218,19 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
           {/* Current Recommendation */}
           <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-800">
             <div className="flex items-center gap-3 mb-3">
-              {recommendation === 'increase_calories' && <TrendingUp className="w-6 h-6 text-green-600" />}
-              {recommendation === 'decrease_calories' && <TrendingDown className="w-6 h-6 text-red-600" />}
-              {recommendation === 'improve_adherence' && <Target className="w-6 h-6 text-yellow-600" />}
-              {recommendation === 'maintain' && <CheckCircle className="w-6 h-6 text-blue-600" />}
               <div>
-                <h3 className="font-semibold text-lg">
-                  {recommendation === 'increase_calories' && 'Increase Calories'}
-                  {recommendation === 'decrease_calories' && 'Decrease Calories'}
-                  {recommendation === 'improve_adherence' && 'Focus on Adherence'}
-                  {recommendation === 'maintain' && 'Maintain Current Plan'}
+                <h3 className="font-semibold text-2xl">
+                  {recommendation === 'increase_calories' && <span className="text-green-600 dark:text-green-400">↑ +Cal</span>}
+                  {recommendation === 'decrease_calories' && <span className="text-red-600 dark:text-red-400">↓ -Cal</span>}
+                  {recommendation === 'improve_adherence' && <span className="text-yellow-600 dark:text-yellow-400">⚠ Adhere</span>}
+                  {recommendation === 'maintain' && <span className="text-blue-600 dark:text-blue-400">✓ Hold</span>}
                 </h3>
-                <p className="text-sm text-muted-foreground">Primary recommendation for this week</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {recommendation === 'increase_calories' && 'Increase calories to support progress'}
+                  {recommendation === 'decrease_calories' && 'Decrease calories to optimize results'}
+                  {recommendation === 'improve_adherence' && 'Focus on improving diet adherence'}
+                  {recommendation === 'maintain' && 'Maintain current nutrition plan'}
+                </p>
               </div>
             </div>
             
