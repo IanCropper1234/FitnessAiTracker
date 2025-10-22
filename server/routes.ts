@@ -5319,6 +5319,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trigger immediate auto-adjustment endpoint
+  app.post("/api/trigger-auto-adjustment", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      
+      console.log('🎯 Immediate auto-adjustment triggered for user:', userId);
+      
+      // Get current week start date
+      const now = new Date();
+      const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Calculate offset to Monday
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + mondayOffset);
+      monday.setHours(0, 0, 0, 0);
+      const currentWeek = monday.toISOString().split('T')[0];
+      
+      console.log('📅 Using week start date:', currentWeek);
+      
+      // Calculate adjustment using AdvancedMacroManagementService
+      const adjustmentResult = await AdvancedMacroManagementService.calculateWeeklyAdjustment(userId, currentWeek);
+      
+      // Extract adjustment percentage
+      const adjustmentPercentage = adjustmentResult.adjustment?.adjustmentPercentage || 0;
+      
+      console.log('📊 Calculated adjustment:', adjustmentPercentage, '%');
+      
+      if (adjustmentPercentage === 0) {
+        return res.status(200).json({
+          message: "No adjustment needed",
+          adjustmentPercentage: 0,
+          newCalories: parseFloat((await storage.getDietGoal(userId))?.targetCalories || '0')
+        });
+      }
+      
+      // Apply the adjustment
+      const result = await AdvancedMacroManagementService.applyWeeklyAdjustment(userId, currentWeek, adjustmentPercentage);
+      
+      console.log('✅ Adjustment applied:', result);
+      
+      // Reset lastAutoAdjustment date to today
+      const user = await storage.getUser(userId);
+      if (user?.autoAdjustmentSettings) {
+        const settings = user.autoAdjustmentSettings as any;
+        const updatedSettings = {
+          ...settings,
+          lastAutoAdjustment: new Date().toISOString()
+        };
+        
+        await storage.updateUser(userId, {
+          autoAdjustmentSettings: updatedSettings
+        });
+        
+        console.log('📅 Reset lastAutoAdjustment date to today');
+      }
+      
+      res.json({
+        adjustmentPercentage: result.adjustmentPercentage,
+        newCalories: result.newCalories,
+        newProtein: result.newProtein,
+        newCarbs: result.newCarbs,
+        newFat: result.newFat,
+        message: `Auto-adjustment applied successfully. New calories: ${result.newCalories} kcal`
+      });
+      
+    } catch (error: any) {
+      console.error('❌ Immediate auto-adjustment error:', error);
+      res.status(500).json({ message: error.message || 'Failed to trigger auto-adjustment' });
+    }
+  });
+
   // Get unified goal data from dietGoals (single source of truth)
   app.get("/api/unified-goals", requireAuth, async (req, res) => {
     try {

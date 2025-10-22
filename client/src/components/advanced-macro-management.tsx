@@ -511,6 +511,45 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
+  // Immediate auto-adjustment mutation (triggers scheduler logic manually)
+  const immediateAutoAdjustmentMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/trigger-auto-adjustment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to trigger auto-adjustment');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Refresh all related data
+      queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/weekly-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/auto-adjustment-settings'] });
+      
+      toast({
+        title: "Auto-Adjustment Applied",
+        description: `${data.adjustmentPercentage > 0 ? '+' : ''}${data.adjustmentPercentage}% adjustment applied. New calories: ${data.newCalories} kcal`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Adjustment Failed",
+        description: error.message || "Failed to apply auto-adjustment",
+        variant: "destructive"
+      });
+    }
+  });
+
   // Create meal distribution mutation
   const mealDistributionMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -1124,6 +1163,34 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                           )}
                         </div>
                       </div>
+                      
+                      {/* Make Adjustment Now button - only shown when auto-adjustment is enabled */}
+                      {autoAdjustmentEnabled && weeklyGoals && weeklyGoals.length > 0 && (
+                        <Button
+                          onClick={() => immediateAutoAdjustmentMutation.mutate()}
+                          disabled={immediateAutoAdjustmentMutation.isPending}
+                          variant="outline"
+                          size="sm"
+                          className="w-full mt-2 text-xs h-7"
+                          data-testid="button-make-adjustment-now"
+                        >
+                          {immediateAutoAdjustmentMutation.isPending ? (
+                            <>
+                              <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                                <div className="dot w-1 h-1 bg-current rounded-full"></div>
+                                <div className="dot w-1 h-1 bg-current rounded-full"></div>
+                                <div className="dot w-1 h-1 bg-current rounded-full"></div>
+                              </div>
+                              Adjusting...
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="w-3 h-3 mr-1.5" />
+                              Make Adjustment Now
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
