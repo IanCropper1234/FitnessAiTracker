@@ -280,6 +280,15 @@ export function NutritionLogger({ userId, selectedDate, onComplete, mealType, on
                   }
                   className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white text-sm flex-1"
                   onKeyPress={(e) => e.key === 'Enter' && (searchMode === 'ai' ? handleAIAnalysis() : handleSearch())}
+                  onPaste={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onCopy={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onCut={(e) => {
+                    e.stopPropagation();
+                  }}
                 />
                 <Button
                   onClick={searchMode === 'ai' ? handleAIAnalysis : handleSearch}
@@ -384,6 +393,15 @@ export function NutritionLogger({ userId, selectedDate, onComplete, mealType, on
                     step="0.1"
                     inputMode="decimal"
                     className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white text-sm mt-1"
+                    onPaste={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onCopy={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onCut={(e) => {
+                      e.stopPropagation();
+                    }}
                   />
                 </div>
                 <div>
