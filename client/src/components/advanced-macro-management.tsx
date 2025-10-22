@@ -953,12 +953,11 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               {weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].adjustmentRecommendation && selectedWeek && (
                 <div className="p-4 border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 pl-[16px] pr-[16px] ml-[-15px] mr-[-15px] mt-[10px] mb-[10px]">
                   <div className="flex items-center gap-2 mb-2">
-                    {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />}
-                    {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />}
-                    {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && <Target className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />}
-                    {weeklyGoals[0].adjustmentRecommendation === 'maintain' && <ArrowRight className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
-                    <h3 className="font-semibold text-black dark:text-white">
-                      Evidence-based methodology Analysis
+                    <h3 className="font-semibold text-xl">
+                      {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <span className="text-green-600 dark:text-green-400">↑ +Cal</span>}
+                      {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <span className="text-red-600 dark:text-red-400">↓ -Cal</span>}
+                      {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && <span className="text-yellow-600 dark:text-yellow-400">⚠ Adhere</span>}
+                      {weeklyGoals[0].adjustmentRecommendation === 'maintain' && <span className="text-blue-600 dark:text-blue-400">✓ Hold</span>}
                     </h3>
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
@@ -1005,8 +1004,11 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Recommendation:</span>
-                        <span className="font-medium text-black dark:text-white capitalize pl-[7px] pr-[7px]">
-                          {weeklyGoals[0].adjustmentRecommendation?.replace('_', ' ')}
+                        <span className="font-semibold pl-[7px] pr-[7px]">
+                          {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <span className="text-green-600 dark:text-green-400">↑ +Cal</span>}
+                          {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <span className="text-red-600 dark:text-red-400">↓ -Cal</span>}
+                          {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && <span className="text-yellow-600 dark:text-yellow-400">⚠ Adhere</span>}
+                          {weeklyGoals[0].adjustmentRecommendation === 'maintain' && <span className="text-blue-600 dark:text-blue-400">✓ Hold</span>}
                         </span>
                       </div>
                     </div>
