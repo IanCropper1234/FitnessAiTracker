@@ -253,7 +253,7 @@ export default function Auth({ onSuccess }: AuthProps) {
     }
     
     if (strategy === 'auto-prompt') {
-      // Android - trigger automatic install
+      // Android/Desktop - trigger automatic install with prompt
       try {
         const result = await promptInstall();
         
@@ -280,7 +280,7 @@ export default function Auth({ onSuccess }: AuthProps) {
       return;
     }
     
-    // Unsupported
+    // Truly unsupported (no deferredPrompt and not iOS)
     toast({
       title: "Not Supported",
       description: "Your browser doesn't support PWA installation.",

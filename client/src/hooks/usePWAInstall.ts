@@ -32,7 +32,14 @@ export function usePWAInstall() {
   // Check platform and installation status
   useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
-    const iosDevice = /iphone|ipad|ipod/.test(userAgent);
+    
+    // Enhanced iOS/iPadOS detection
+    // iPadOS 13+ reports as MacIntel, so we need additional checks
+    const isIOSUserAgent = /iphone|ipad|ipod/.test(userAgent);
+    const isPadOSDesktopMode = navigator.platform === 'MacIntel' && 
+                               navigator.maxTouchPoints > 1;
+    const iosDevice = isIOSUserAgent || isPadOSDesktopMode;
+    
     const androidDevice = /android/.test(userAgent);
     const standalone = window.matchMedia('(display-mode: standalone)').matches || 
                        (window.navigator as any).standalone === true;
@@ -47,9 +54,13 @@ export function usePWAInstall() {
 
     console.log('[PWA Install] Platform detection:', {
       isIOS: iosDevice,
+      isIOSUserAgent,
+      isPadOSDesktopMode,
       isAndroid: androidDevice,
       isStandalone: standalone,
-      userAgent
+      userAgent,
+      platform: navigator.platform,
+      maxTouchPoints: navigator.maxTouchPoints
     });
   }, []);
 
