@@ -1240,7 +1240,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               )}
                     {/* Profile Integration Section */}
                     {!isDataLoading && userProfile?.fitnessGoal && (
-                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
+                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 pl-[12px] pr-[12px] ml-[20px] mr-[20px]">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                           <h4 className="font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2 text-sm">
                             <User className="w-4 h-4 flex-shrink-0" />
