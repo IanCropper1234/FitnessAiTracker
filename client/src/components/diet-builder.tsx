@@ -1354,7 +1354,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </RadioGroup>
                     </div>
                     {/* Calculated Macros Display */}
-                    <div className="bg-background border border-border p-4 space-y-4">
+                    <div className="bg-background border border-border p-4 space-y-4 ml-[20px] mr-[20px]">
                       <h3 className="text-lg font-semibold text-foreground">Calculated Daily Goals</h3>
                       
                       {/* Calorie Goal */}
