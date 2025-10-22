@@ -5,6 +5,21 @@ MyTrainPro is an enterprise-grade AI-powered fitness platform that delivers inte
 
 ## Recent Changes
 **October 22, 2025**:
+- **Fixed Auto-Adjustment Scheduler** - Critical bug fix for macro auto-adjustments
+  - Added scheduler initialization in `server/index.ts` to start on server boot
+  - Fixed static method calls in `AutoAdjustmentScheduler.processUserAutoAdjustment()`
+  - Fixed `adjustmentPercentage` extraction from `calculateWeeklyAdjustment()` result
+  - Scheduler now runs daily at 6 AM to check users needing adjustments (biweekly/weekly)
+  - In development mode, scheduler also runs 10 seconds after startup for testing
+  - Status endpoint: `/api/auto-adjustment-status` to check scheduler state
+  - Issue identified: Previous execution caused data corruption (NaN values) - restored user data
+  
+- **Enhanced PWA Installation** with improved platform detection
+  - Fixed iPadOS detection using `navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1`
+  - Removed desktop viewport width restrictions (was blocking narrow browser windows)
+  - Simplified Android/desktop installation flow using native browser prompts
+  - Enhanced logging for platform detection debugging
+  
 - **Re-added PWA Installation Functionality** with smooth onboarding flow
   - Created `usePWAInstall` Hook for managing PWA installation state and logic
   - Created `PWAInstallGuide` component with iOS/Android-specific installation guides
