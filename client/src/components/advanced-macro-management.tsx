@@ -12,7 +12,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle, ChevronDown, ChevronUp, RotateCcw, Clock, AlertTriangle } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle, ChevronDown, ChevronUp, RotateCcw, Clock, AlertTriangle, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
 import { TimezoneUtils } from "@shared/utils/timezone";
@@ -1144,7 +1145,61 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <button 
+                                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                                data-testid="button-weight-change-info"
+                              >
+                                <Info className="w-3.5 h-3.5" />
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80 p-4" align="start">
+                              <div className="space-y-3">
+                                <div className="flex items-start gap-2">
+                                  <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                                  <div>
+                                    <h4 className="font-medium text-sm mb-1">How Weight Change is Calculated</h4>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                      This shows your weekly weight change trend using <strong>linear regression analysis</strong> of your past 14 days of data.
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                                  <div className="flex gap-2">
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">•</span>
+                                    <p className="leading-relaxed">
+                                      <strong>More accurate than simple comparisons:</strong> Instead of just comparing two points, it analyzes the overall trend across all your weight entries.
+                                    </p>
+                                  </div>
+                                  
+                                  <div className="flex gap-2">
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">•</span>
+                                    <p className="leading-relaxed">
+                                      <strong>Filters out daily fluctuations:</strong> Water retention, meal timing, and other factors cause daily weight variations. The trend line smooths these out.
+                                    </p>
+                                  </div>
+                                  
+                                  <div className="flex gap-2">
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">•</span>
+                                    <p className="leading-relaxed">
+                                      <strong>Best practice:</strong> Weigh yourself daily at the same time (morning, after using the bathroom, before eating) for the most accurate trend.
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                                  <p className="text-xs text-gray-500 dark:text-gray-500 italic">
+                                    💡 The more data points you have, the more accurate your trend will be.
+                                  </p>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
                         <span className="text-sm font-medium text-black dark:text-white">
                           {formatWeightChangeWithUnit(get14DayWeightChange() || 0)}
                         </span>
