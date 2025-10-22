@@ -71,6 +71,14 @@ app.use((req, res, next) => {
     ]);
 
     console.log('✅ Routes registered successfully');
+    
+    // Initialize auto-adjustment scheduler
+    try {
+      const { autoAdjustmentScheduler } = await import("./services/auto-adjustment-scheduler");
+      console.log('📅 Auto-adjustment scheduler initialized');
+    } catch (schedulerError) {
+      console.error('⚠️ Failed to initialize auto-adjustment scheduler:', schedulerError);
+    }
   } catch (error) {
     console.error('❌ Server initialization error:', error);
     

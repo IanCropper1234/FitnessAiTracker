@@ -102,13 +102,15 @@ export class AutoAdjustmentScheduler {
       }
 
       // Apply the adjustment using the same logic as manual adjustment
-      const macroService = new AdvancedMacroManagementService();
-      const adjustmentResult = await macroService.calculateWeeklyAdjustment(userId, currentWeek);
+      const adjustmentResult = await AdvancedMacroManagementService.calculateWeeklyAdjustment(userId, currentWeek);
       
-      if (adjustmentResult.adjustmentPercentage !== 0) {
-        await macroService.applyWeeklyAdjustment(userId, currentWeek, adjustmentResult.adjustmentPercentage);
+      // Extract adjustment percentage from the result
+      const adjustmentPercentage = adjustmentResult.adjustment?.adjustmentPercentage || 0;
+      
+      if (adjustmentPercentage !== 0) {
+        await AdvancedMacroManagementService.applyWeeklyAdjustment(userId, currentWeek, adjustmentPercentage);
         
-        console.log(`✅ Auto-adjustment applied for user ${userId}: ${adjustmentResult.adjustmentPercentage}%`);
+        console.log(`✅ Auto-adjustment applied for user ${userId}: ${adjustmentPercentage}%`);
         
         // Update last adjustment timestamp
         await this.updateLastAdjustmentTime(userId);
