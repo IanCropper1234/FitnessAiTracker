@@ -152,6 +152,11 @@ export class MesocyclePeriodization {
 
     // Analyze fatigue
     const fatigueAnalysis = await this.analyzeFatigueAccumulation(userId);
+    console.log('🔍 Fatigue Analysis:', {
+      fatigueScore: fatigueAnalysis.fatigueScore,
+      shouldDeload: fatigueAnalysis.shouldDeload,
+      reasons: fatigueAnalysis.reasons
+    });
     
     // Calculate volume progression only if there's an active mesocycle
     const nextWeekVolume = await this.calculateVolumeProgression(userId, currentWeek, totalWeeks);
@@ -182,25 +187,33 @@ export class MesocyclePeriodization {
     // Generate recovery recommendations
     const recommendations: string[] = [];
     
+    console.log('📊 Generating recommendations for fatigue score:', fatigueAnalysis.fatigueScore);
+    
     if (fatigueAnalysis.fatigueScore > 7) {
       recommendations.push("High fatigue detected - consider a deload week");
       recommendations.push("Prioritize sleep (8+ hours) and stress management");
       recommendations.push("Reduce training volume by 30-40%");
+      console.log('✅ Added HIGH fatigue recommendations');
     } else if (fatigueAnalysis.fatigueScore > 5) {
       recommendations.push("Moderate fatigue accumulation - monitor closely");
       recommendations.push("Ensure adequate sleep (7-8 hours) and recovery nutrition");
       recommendations.push("Reduce training intensity by 10-15% if fatigue persists");
+      console.log('✅ Added MODERATE fatigue recommendations');
     } else if (fatigueAnalysis.fatigueScore >= 3) {
       recommendations.push("Recovery is balanced - maintain current training approach");
       recommendations.push("Continue monitoring fatigue and recovery signals");
       recommendations.push("Ensure consistent sleep schedule and nutrition timing");
+      console.log('✅ Added BALANCED recovery recommendations');
     } else {
       recommendations.push("Recovery is excellent - can maintain or increase volume");
       recommendations.push("Consider adding specialization work for lagging muscle groups");
       recommendations.push("Good time to push intensity or add volume progression");
+      console.log('✅ Added EXCELLENT recovery recommendations');
     }
 
-    return {
+    console.log('📝 Total recommendations:', recommendations.length, recommendations);
+
+    const result = {
       shouldDeload: fatigueAnalysis.shouldDeload,
       nextWeekVolume,
       phaseTransition,
@@ -210,6 +223,10 @@ export class MesocyclePeriodization {
         recommendations
       }
     };
+
+    console.log('🎯 Final result:', JSON.stringify(result, null, 2));
+
+    return result;
   }
 
   /**
