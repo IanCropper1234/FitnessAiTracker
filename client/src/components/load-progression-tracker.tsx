@@ -127,6 +127,22 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
             <CardDescription>
               Your training progress and performance trends
             </CardDescription>
+            
+            {/* Timeframe Selector */}
+            <div className="flex gap-2 mt-4">
+              {[7, 14, 28].map((days) => (
+                <Button
+                  key={days}
+                  variant={timeframe === days ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setTimeframe(days)}
+                  className="flex-1 whitespace-nowrap"
+                  data-testid={`button-timeframe-${days}`}
+                >
+                  {days} days
+                </Button>
+              ))}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-4 gap-2 mb-6">
@@ -280,28 +296,6 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
           </CardContent>
         </Card>
       )}
-
-      {/* Timeframe Selector */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Analysis Timeframe</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {[7, 14, 28, 56].map((days) => (
-              <Button
-                key={days}
-                variant={timeframe === days ? "default" : "outline"}
-                size="sm"
-                onClick={() => setTimeframe(days)}
-                className="flex-shrink-0 whitespace-nowrap pl-[5px] pr-[5px] pt-[8px] pb-[8px]"
-              >
-                {days} days
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
