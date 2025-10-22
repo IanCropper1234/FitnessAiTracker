@@ -561,7 +561,13 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                 </CardHeader>
                 <CardContent className="p-5 px-2 pt-[0px] pb-[0px]">
                   <div className="text-base sm:text-xl font-bold text-orange-600 dark:text-orange-400 text-center">
-                    {Math.round(trainingStats?.totalVolume || 0)}kg
+                    {(() => {
+                      const volume = trainingStats?.totalVolume || 0;
+                      if (volume >= 1000) {
+                        return `${(volume / 1000).toFixed(1)}K kg`;
+                      }
+                      return `${Math.round(volume)}kg`;
+                    })()}
                   </div>
                   <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center mt-1">
                     This week
