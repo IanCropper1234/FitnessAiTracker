@@ -1980,7 +1980,7 @@ button, .ios-button {
   
   /* Full safe area insets for PWA containers - 僅底部使用 safe area */
 .ios-pwa-container {
-  padding-top: env(safe-area-inset-top, 0); /* ✅ iOS Capacitor: 只用 safe area，不加額外 padding */
+  padding-top: 0; /* ❌ 移除，讓 sticky header 統一處理 safe area */
   padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom, 0)));
   padding-left: 16px;
   padding-right: 16px;
@@ -2017,7 +2017,7 @@ button, .ios-button {
   .ios-sticky-header {
     position: sticky;
     top: 0;
-    padding-top: calc(env(safe-area-inset-top, 0) + 8px); /* Safe area + visual spacing */
+    padding-top: calc(env(safe-area-inset-top, 0) + 4px); /* ✅ 減少視覺間距從 8px 到 4px */
     z-index: 50;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
