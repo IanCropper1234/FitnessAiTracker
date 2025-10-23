@@ -236,13 +236,13 @@ export function Nutrition({
             >
               <ArrowLeft className="w-5 h-5 transition-transform duration-150" />
             </Button>
-            
+
             {/* Center: Compact Title with Icon */}
             <div className="flex items-center gap-1.5 min-w-0">
               <Utensils className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 transition-colors duration-200" />
               <h1 className="text-base font-semibold transition-colors duration-200">Nutrition</h1>
             </div>
-            
+
             {/* Right: Context Menu */}
             <Button 
               variant="ghost" 
@@ -270,7 +270,7 @@ export function Nutrition({
               >
                 <ChevronLeft className="h-5 w-5 transition-transform duration-150" />
               </button>
-              
+
               <button
                 onClick={() => setShowDatePicker(true)}
                 className="ios-touch-feedback ios-smooth-transform flex items-center gap-2 px-4 py-2  hover:bg-accent/50 transition-all duration-200 active:scale-98 min-h-[44px]"
@@ -284,7 +284,7 @@ export function Nutrition({
                 </span>
                 <ChevronDown className="h-4 w-4 text-foreground/50 transition-transform duration-150" />
               </button>
-              
+
               <button
                 onClick={() => {
                   const nextDay = TimezoneUtils.addDays(selectedDate, 1);

@@ -23,17 +23,17 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
   const activeTab = externalActiveTab || "sessions";
   const setActiveTab = onTabChange || (() => {});
   const { state } = useWorkoutExecution();
-  
+
   // Hide menu bar when in active workout or viewing details
   // Add defensive check for state
   const hideHeader = isViewingDetails || (state?.hideMenuBar || false);
-  
+
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container ios-no-safe-top pl-[20px] pr-[20px]">
       <div className="w-full max-w-none space-y-4">
         {/* Ultra-Compact iOS Header - Hide when viewing workout details or in active workout */}
         {!hideHeader && (
-          <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-4 px-4">
+          <div className="ios-sticky-header bg-background/95 border-b border-border/10">
             <div className="flex items-center justify-between h-[44px]">
               {/* Left: Back Arrow Only */}
               <Button 
@@ -44,13 +44,13 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
               >
                 <ArrowLeft className="w-5 h-5 transition-transform duration-150" />
               </Button>
-              
+
               {/* Center: Compact Title with Icon */}
               <div className="flex items-center gap-1.5 min-w-0">
                 <Dumbbell className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0 transition-colors duration-200" />
                 <h1 className="text-base font-semibold transition-colors duration-200">Training</h1>
               </div>
-              
+
               {/* Right: Settings Button */}
               <Button 
                 variant="ghost" 
@@ -63,7 +63,7 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
             </div>
           </div>
         )}
-        
+
         <div className={isViewingDetails ? "mt-4 mb-32" : "mt-4 mb-32"}>
           <TrainingDashboard 
             userId={user.id} 
