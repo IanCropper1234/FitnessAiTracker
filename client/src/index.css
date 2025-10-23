@@ -1997,11 +1997,9 @@ button, .ios-button {
   padding-top: 0 !important;
 }
 
-/* Toast 不需要額外的 padding-top，只需要 top 定位 */
+/* Toast positioning with safe area */
 .top-safe-area-inset-top {
-  top: env(safe-area-inset-top, 0px); /* ✅ 保留這個 */
-  /* ❌ 移除下面這行，避免重複加 padding */
-  /* padding-top: max(1rem, env(safe-area-inset-top)); */
+  top: env(safe-area-inset-top, 0px);
 }
 
   /* Smaller screens like iPhone 12 mini */
@@ -2013,11 +2011,11 @@ button, .ios-button {
     }
   }
   
-  /* Sticky header with proper iOS support - header consumes safe area */
+  /* Sticky header with proper iOS support - only use safe area inset, no forced minimum */
   .ios-sticky-header {
     position: sticky;
     top: 0;
-    padding-top: env(safe-area-inset-top, 0); /* ✅ Remove extra visual spacing */
+    padding-top: env(safe-area-inset-top, 0);
     z-index: 50;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
