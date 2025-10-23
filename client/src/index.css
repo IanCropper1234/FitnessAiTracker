@@ -2017,7 +2017,7 @@ button, .ios-button {
   .ios-sticky-header {
     position: sticky;
     top: 0;
-    padding-top: calc(env(safe-area-inset-top, 0) + 4px); /* ✅ 減少視覺間距從 8px 到 4px */
+    padding-top: env(safe-area-inset-top, 0); /* ✅ Remove extra visual spacing */
     z-index: 50;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
